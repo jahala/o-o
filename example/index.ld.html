@@ -1,0 +1,1202 @@
+#!/usr/bin/env bash
+# LIKI Document Library — index and management tool
+# Usage:
+#   bash index.ld.html                              # Rebuild index
+#   bash index.ld.html --new "Title / description"  # Create new document
+#   bash index.ld.html --update-all                 # Update all stale documents
+#   bash index.ld.html --help                       # Show help
+: << 'LIKI_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>LIKI Document Library</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-weak: #eff6ff;
+    --heading: #111827;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --grey: #9ca3af;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--bg);
+    font-size: 0;
+    line-height: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  #doc-title {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    margin-top: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  .stats-bar {
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--muted);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .stats-bar .stat {
+    display: inline-block;
+  }
+  .stats-bar .stat strong {
+    color: var(--heading);
+    font-weight: 600;
+  }
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  .search-bar input[type="search"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input[type="search"]:focus {
+    border-color: var(--accent);
+  }
+  #article {
+    margin-top: 24px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 12px;
+    background: #f9fafb;
+    color: var(--heading);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 24px;
+  }
+  th.sortable:hover {
+    background: #f3f4f6;
+  }
+  th.sortable::after {
+    content: '\2195';
+    position: absolute;
+    right: 8px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  th.sortable.asc::after {
+    content: '\2191';
+    color: var(--accent);
+  }
+  th.sortable.desc::after {
+    content: '\2193';
+    color: var(--accent);
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:hover {
+    background: #fafbfc;
+  }
+  td a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  td a:hover {
+    text-decoration: underline;
+  }
+  .quality-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .quality-badge.high {
+    background: var(--green);
+  }
+  .quality-badge.medium {
+    background: var(--yellow);
+  }
+  .quality-badge.low {
+    background: var(--grey);
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state p {
+    margin: 8px 0;
+  }
+  .empty-state code {
+    background: #f9fafb;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--heading);
+    border: 1px solid var(--border);
+  }
+  .file-size {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  @media (max-width: 768px) {
+    .wrap { padding: 16px 14px 48px; }
+    #doc-title { font-size: 24px; }
+    .stats-bar { flex-direction: column; align-items: flex-start; }
+    table { font-size: 13px; }
+    th, td { padding: 8px; }
+    .search-bar input[type="search"] { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">LIKI Document Library</h1>
+<p class="subtitle">Self-updating living documents</p>
+</header>
+<div class="stats-bar">
+  <div class="stat"><strong id="doc-count">1</strong> documents</div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-02-16 21:02</span></div>
+</div>
+<div class="search-bar">
+  <input type="search" id="search-input" placeholder="Search documents...">
+</div>
+<article id="article">
+  <!-- INDEX-CONTENT-START -->
+  <table>
+    <thead>
+      <tr>
+        <th class="sortable" data-type="text">Title</th>
+        <th class="sortable" data-type="date">Last Updated</th>
+        <th class="sortable" data-type="number">Version</th>
+        <th class="sortable" data-type="text">Quality</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><a href="anthropic-leadership.ld.html">Anthropic Leadership Team</a> <span class="file-size">15K</span></td>
+  <td>—</td>
+  <td>0</td>
+  <td><span class="quality-badge low">—</span></td>
+</tr>
+    </tbody>
+  </table>
+  <!-- INDEX-CONTENT-END -->
+</article>
+</div>
+
+<script>
+(function(){
+  var d = document;
+  var input = d.getElementById('search-input');
+  var table = d.querySelector('table');
+
+  // Live search
+  if (input && table) {
+    input.addEventListener('keyup', function() {
+      var query = this.value.toLowerCase();
+      var rows = table.querySelectorAll('tbody tr');
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        row.style.display = text.indexOf(query) > -1 ? '' : 'none';
+      });
+    });
+  }
+
+  // Table sorting
+  var currentSort = { col: -1, dir: 'asc' };
+
+  function sortTable(colIndex, type) {
+    if (!table) return;
+    var tbody = table.querySelector('tbody');
+    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+
+    var dir = 'asc';
+    if (currentSort.col === colIndex) {
+      dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+    }
+    currentSort = { col: colIndex, dir: dir };
+
+    rows.sort(function(a, b) {
+      var aVal = a.cells[colIndex].textContent.trim();
+      var bVal = b.cells[colIndex].textContent.trim();
+
+      if (type === 'number') {
+        aVal = parseFloat(aVal) || 0;
+        bVal = parseFloat(bVal) || 0;
+      } else if (type === 'date') {
+        aVal = aVal === '\u2014' || aVal === '' ? 0 : new Date(aVal).getTime();
+        bVal = bVal === '\u2014' || bVal === '' ? 0 : new Date(bVal).getTime();
+      }
+
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    rows.forEach(function(row) { tbody.appendChild(row); });
+
+    // Update header classes
+    var ths = table.querySelectorAll('th.sortable');
+    ths.forEach(function(th, i) {
+      th.classList.remove('asc', 'desc');
+      if (i === colIndex) {
+        th.classList.add(dir);
+      }
+    });
+  }
+
+  if (table) {
+    var ths = table.querySelectorAll('th.sortable');
+    ths.forEach(function(th, i) {
+      th.addEventListener('click', function() {
+        var type = this.getAttribute('data-type') || 'text';
+        sortTable(i, type);
+      });
+    });
+  }
+})();
+</script>
+
+<!-- Stop browser parsing — everything below (shell code, embedded template) must not render -->
+<script>window.stop();</script>
+
+</body>
+</html>
+LIKI_HTML
+
+set -euo pipefail
+
+# Portable realpath alternative
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_DIR="$(dirname "$SELF")"
+SELF_NAME="$(basename "$SELF")"
+
+# Generate a new LIKI v2 file from template
+generate_liki_file() {
+  local filepath="$1"
+  local title="$2"
+  local scope="$3"
+  local slug="$4"
+
+  # Write template with placeholders
+  cat > "$filepath" << 'TEMPLATE_EOF'
+#!/usr/bin/env bash
+# LIKI v2 Living Document — self-updating via LLM agent
+# To update: bash __SLUG__.ld.html [--agent claude] [--model sonnet]
+# To read:   open __SLUG__.ld.html in any browser
+: << 'LIKI_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>__TITLE__</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-weak: #eff6ff;
+    --heading: #111827;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--bg);
+    font-size: 0;
+    line-height: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  #doc-title {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 14px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  .meta .version-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    background: #fff;
+    font-weight: 600;
+  }
+  .meta .version-badge { cursor: pointer; }
+  .meta .version-badge:hover { background: var(--accent-weak); border-color: var(--accent); }
+  .contract-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .contract-panel.open { display: block; }
+  .contract-panel dt { font-weight: 600; color: var(--heading); margin-top: 10px; }
+  .contract-panel dt:first-child { margin-top: 0; }
+  .contract-panel dd { margin: 2px 0 0 0; color: var(--muted); }
+  .contract-panel .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 2px 3px 2px 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .note {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav.toc {
+    position: fixed;
+    left: calc((100vw - 900px) / 4 - 100px);
+    top: 16px;
+    width: 220px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  nav.toc strong { font-weight: 700; }
+  nav.toc a {
+    display: block;
+    margin: 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    padding-left: 10px;
+    position: relative;
+  }
+  nav.toc a.toc-h3 {
+    padding-left: 22px;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 3px 0;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc a.active { font-weight: 700; text-decoration: none; }
+  nav.toc a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    color: var(--muted);
+  }
+  nav.toc a.active::before { content: '\2192'; }
+  #article h2 {
+    margin-top: 28px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  #article h3 { margin-top: 20px; margin-bottom: 6px; color: var(--heading); }
+  #article p { margin: 10px 0 0; }
+  #references, h2#references { scroll-margin-top: 80px; }
+  #article ol { margin: 10px 0 0 22px; }
+  #article ol li { margin: 6px 0; }
+  #article a { color: var(--accent); text-decoration: none; }
+  #article a:hover { text-decoration: underline; }
+  #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
+  #article figure { margin: 16px 0; padding: 0; }
+  #article figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  #article figcaption {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  #article figcaption .img-src { font-size: 12px; }
+  #article figcaption .img-src a { color: var(--muted); }
+  #article figure.fig-full img { width: 100%; }
+  #article figure.fig-center { max-width: 70%; margin: 20px auto; }
+  #article figure.fig-right {
+    float: right;
+    max-width: 28%;
+    margin: 4px 0 12px 20px;
+  }
+  #article figure.fig-left {
+    float: left;
+    max-width: 28%;
+    margin: 4px 20px 12px 0;
+  }
+  #article h2, #article h3 { clear: both; }
+  .stub-notice {
+    margin: 40px 0;
+    padding: 24px;
+    background: var(--accent-weak);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  .stub-notice code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  @media (max-width: 1200px) {
+    .wrap { padding: 16px 14px 48px; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      left: auto;
+      width: 100%;
+      max-height: none;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      box-shadow: none;
+      border: 0;
+      background: #ffffff;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      z-index: 20;
+    }
+    nav.toc a {
+      display: inline-block;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+      padding-left: 0;
+    }
+    nav.toc a::before {
+      position: static;
+      margin-right: 6px;
+      left: auto;
+      top: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 14px 48px; }
+    #doc-title { font-size: 24px; }
+    nav.toc { font-size: 13px; padding: 8px 10px; }
+    #article figure.fig-left,
+    #article figure.fig-right {
+      float: none;
+      max-width: 100%;
+      margin: 16px 0;
+    }
+    #article figure.fig-center { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">__TITLE__</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash __SLUG__.ld.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+  <div class="stub-notice">
+    <p><strong>This document has not been populated yet.</strong></p>
+    <p>To fill it with researched content, run:</p>
+    <p><code>bash __SLUG__.ld.html</code></p>
+  </div>
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="liki-manifest" type="application/json">
+{
+  "title": "__TITLE__",
+  "freshness": "weekly",
+  "version": 0,
+  "as_of": "",
+  "quality": {
+    "veracity": null,
+    "coverage": null
+  },
+  "changelog": []
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d = document, data = JSON.parse(d.getElementById('liki-manifest').textContent);
+  d.getElementById('doc-title').textContent = data.title || 'Living Article';
+  d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
+  d.getElementById('doc-version').textContent = data.version || '0';
+
+  // PID binding
+  var art = d.getElementById('article');
+  if (art) {
+    try {
+      var w = document.createTreeWalker(art, NodeFilter.SHOW_COMMENT), nodes = [];
+      while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function(n) {
+        var m = (n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if (m) {
+          var t = n.nextElementSibling;
+          if (t) t.setAttribute('data-pid', m[1]);
+          n.parentNode.removeChild(n);
+        }
+      });
+    } catch(e){}
+  }
+
+  // TOC with h2/h3 hierarchy
+  var toc = d.getElementById('toc');
+  var hh = d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML = '<strong>Contents</strong><br>' +
+    Array.prototype.map.call(hh, function(h){
+      var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
+      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+    }).join('');
+
+  // Auto-link citations: [s1] -> <a href="#s1" class="cite">[s1]</a>
+  var refSection = d.getElementById('references');
+  if (refSection) {
+    var ol = refSection.nextElementSibling;
+    while (ol && ol.tagName !== 'OL') ol = ol.nextElementSibling;
+    if (ol) {
+      var items = ol.querySelectorAll('li');
+      items.forEach(function(li, i) { li.id = 's' + (i + 1); });
+    }
+    var paras = art.querySelectorAll('p');
+    paras.forEach(function(p) {
+      p.innerHTML = p.innerHTML.replace(/\[s(\d+)\]/g, function(match, num) {
+        return '<a href="#s'+num+'" class="cite">[s'+num+']</a>';
+      });
+    });
+  }
+
+  // Scroll highlighting
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href')] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map['#'+e.target.id];
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '0px 0px -70% 0px' });
+  d.querySelectorAll('#article h2').forEach(function(h){ obs.observe(h); });
+  if (location.hash && map[location.hash]) map[location.hash].classList.add('active');
+  else if (links[0]) links[0].classList.add('active');
+
+  // Contract panel: toggle on version badge click
+  var badge = d.querySelector('.version-badge');
+  var panel = d.getElementById('contract-panel');
+  if (badge && panel) {
+    badge.addEventListener('click', function() {
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        return;
+      }
+      var el = d.getElementById('liki-contract');
+      if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try {
+        var c = JSON.parse(el.textContent);
+        var id = c.identity || {};
+        var r = c.research || {};
+        var q = c.quality || {};
+        var b = c.budget || {};
+        var html = '<dl>';
+        if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
+        if (id.scope) html += '<dt>Scope</dt><dd>' + id.scope + '</dd>';
+        if (id.audience) html += '<dt>Audience</dt><dd>' + id.audience + '</dd>';
+        if (id.tone) html += '<dt>Tone</dt><dd>' + id.tone + '</dd>';
+        if (r.intents && r.intents.length) {
+          html += '<dt>Research Intents</dt><dd>';
+          r.intents.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (r.required_sections && r.required_sections.length) {
+          html += '<dt>Required Sections</dt><dd>';
+          r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (q.veracity_threshold) html += '<dt>Veracity Threshold</dt><dd>' + (q.veracity_threshold * 100) + '%</dd>';
+        if (q.coverage_threshold) html += '<dt>Coverage Threshold</dt><dd>' + (q.coverage_threshold * 100) + '%</dd>';
+        if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
+        if (b.max_searches) html += '<dt>Max Searches</dt><dd>' + b.max_searches + '</dd>';
+        html += '</dl>';
+        panel.innerHTML = html;
+      } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<!-- UPDATE CONTRACT: complete instructions for the research agent -->
+<script id="liki-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a LIKI v2 research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "procedure": [
+      "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
+      "2. Read the liki-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the liki-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
+      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "7. Update liki-manifest: increment version, set as_of to today (YYYY-MM-DD), update quality scores if you can estimate them.",
+      "8. Update liki-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "9. Update liki-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+    ]
+  },
+  "identity": {
+    "subject": "__TITLE__",
+    "scope": "__SCOPE__",
+    "audience": "General readers",
+    "tone": "Informative, well-researched, accessible"
+  },
+  "research": {
+    "intents": [
+      "__TITLE__ overview 2026",
+      "__TITLE__ recent developments",
+      "__TITLE__ key facts history"
+    ],
+    "required_sections": [
+      "Overview",
+      "Key Details",
+      "Recent Developments",
+      "References"
+    ],
+    "source_policy": {
+      "min_tier": 2,
+      "prefer_domains": [],
+      "deny_domains": ["reddit.com", "quora.com"],
+      "require_corroboration": true,
+      "max_source_age_days": 365
+    }
+  },
+  "quality": {
+    "veracity_threshold": 0.80,
+    "coverage_threshold": 0.70,
+    "min_sources_per_claim": 1,
+    "require_exact_quotes": false
+  },
+  "budget": {
+    "max_cost_usd": 0.50,
+    "max_searches": 15,
+    "max_page_fetches": 25
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 8,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["official pages", "wikimedia commons", "press kits"],
+    "layout_guidance": "fig-right for portraits/headshots, fig-full for diagrams/charts/group photos, fig-center for standalone photos, fig-left for logos/icons",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="liki-source-cache" type="application/json">
+{
+  "last_updated": null,
+  "sources": [],
+  "facts": []
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="liki-changelog" type="application/json">
+{
+  "entries": []
+}
+</script>
+
+</body>
+</html>
+LIKI_HTML
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a LIKI v2 research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="liki-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the liki-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, liki-manifest, liki-source-cache, liki-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
+- Verify it is an image: file /tmp/liki_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
+  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/liki_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/liki_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "LIKI: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "LIKI: Error — 'claude' CLI not found." >&2
+      echo "LIKI: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "LIKI: Unknown agent '$AGENT'." >&2
+    echo "LIKI: Currently supported: claude" >&2
+    exit 1
+    ;;
+esac
+
+echo "LIKI: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0
+TEMPLATE_EOF
+
+  # Replace placeholders
+  local tmp="/tmp/liki_template_$$"
+  sed -e "s|__TITLE__|${title}|g" -e "s|__SCOPE__|${scope}|g" -e "s|__SLUG__|${slug}|g" "$filepath" > "$tmp" && mv "$tmp" "$filepath"
+
+  chmod +x "$filepath"
+}
+
+# Slugify a string for use as a filename
+slugify() {
+  local str="$1"
+  echo "$str" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g' | cut -c1-60
+}
+
+# Rebuild the index
+rebuild_index() {
+  echo "LIKI Index: Scanning for .ld.html files..."
+
+  local count=0
+  local table_rows=""
+
+  # Find all .ld.html files (excluding index.ld.html)
+  while IFS= read -r file; do
+    [[ "$file" == "$SELF" ]] && continue
+
+    # Extract manifest fields using grep (portable, no jq)
+    local title=$(grep -o '"title"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+    local version=$(grep -o '"version"[[:space:]]*:[[:space:]]*[0-9]*' "$file" | head -1 | grep -o '[0-9]*$')
+    local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+    local veracity=$(grep -o '"veracity"[[:space:]]*:[[:space:]]*[0-9.]*' "$file" | head -1 | grep -o '[0-9.]*$')
+    local coverage=$(grep -o '"coverage"[[:space:]]*:[[:space:]]*[0-9.]*' "$file" | head -1 | grep -o '[0-9.]*$')
+
+    # Get file info
+    local rel_path=$(basename "$file")
+    local file_size=$(ls -lh "$file" | awk '{print $5}')
+
+    # Default values
+    [[ -z "$title" ]] && title="Untitled"
+    [[ -z "$version" ]] && version="0"
+    [[ -z "$as_of" ]] && as_of="—"
+
+    # Calculate quality score (average of veracity and coverage if both exist)
+    local quality_badge=""
+    if [[ -n "$veracity" && -n "$coverage" ]]; then
+      local avg=$(echo "scale=2; ($veracity + $coverage) / 2" | bc 2>/dev/null || echo "0")
+      local int_avg=$(echo "$avg * 100 / 100" | bc 2>/dev/null || echo "0")
+
+      if (( $(echo "$avg >= 0.8" | bc -l 2>/dev/null || echo 0) )); then
+        quality_badge="<span class=\"quality-badge high\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
+      elif (( $(echo "$avg >= 0.6" | bc -l 2>/dev/null || echo 0) )); then
+        quality_badge="<span class=\"quality-badge medium\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
+      else
+        quality_badge="<span class=\"quality-badge low\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
+      fi
+    else
+      quality_badge="<span class=\"quality-badge low\">—</span>"
+    fi
+
+    # Build table row
+    table_rows="${table_rows}<tr>
+  <td><a href=\"${rel_path}\">${title}</a> <span class=\"file-size\">${file_size}</span></td>
+  <td>${as_of}</td>
+  <td>${version}</td>
+  <td>${quality_badge}</td>
+</tr>
+"
+
+    count=$((count + 1))
+  done < <(find "$SELF_DIR" -name "*.ld.html" -type f)
+
+  # Build the new content
+  local now=$(date "+%Y-%m-%d %H:%M")
+  local new_content
+
+  if [[ "$count" -eq 0 ]]; then
+    new_content='  <div class="empty-state">
+    <p><strong>No documents found.</strong></p>
+    <p>Create one with:</p>
+    <p><code>bash index.ld.html --new "Your Topic"</code></p>
+  </div>'
+  else
+    new_content="  <table>
+    <thead>
+      <tr>
+        <th class=\"sortable\" data-type=\"text\">Title</th>
+        <th class=\"sortable\" data-type=\"date\">Last Updated</th>
+        <th class=\"sortable\" data-type=\"number\">Version</th>
+        <th class=\"sortable\" data-type=\"text\">Quality</th>
+      </tr>
+    </thead>
+    <tbody>
+${table_rows}    </tbody>
+  </table>"
+  fi
+
+  # Escape special characters for perl regex
+  local escaped_content=$(echo "$new_content" | sed 's/\\/\\\\/g' | sed 's/\$/\\$/g' | sed 's/@/\\@/g')
+
+  # Update the index using perl (works reliably with multiline content)
+  perl -i -pe "BEGIN{undef \$/;} s|<!-- INDEX-CONTENT-START -->.*?<!-- INDEX-CONTENT-END -->|<!-- INDEX-CONTENT-START -->\n${escaped_content}\n  <!-- INDEX-CONTENT-END -->|sm" "$SELF"
+
+  # Update stats
+  local tmp="/tmp/liki_stats_$$"
+  sed -e "s|<strong id=\"doc-count\">[^<]*</strong>|<strong id=\"doc-count\">$count</strong>|" \
+      -e "s|<span id=\"last-scan\">[^<]*</span>|<span id=\"last-scan\">$now</span>|" \
+      "$SELF" > "$tmp" && mv "$tmp" "$SELF"
+
+  echo "LIKI Index: Found $count document(s). Index updated."
+}
+
+# Create a new document
+create_new() {
+  local input="$1"
+  local title desc
+
+  # Split on " / " if present
+  if [[ "$input" == *" / "* ]]; then
+    title="${input%% / *}"
+    desc="${input##* / }"
+  else
+    title="$input"
+    desc="$input"
+  fi
+
+  # Slugify title for filename
+  local slug=$(slugify "$title")
+  local filepath="${SELF_DIR}/${slug}.ld.html"
+
+  # Check if file exists
+  if [[ -e "$filepath" ]]; then
+    echo "LIKI Index: Error — file already exists: $filepath" >&2
+    exit 1
+  fi
+
+  echo "LIKI Index: Creating new document: $title"
+  echo "LIKI Index: File: $filepath"
+
+  # Generate the file
+  generate_liki_file "$filepath" "$title" "$desc" "$slug"
+
+  echo "LIKI Index: Created $filepath"
+  echo "LIKI Index: Running first update..."
+
+  # Run the file to trigger first update
+  bash "$filepath"
+
+  echo "LIKI Index: Document created and populated. Open in browser to read."
+}
+
+# Update all stale documents
+update_all() {
+  echo "LIKI Index: Checking for stale documents..."
+
+  local now_epoch=$(date +%s)
+  local stale_threshold=$((7 * 24 * 60 * 60)) # 7 days in seconds
+  local updated_count=0
+
+  while IFS= read -r file; do
+    [[ "$file" == "$SELF" ]] && continue
+
+    # Extract as_of date
+    local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+    # Check if stale (empty or older than 7 days)
+    local should_update=0
+
+    if [[ -z "$as_of" || "$as_of" == "null" ]]; then
+      should_update=1
+    else
+      # Try to parse date (portable across systems)
+      local as_of_epoch
+      if date -j -f "%Y-%m-%d" "$as_of" "+%s" &>/dev/null; then
+        # BSD date (macOS)
+        as_of_epoch=$(date -j -f "%Y-%m-%d" "$as_of" "+%s")
+      elif date -d "$as_of" "+%s" &>/dev/null; then
+        # GNU date (Linux)
+        as_of_epoch=$(date -d "$as_of" "+%s")
+      else
+        # Can't parse date, assume stale
+        should_update=1
+      fi
+
+      if [[ -n "$as_of_epoch" ]]; then
+        local age=$((now_epoch - as_of_epoch))
+        if [[ "$age" -gt "$stale_threshold" ]]; then
+          should_update=1
+        fi
+      fi
+    fi
+
+    if [[ "$should_update" -eq 1 ]]; then
+      echo "LIKI Index: Updating $(basename "$file")..."
+      bash "$file"
+      updated_count=$((updated_count + 1))
+    fi
+  done < <(find "$SELF_DIR" -name "*.ld.html" -type f)
+
+  if [[ "$updated_count" -gt 0 ]]; then
+    echo "LIKI Index: Updated $updated_count document(s)."
+    echo "LIKI Index: Rebuilding index..."
+    rebuild_index
+  else
+    echo "LIKI Index: All documents are up to date."
+  fi
+}
+
+# Show help
+show_help() {
+  cat << 'HELP_EOF'
+LIKI Document Library — index and management tool
+
+Usage:
+  bash index.ld.html                              Rebuild the index
+  bash index.ld.html --new "Title / description"  Create a new living document
+  bash index.ld.html --update-all                 Update all stale documents (>7 days old)
+  bash index.ld.html --help                       Show this help
+
+Examples:
+  bash index.ld.html --new "History of the USA"
+  bash index.ld.html --new "Python Async / Guide to Python async/await patterns"
+  bash index.ld.html --update-all
+
+The index.ld.html file is both a web page (open in browser) and a management tool (run with bash).
+
+HELP_EOF
+}
+
+# Main command routing
+case "${1:-}" in
+  --new)
+    if [[ -z "${2:-}" ]]; then
+      echo "LIKI Index: Error — --new requires a title argument" >&2
+      echo "Usage: bash index.ld.html --new \"Title / description\"" >&2
+      exit 1
+    fi
+    create_new "$2"
+    ;;
+  --update-all)
+    update_all
+    ;;
+  --help|-h)
+    show_help
+    ;;
+  "")
+    rebuild_index
+    ;;
+  *)
+    echo "LIKI Index: Unknown command: $1" >&2
+    echo "Run: bash index.ld.html --help" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

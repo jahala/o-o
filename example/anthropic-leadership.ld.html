@@ -1,0 +1,709 @@
+#!/usr/bin/env bash
+# LIKI v2 Living Document — self-updating via LLM agent
+# To update: bash this_file.ld.html [--agent claude] [--model sonnet]
+# To read:   open this_file.ld.html in any browser
+: << 'LIKI_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Anthropic Leadership Team</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-weak: #eff6ff;
+    --heading: #111827;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--bg);
+    font-size: 0;
+    line-height: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  #doc-title {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 14px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  .meta .version-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .meta .version-badge:hover { background: var(--accent-weak); border-color: var(--accent); }
+  .contract-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .contract-panel.open { display: block; }
+  .contract-panel dt { font-weight: 600; color: var(--heading); margin-top: 10px; }
+  .contract-panel dt:first-child { margin-top: 0; }
+  .contract-panel dd { margin: 2px 0 0 0; color: var(--muted); }
+  .contract-panel .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 2px 3px 2px 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .note {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav.toc {
+    position: fixed;
+    left: calc((100vw - 900px) / 4 - 100px);
+    top: 16px;
+    width: 220px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  nav.toc strong { font-weight: 700; }
+  nav.toc a {
+    display: block;
+    margin: 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    padding-left: 10px;
+    position: relative;
+  }
+  nav.toc a.toc-h3 {
+    padding-left: 22px;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 3px 0;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc a.active { font-weight: 700; text-decoration: none; }
+  nav.toc a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    color: var(--muted);
+  }
+  nav.toc a.active::before { content: '\2192'; }
+  #article h2 {
+    margin-top: 28px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  #article h3 { margin-top: 20px; margin-bottom: 6px; color: var(--heading); }
+  #article p { margin: 10px 0 0; }
+  #references, h2#references { scroll-margin-top: 80px; }
+  #article ol { margin: 10px 0 0 22px; }
+  #article ol li { margin: 6px 0; }
+  #article a { color: var(--accent); text-decoration: none; }
+  #article a:hover { text-decoration: underline; }
+  #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
+  #article figure { margin: 16px 0; padding: 0; }
+  #article figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  #article figcaption {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  #article figcaption .img-src { font-size: 12px; }
+  #article figcaption .img-src a { color: var(--muted); }
+  #article figure.fig-full img { width: 100%; }
+  #article figure.fig-center { max-width: 70%; margin: 20px auto; }
+  #article figure.fig-right {
+    float: right;
+    max-width: 28%;
+    margin: 4px 0 12px 20px;
+  }
+  #article figure.fig-left {
+    float: left;
+    max-width: 28%;
+    margin: 4px 20px 12px 0;
+  }
+  #article h2, #article h3 { clear: both; }
+  .stub-notice {
+    margin: 40px 0;
+    padding: 24px;
+    background: var(--accent-weak);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  .stub-notice code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  @media (max-width: 1200px) {
+    .wrap { padding: 16px 14px 48px; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      left: auto;
+      width: 100%;
+      max-height: none;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      box-shadow: none;
+      border: 0;
+      background: #ffffff;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      z-index: 20;
+    }
+    nav.toc a {
+      display: inline-block;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+      padding-left: 0;
+    }
+    nav.toc a::before {
+      position: static;
+      margin-right: 6px;
+      left: auto;
+      top: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 14px 48px; }
+    #doc-title { font-size: 24px; }
+    nav.toc { font-size: 13px; padding: 8px 10px; }
+    #article figure.fig-left,
+    #article figure.fig-right {
+      float: none;
+      max-width: 100%;
+      margin: 16px 0;
+    }
+    #article figure.fig-center { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">Anthropic Leadership Team</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash anthropic-leadership.ld.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+
+<h2 id="overview">Overview</h2>
+<!-- pid:overview:a1b2c3d4 -->
+<p>Anthropic is an American artificial intelligence safety company founded in 2021 by siblings Dario and Daniela Amodei, along with five other former OpenAI researchers. The company is structured as a public benefit corporation (PBC) and is headquartered in San Francisco, California. Anthropic develops the Claude family of AI assistants and is one of the leading AI research organizations globally [s1][s2].</p>
+<!-- pid:overview:e5f6a7b8 -->
+<p>The leadership team combines deep expertise in AI research, safety, and scaling with experienced operators from major technology companies. Seven co-founders remain actively involved in the company, and the organization has expanded its executive ranks significantly since 2024 with hires across finance, product, and commercial functions [s1][s3].</p>
+
+<h2 id="co-founders">Co-Founders</h2>
+
+<h3 id="dario-amodei">Dario Amodei &mdash; CEO &amp; Co-Founder</h3>
+<!-- pid:co-founders:c1d2e3f4 -->
+<p>Dario Amodei is an AI researcher and entrepreneur serving as CEO and co-founder of Anthropic. He holds a bachelor's degree in Physics from Caltech and Stanford and a PhD in Computational Neuroscience from Princeton University. Before founding Anthropic, Amodei worked at Baidu (2014&ndash;2015), then at Google, before joining OpenAI in 2016 where he rose to Vice President of Research [s4][s5].</p>
+<!-- pid:co-founders:a5b6c7d8 -->
+<p>Dario departed OpenAI in 2020 over concerns about the pace of commercialization relative to safety research, and co-founded Anthropic in 2021. He has been a prominent voice advocating for responsible AI development while pursuing frontier model capabilities [s4][s5].</p>
+
+<h3 id="daniela-amodei">Daniela Amodei &mdash; President &amp; Co-Founder</h3>
+<!-- pid:co-founders:e9f0a1b2 -->
+<p>Daniela Amodei serves as President and co-founder of Anthropic. She graduated from the University of California, Santa Cruz with a Bachelor of Arts in English Literature, having originally attended on a scholarship for classical flute performance. Her early career spanned global health and politics, including managing communications for U.S. Representative Matt Cartwright [s6].</p>
+<!-- pid:co-founders:c3d4e5f6 -->
+<p>In 2013, Daniela joined Stripe as an early employee, then transitioned to OpenAI in 2018, where she managed the operations team during GPT-2's development and later served as Vice President of Safety and Policy. She co-founded Anthropic in 2021 with her brother Dario and oversees the company's business operations, go-to-market strategy, policy, and people functions [s6][s2].</p>
+
+<h3 id="other-cofounders">Other Co-Founders</h3>
+<!-- pid:co-founders:a7b8c9d0 -->
+<p>Five additional co-founders, all former OpenAI researchers, round out the founding team [s2][s7]:</p>
+<!-- pid:co-founders:e1f2a3b4 -->
+<p><strong>Tom Brown</strong> &mdash; Co-Founder. Lead author of the GPT-3 paper at OpenAI, Brown brought deep expertise in large language model training to Anthropic.</p>
+<!-- pid:co-founders:c5d6e7f8 -->
+<p><strong>Jack Clark</strong> &mdash; Co-Founder. Clark focuses on AI policy, strategy, and communications at Anthropic. He previously served as Policy Director at OpenAI and is known for his work on the social implications of AI systems.</p>
+<!-- pid:co-founders:a9b0c1d2 -->
+<p><strong>Jared Kaplan</strong> &mdash; Co-Founder &amp; Chief Science Officer. Kaplan leads Anthropic's scientific research agenda. He is a physicist by training and is known for co-authoring influential papers on neural scaling laws.</p>
+<!-- pid:co-founders:e3f4a5b6 -->
+<p><strong>Sam McCandlish</strong> &mdash; Co-Founder &amp; Chief Technology Officer. McCandlish oversees Anthropic's technical architecture and infrastructure. He previously contributed to scaling research at OpenAI.</p>
+<!-- pid:co-founders:c7d8e9f0 -->
+<p><strong>Christopher Olah</strong> &mdash; Co-Founder &amp; Head of Interpretability. Olah is a leading researcher in mechanistic interpretability&mdash;the science of understanding neural networks by reverse-engineering their internal representations into human-understandable algorithms [s8][s9].</p>
+
+<h2 id="executive-team">Executive Team</h2>
+
+<h3 id="krishna-rao">Krishna Rao &mdash; Chief Financial Officer</h3>
+<!-- pid:executive-team:a1c2d3e4 -->
+<p>Krishna Rao joined Anthropic as its first CFO in May 2024. He brings nearly 20 years of experience in strategic finance, joining from Fanatics Commerce where he served as CFO. Prior to Fanatics, Rao held senior finance roles at Airbnb, where he was a key executive during the company's IPO and growth phase [s10][s11].</p>
+
+<h3 id="mike-krieger">Mike Krieger &mdash; Former Chief Product Officer</h3>
+<!-- pid:executive-team:f5a6b7c8 -->
+<p>Mike Krieger, co-founder of Instagram, joined Anthropic as Chief Product Officer in 2024, overseeing product engineering, product management, and product design. In January 2026, Krieger transitioned to a new role within Anthropic's newly created "Labs" division [s3][s12].</p>
+
+<h3 id="jan-leike">Jan Leike &mdash; Head of Alignment Science</h3>
+<!-- pid:executive-team:d9e0f1a2 -->
+<p>Jan Leike joined Anthropic in mid-2024 to co-lead the Alignment Science team, departing from OpenAI where he had led the Superalignment team. Leike holds a PhD in reinforcement learning theory from the Australian National University and previously worked at DeepMind, where he prototyped reinforcement learning from human feedback (RLHF) techniques [s2][s13].</p>
+
+<h3 id="commercial-leadership">Commercial Leadership</h3>
+<!-- pid:executive-team:b3c4d5e6 -->
+<p><strong>Chris Ciauri</strong> &mdash; Managing Director, International. Ciauri joined Anthropic to lead the company's global expansion outside of the United States, building on an enterprise sales background [s3].</p>
+<!-- pid:executive-team:f7a8b9c0 -->
+<p><strong>Guillaume Princen</strong> &mdash; Head of EMEA. Princen oversees Anthropic's European, Middle Eastern, and African operations [s3].</p>
+<!-- pid:executive-team:d1e2f3a4 -->
+<p><strong>Hidetoshi Tojo</strong> &mdash; Head of Japan. Tojo leads Anthropic's market efforts in Japan [s3].</p>
+<!-- pid:executive-team:b5c6d7e8 -->
+<p><strong>Kate Jensen</strong> &mdash; Head of Americas. Jensen leads Anthropic's commercial operations in the Americas region [s3].</p>
+
+<h2 id="board-of-directors">Board of Directors</h2>
+<!-- pid:board-of-directors:a1b2c3d5 -->
+<p>As of February 2026, Anthropic's board of directors consists of six members [s14][s15][s16]:</p>
+<!-- pid:board-of-directors:e5f6a7b9 -->
+<p><strong>Dario Amodei</strong> &mdash; Co-Founder and CEO of Anthropic.</p>
+<!-- pid:board-of-directors:c1d2e3f5 -->
+<p><strong>Daniela Amodei</strong> &mdash; Co-Founder and President of Anthropic.</p>
+<!-- pid:board-of-directors:a5b6c7d9 -->
+<p><strong>Yasmin Razavi</strong> &mdash; General Partner at Spark Capital, one of Anthropic's early investors.</p>
+<!-- pid:board-of-directors:e9f0a1b3 -->
+<p><strong>Jay Kreps</strong> &mdash; Co-Founder and CEO of Confluent, the data streaming platform company. Kreps was appointed to Anthropic's board to bring expertise in enterprise technology and data infrastructure [s16].</p>
+<!-- pid:board-of-directors:c3d4e5f7 -->
+<p><strong>Reed Hastings</strong> &mdash; Co-Founder and former CEO of Netflix. Hastings brings decades of experience scaling technology companies and navigating complex strategic decisions [s14].</p>
+<!-- pid:board-of-directors:a7b8c9d1 -->
+<p><strong>Chris Liddell</strong> &mdash; Former CFO of Microsoft and former Deputy White House Chief of Staff. Liddell was appointed in February 2026 and brings extensive corporate finance and governance experience, including roles as a director of Commonwealth Fusion Systems and the Council on Foreign Relations [s15].</p>
+
+<h3 id="ltbt">Long-Term Benefit Trust</h3>
+<!-- pid:board-of-directors:e1f2a3b5 -->
+<p>Anthropic maintains a Long-Term Benefit Trust (LTBT), a purpose trust established for "the responsible development and maintenance of advanced AI for the long-term benefit of humanity." The LTBT holds Class T shares in Anthropic's PBC structure, granting it the power to elect directors to the board. As of October 2025, the Trust members are Neil Buddy Shah, Kanika Bahl, Zach Robinson, and Richard Fontaine [s2][s14].</p>
+
+<h2 id="research-leadership">Research Leadership</h2>
+<!-- pid:research-leadership:f1a2b3c4 -->
+<p>Anthropic's research organization is led by several co-founders and senior researchers who drive the company's work on frontier AI capabilities and safety [s2][s8]:</p>
+<!-- pid:research-leadership:d5e6f7a8 -->
+<p><strong>Jared Kaplan</strong> (Chief Science Officer) sets the overall scientific direction, drawing on his background in physics and neural scaling laws. His research on how model performance scales with compute, data, and parameters has been foundational to the field [s7].</p>
+<!-- pid:research-leadership:b9c0d1e2 -->
+<p><strong>Sam McCandlish</strong> (CTO) leads the technical architecture underpinning Anthropic's model training and serving infrastructure [s7].</p>
+<!-- pid:research-leadership:f3a4b5c6 -->
+<p><strong>Christopher Olah</strong> heads the interpretability research team, pioneering techniques to understand what neural networks learn and how they process information internally. His work on mechanistic interpretability is considered foundational to the field of AI safety [s8][s9].</p>
+<!-- pid:research-leadership:d7e8f9a0 -->
+<p><strong>Jan Leike</strong> leads the Alignment Science team, which focuses on ensuring AI systems behave in accordance with human intentions. His prior work on RLHF at DeepMind and superalignment research at OpenAI directly informs Anthropic's approach to AI safety [s13].</p>
+<!-- pid:research-leadership:b1c2d3e4 -->
+<p>In January 2026, Anthropic announced a new "Labs" division, with former CPO Mike Krieger joining the effort. This reorganization signals the company's intent to bridge research and product development more closely [s12].</p>
+
+<h2 id="references">References</h2>
+<ol>
+<li>[s1] <a href="https://www.anthropic.com/company">Anthropic &mdash; Company</a>, anthropic.com</li>
+<li>[s2] <a href="https://en.wikipedia.org/wiki/Anthropic">Anthropic &mdash; Wikipedia</a>, wikipedia.org</li>
+<li>[s3] <a href="https://www.anthropic.com/news/anthropic-expands-global-leadership-in-enterprise-ai-naming-chris-ciauri-as-managing-director-of">Anthropic Expands Global Leadership in Enterprise AI</a>, anthropic.com</li>
+<li>[s4] <a href="https://en.wikipedia.org/wiki/Dario_Amodei">Dario Amodei &mdash; Wikipedia</a>, wikipedia.org</li>
+<li>[s5] <a href="https://www.darioamodei.com/">Dario Amodei &mdash; Personal Site</a>, darioamodei.com</li>
+<li>[s6] <a href="https://en.wikipedia.org/wiki/Daniela_Amodei">Daniela Amodei &mdash; Wikipedia</a>, wikipedia.org</li>
+<li>[s7] <a href="https://www.clay.com/dossier/anthropic-executives">List of Anthropic Executives &amp; Org Chart</a>, clay.com</li>
+<li>[s8] <a href="https://colah.github.io/about.html">About Me &mdash; colah's blog</a>, colah.github.io</li>
+<li>[s9] <a href="https://research.contrary.com/report/anthropic">Anthropic Business Breakdown &amp; Founding Story</a>, contrary.com</li>
+<li>[s10] <a href="https://www.anthropic.com/news/krishna-rao-joins-anthropic">Krishna Rao joins Anthropic as Chief Financial Officer</a>, anthropic.com</li>
+<li>[s11] <a href="https://www.cfodive.com/news/ai-startup-anthropic-airbnb-alum-first-cfo/716899/">AI startup Anthropic brings in Airbnb alum as first CFO</a>, cfodive.com</li>
+<li>[s12] <a href="https://www.cbinsights.com/company/anthropic/people">Anthropic CEO, Founder, Key Executive Team</a>, cbinsights.com</li>
+<li>[s13] <a href="https://b17news.com/anthropics-power-players-here-are-the-11-leaders-helping-shape-the-future-of-the-amazon-backed-ai-company/">Anthropic's Power Players</a>, b17news.com</li>
+<li>[s14] <a href="https://www.cnbc.com/2026/02/13/anthropic-ai-chris-liddell-microsoft-trump-board.html">Anthropic: Former Trump aide Liddell on board of directors</a>, cnbc.com</li>
+<li>[s15] <a href="https://www.anthropic.com/news/chris-liddell-appointed-anthropic-board">Chris Liddell appointed to Anthropic's board of directors</a>, anthropic.com</li>
+<li>[s16] <a href="https://www.anthropic.com/news/jay-kreps-appointed-to-board-of-directors">Jay Kreps appointed to Anthropic's Board of Directors</a>, anthropic.com</li>
+</ol>
+
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="liki-manifest" type="application/json">
+{
+  "title": "Anthropic Leadership Team",
+  "freshness": "weekly",
+  "version": 1,
+  "as_of": "2026-02-16",
+  "quality": {
+    "veracity": 0.85,
+    "coverage": 0.80
+  },
+  "changelog": []
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d = document, data = JSON.parse(d.getElementById('liki-manifest').textContent);
+  d.getElementById('doc-title').textContent = data.title || 'Living Article';
+  d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
+  d.getElementById('doc-version').textContent = data.version || '0';
+
+  // PID binding
+  var art = d.getElementById('article');
+  if (art) {
+    try {
+      var w = document.createTreeWalker(art, NodeFilter.SHOW_COMMENT), nodes = [];
+      while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function(n) {
+        var m = (n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if (m) {
+          var t = n.nextElementSibling;
+          if (t) t.setAttribute('data-pid', m[1]);
+          n.parentNode.removeChild(n);
+        }
+      });
+    } catch(e){}
+  }
+
+  // TOC with h2/h3 hierarchy
+  var toc = d.getElementById('toc');
+  var hh = d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML = '<strong>Contents</strong><br>' +
+    Array.prototype.map.call(hh, function(h){
+      var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
+      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+    }).join('');
+
+  // Auto-link citations: [s1] -> <a href="#s1" class="cite">[s1]</a>
+  // and add id="sN" to each <li> in the references <ol>
+  var refSection = d.getElementById('references');
+  if (refSection) {
+    var ol = refSection.nextElementSibling;
+    while (ol && ol.tagName !== 'OL') ol = ol.nextElementSibling;
+    if (ol) {
+      var items = ol.querySelectorAll('li');
+      items.forEach(function(li, i) { li.id = 's' + (i + 1); });
+    }
+    // Replace [sN] text with clickable links in article paragraphs
+    var paras = art.querySelectorAll('p');
+    paras.forEach(function(p) {
+      p.innerHTML = p.innerHTML.replace(/\[s(\d+)\]/g, function(match, num) {
+        return '<a href="#s'+num+'" class="cite">[s'+num+']</a>';
+      });
+    });
+  }
+
+  // Scroll highlighting
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href')] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map['#'+e.target.id];
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '0px 0px -70% 0px' });
+  d.querySelectorAll('#article h2').forEach(function(h){ obs.observe(h); });
+  if (location.hash && map[location.hash]) map[location.hash].classList.add('active');
+  else if (links[0]) links[0].classList.add('active');
+  // Contract panel: toggle on version badge click
+  var badge = d.querySelector('.version-badge');
+  var panel = d.getElementById('contract-panel');
+  if (badge && panel) {
+    badge.addEventListener('click', function() {
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        return;
+      }
+      var el = d.getElementById('liki-contract');
+      if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try {
+        var c = JSON.parse(el.textContent);
+        var id = c.identity || {};
+        var r = c.research || {};
+        var q = c.quality || {};
+        var b = c.budget || {};
+        var html = '<dl>';
+        if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
+        if (id.scope) html += '<dt>Scope</dt><dd>' + id.scope + '</dd>';
+        if (id.audience) html += '<dt>Audience</dt><dd>' + id.audience + '</dd>';
+        if (id.tone) html += '<dt>Tone</dt><dd>' + id.tone + '</dd>';
+        if (r.intents && r.intents.length) {
+          html += '<dt>Research Intents</dt><dd>';
+          r.intents.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (r.required_sections && r.required_sections.length) {
+          html += '<dt>Required Sections</dt><dd>';
+          r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (q.veracity_threshold) html += '<dt>Veracity Threshold</dt><dd>' + (q.veracity_threshold * 100) + '%</dd>';
+        if (q.coverage_threshold) html += '<dt>Coverage Threshold</dt><dd>' + (q.coverage_threshold * 100) + '%</dd>';
+        if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
+        if (b.max_searches) html += '<dt>Max Searches</dt><dd>' + b.max_searches + '</dd>';
+        html += '</dl>';
+        panel.innerHTML = html;
+      } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<script id="liki-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a research agent updating a living document.",
+    "read_file": true,
+    "edit_in_place": true,
+    "preserve_pids": true,
+    "add_citations": true,
+    "update_manifest": true
+  },
+  "identity": {
+    "subject": "Anthropic Leadership Team",
+    "scope": "Comprehensive profile of Anthropic's executive leadership, organizational structure, and key personnel",
+    "audience": "General public, journalists, researchers, investors",
+    "tone": "Encyclopedic, neutral, factual"
+  },
+  "research": {
+    "intents": [
+      "Anthropic leadership team executives 2025 2026",
+      "Anthropic new hires executives",
+      "Anthropic board of directors members",
+      "Dario Amodei Daniela Amodei recent news",
+      "Anthropic organizational structure",
+      "Anthropic research leadership team"
+    ],
+    "required_sections": ["Overview", "Co-Founders", "Executive Team", "Board of Directors", "Research Leadership", "References"],
+    "source_policy": {
+      "min_tier": 2,
+      "prefer_domains": ["anthropic.com", "reuters.com", "bloomberg.com", "nytimes.com", "washingtonpost.com", "techcrunch.com", "theverge.com", "wired.com"],
+      "deny_domains": ["reddit.com", "quora.com", "medium.com"],
+      "max_age_days": 365,
+      "require_https": true
+    }
+  },
+  "quality": {
+    "veracity_threshold": 0.80,
+    "coverage_threshold": 0.70,
+    "min_sources": 5,
+    "max_uncited_claims": 2
+  },
+  "budget": {
+    "max_cost_usd": 3.00,
+    "max_searches": 15,
+    "max_page_fetches": 25
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 8,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["official company pages", "wikimedia commons", "press kits"],
+    "layout_guidance": "fig-right for portraits/headshots, fig-full for diagrams/charts/group photos, fig-center for standalone photos, fig-left for logos/icons",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="liki-source-cache" type="application/json">
+{
+  "last_updated": null,
+  "sources": [],
+  "facts": []
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="liki-changelog" type="application/json">
+[]
+</script>
+
+LIKI_HTML
+
+# ==============================================================
+# Shell execution — only reached by bash, never rendered by browser
+# Portable: bash 3.2+ (macOS) and bash 4+/5+ (Linux)
+# No GNU coreutils required. No python/jq/node dependencies.
+# ==============================================================
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo "The agent reads the file, follows the embedded update contract,"
+      echo "researches via web search, and edits the file in-place."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a LIKI v2 research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="liki-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the liki-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, liki-manifest, liki-source-cache, liki-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
+- Verify it is an image: file /tmp/liki_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
+  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/liki_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/liki_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "LIKI: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "LIKI: Error — 'claude' CLI not found." >&2
+      echo "LIKI: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "LIKI: Unknown agent '$AGENT'." >&2
+    echo "LIKI: Currently supported: claude" >&2
+    echo "LIKI: The update contract is agent-agnostic — contributions for other backends welcome." >&2
+    exit 1
+    ;;
+esac
+
+echo "LIKI: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0

@@ -856,15 +856,15 @@ Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <ar
 
 IMAGES: The contract may have an "images" section. If images are allowed:
 - Find relevant images via web search (official sites, wikimedia, press kits)
-- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
-- Verify it is an image: file /tmp/liki_img_N.ext
+- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
+- Verify it is an image: file /tmp/oo_img_N.ext
 - Resize (preserve format — keep PNG for transparency, JPEG for photos):
-  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
-  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
+  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
 - Check size: if over max_file_kb, reduce further or skip
-- Encode: base64 < /tmp/liki_img_N_r.ext
+- Encode: base64 < /tmp/oo_img_N_r.ext
 - Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
-- Clean up: rm /tmp/liki_img_N*
+- Clean up: rm /tmp/oo_img_N*
 PROMPT_EOF
 
 # --- Dispatch to the selected agent ---

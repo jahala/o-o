@@ -440,7 +440,7 @@ SELF_DIR="$(dirname "$SELF")"
 SELF_NAME="$(basename "$SELF")"
 
 # Generate a new o-o file from template
-generate_liki_file() {
+generate_oo_file() {
   local filepath="$1"
   local title="$2"
   local scope="$3"
@@ -1027,15 +1027,15 @@ Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <ar
 
 IMAGES: The contract may have an "images" section. If images are allowed:
 - Find relevant images via web search (official sites, wikimedia, press kits)
-- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
-- Verify it is an image: file /tmp/liki_img_N.ext
+- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
+- Verify it is an image: file /tmp/oo_img_N.ext
 - Resize (preserve format — keep PNG for transparency, JPEG for photos):
-  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
-  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
+  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
 - Check size: if over max_file_kb, reduce further or skip
-- Encode: base64 < /tmp/liki_img_N_r.ext
+- Encode: base64 < /tmp/oo_img_N_r.ext
 - Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
-- Clean up: rm /tmp/liki_img_N*
+- Clean up: rm /tmp/oo_img_N*
 PROMPT_EOF
 
 # --- Dispatch to the selected agent ---
@@ -1075,7 +1075,7 @@ exit 0
 TEMPLATE_EOF
 
   # Replace placeholders
-  local tmp="/tmp/liki_template_$$"
+  local tmp="/tmp/oo_template_$$"
   sed -e "s|__TITLE__|${title}|g" -e "s|__SCOPE__|${scope}|g" -e "s|__SLUG__|${slug}|g" "$filepath" > "$tmp" && mv "$tmp" "$filepath"
 
   chmod +x "$filepath"
@@ -1211,7 +1211,7 @@ ${table_rows}    </tbody>
   perl -i -pe "BEGIN{undef \$/;} s|<!-- INDEX-CONTENT-START -->.*?<!-- INDEX-CONTENT-END -->|<!-- INDEX-CONTENT-START -->\n${escaped_content}\n  <!-- INDEX-CONTENT-END -->|sm" "$SELF"
 
   # Update stats
-  local tmp="/tmp/liki_stats_$$"
+  local tmp="/tmp/oo_stats_$$"
   sed -e "s|<strong id=\"doc-count\">[^<]*</strong>|<strong id=\"doc-count\">$count</strong>|" \
       -e "s|<span id=\"last-scan\">[^<]*</span>|<span id=\"last-scan\">$now</span>|" \
       "$SELF" > "$tmp" && mv "$tmp" "$SELF"
@@ -1247,7 +1247,7 @@ create_new() {
   echo "o-o Index: File: $filepath"
 
   # Generate the file
-  generate_liki_file "$filepath" "$title" "$desc" "$slug"
+  generate_oo_file "$filepath" "$title" "$desc" "$slug"
 
   echo "o-o Index: Created $filepath"
   echo "o-o Index: Running first update..."
@@ -1354,48 +1354,48 @@ case "${1:-}" in
     if [[ -z "${2:-}" ]]; then
       # Interactive mode
       echo ""
-      echo "  LIKI — Create New Living Document"
+      echo "  o-o — Create New Living Document"
       echo "  ─────────────────────────────────"
       echo ""
-      read -p "  Title: " LIKI_NEW_TITLE
-      if [[ -z "$LIKI_NEW_TITLE" ]]; then
+      read -p "  Title: " OO_NEW_TITLE
+      if [[ -z "$OO_NEW_TITLE" ]]; then
         echo "  Error: Title is required." >&2
         exit 1
       fi
       echo ""
-      read -p "  Scope (what should this document cover?): " LIKI_NEW_SCOPE
-      [[ -z "$LIKI_NEW_SCOPE" ]] && LIKI_NEW_SCOPE="$LIKI_NEW_TITLE"
+      read -p "  Scope (what should this document cover?): " OO_NEW_SCOPE
+      [[ -z "$OO_NEW_SCOPE" ]] && OO_NEW_SCOPE="$OO_NEW_TITLE"
       echo ""
-      read -p "  Audience [General readers]: " LIKI_NEW_AUDIENCE
-      [[ -z "$LIKI_NEW_AUDIENCE" ]] && LIKI_NEW_AUDIENCE="General readers"
-      read -p "  Tone [Informative, well-researched, accessible]: " LIKI_NEW_TONE
-      [[ -z "$LIKI_NEW_TONE" ]] && LIKI_NEW_TONE="Informative, well-researched, accessible"
-      read -p "  Budget USD [0.50]: " LIKI_NEW_BUDGET
-      [[ -z "$LIKI_NEW_BUDGET" ]] && LIKI_NEW_BUDGET="0.50"
+      read -p "  Audience [General readers]: " OO_NEW_AUDIENCE
+      [[ -z "$OO_NEW_AUDIENCE" ]] && OO_NEW_AUDIENCE="General readers"
+      read -p "  Tone [Informative, well-researched, accessible]: " OO_NEW_TONE
+      [[ -z "$OO_NEW_TONE" ]] && OO_NEW_TONE="Informative, well-researched, accessible"
+      read -p "  Budget USD [0.50]: " OO_NEW_BUDGET
+      [[ -z "$OO_NEW_BUDGET" ]] && OO_NEW_BUDGET="0.50"
       echo ""
 
-      LIKI_NEW_SLUG=$(slugify "$LIKI_NEW_TITLE")
-      LIKI_NEW_PATH="${SELF_DIR}/${LIKI_NEW_SLUG}.o-o.html"
+      OO_NEW_SLUG=$(slugify "$OO_NEW_TITLE")
+      OO_NEW_PATH="${SELF_DIR}/${OO_NEW_SLUG}.o-o.html"
 
-      if [[ -e "$LIKI_NEW_PATH" ]]; then
-        echo "  Error: File already exists: $LIKI_NEW_PATH" >&2
+      if [[ -e "$OO_NEW_PATH" ]]; then
+        echo "  Error: File already exists: $OO_NEW_PATH" >&2
         exit 1
       fi
 
-      echo "  Creating: ${LIKI_NEW_SLUG}.o-o.html"
-      generate_liki_file "$LIKI_NEW_PATH" "$LIKI_NEW_TITLE" "$LIKI_NEW_SCOPE" "$LIKI_NEW_SLUG"
+      echo "  Creating: ${OO_NEW_SLUG}.o-o.html"
+      generate_oo_file "$OO_NEW_PATH" "$OO_NEW_TITLE" "$OO_NEW_SCOPE" "$OO_NEW_SLUG"
 
       # Customize audience, tone, budget if not defaults
-      LIKI_TMP="/tmp/liki_custom_$$"
-      sed -e "s|\"audience\": \"General readers\"|\"audience\": \"${LIKI_NEW_AUDIENCE}\"|" \
-          -e "s|\"tone\": \"Informative, well-researched, accessible\"|\"tone\": \"${LIKI_NEW_TONE}\"|" \
-          -e "s|\"max_cost_usd\": 0.50|\"max_cost_usd\": ${LIKI_NEW_BUDGET}|" \
-          "$LIKI_NEW_PATH" > "$LIKI_TMP" && mv "$LIKI_TMP" "$LIKI_NEW_PATH"
-      chmod +x "$LIKI_NEW_PATH"
+      OO_TMP="/tmp/oo_custom_$$"
+      sed -e "s|\"audience\": \"General readers\"|\"audience\": \"${OO_NEW_AUDIENCE}\"|" \
+          -e "s|\"tone\": \"Informative, well-researched, accessible\"|\"tone\": \"${OO_NEW_TONE}\"|" \
+          -e "s|\"max_cost_usd\": 0.50|\"max_cost_usd\": ${OO_NEW_BUDGET}|" \
+          "$OO_NEW_PATH" > "$OO_TMP" && mv "$OO_TMP" "$OO_NEW_PATH"
+      chmod +x "$OO_NEW_PATH"
 
       echo "  Running first update..."
       echo ""
-      bash "$LIKI_NEW_PATH"
+      bash "$OO_NEW_PATH"
     else
       create_new "$2"
     fi

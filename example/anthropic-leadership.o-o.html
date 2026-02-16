@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# LIKI v2 Living Document — self-updating via LLM agent
-# To update: bash this_file.ld.html [--agent claude] [--model sonnet]
-# To read:   open this_file.ld.html in any browser
-: << 'LIKI_HTML'
+# o-o Living Document — self-updating via LLM agent
+# To update: bash this_file.o-o.html [--agent claude] [--model sonnet]
+# To read:   open this_file.o-o.html in any browser
+: << 'OO_HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -159,6 +159,11 @@
   #references, h2#references { scroll-margin-top: 80px; }
   #article ol { margin: 10px 0 0 22px; }
   #article ol li { margin: 6px 0; }
+  #article table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 16px 0; color: var(--text); }
+  #article th, #article td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+  #article th { font-weight: 600; color: var(--heading); border-bottom-width: 2px; }
+  #article tr:hover td { background: var(--accent-weak); }
+  #article .table-wrap { overflow-x: auto; margin: 16px 0; }
   #article a { color: var(--accent); text-decoration: none; }
   #article a:hover { text-decoration: underline; }
   #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
@@ -255,7 +260,7 @@
 <header>
 <h1 id="doc-title">Anthropic Leadership Team</h1>
 <div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
-<p class="note">This is a self-updating living document. Run <code>bash anthropic-leadership.ld.html</code> to update.</p>
+<p class="note">This is a self-updating living document. Run <code>bash anthropic-leadership.o-o.html</code> to update.</p>
 <div class="contract-panel" id="contract-panel"></div>
 </header>
 <nav class="toc" id="toc"></nav>
@@ -378,16 +383,12 @@
 </div>
 
 <!-- Manifest -->
-<script id="liki-manifest" type="application/json">
+<script id="oo-manifest" type="application/json">
 {
   "title": "Anthropic Leadership Team",
   "freshness": "weekly",
   "version": 1,
   "as_of": "2026-02-16",
-  "quality": {
-    "veracity": 0.85,
-    "coverage": 0.80
-  },
   "changelog": []
 }
 </script>
@@ -395,7 +396,7 @@
 <!-- Binder JS -->
 <script>
 (function(){
-  var d = document, data = JSON.parse(d.getElementById('liki-manifest').textContent);
+  var d = document, data = JSON.parse(d.getElementById('oo-manifest').textContent);
   d.getElementById('doc-title').textContent = data.title || 'Living Article';
   d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
   d.getElementById('doc-version').textContent = data.version || '0';
@@ -470,13 +471,12 @@
         panel.classList.remove('open');
         return;
       }
-      var el = d.getElementById('liki-contract');
+      var el = d.getElementById('oo-contract');
       if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
       try {
         var c = JSON.parse(el.textContent);
         var id = c.identity || {};
         var r = c.research || {};
-        var q = c.quality || {};
         var b = c.budget || {};
         var html = '<dl>';
         if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
@@ -493,10 +493,7 @@
           r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
           html += '</dd>';
         }
-        if (q.veracity_threshold) html += '<dt>Veracity Threshold</dt><dd>' + (q.veracity_threshold * 100) + '%</dd>';
-        if (q.coverage_threshold) html += '<dt>Coverage Threshold</dt><dd>' + (q.coverage_threshold * 100) + '%</dd>';
         if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
-        if (b.max_searches) html += '<dt>Max Searches</dt><dd>' + b.max_searches + '</dd>';
         html += '</dl>';
         panel.innerHTML = html;
       } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
@@ -506,7 +503,7 @@
 })();
 </script>
 
-<script id="liki-contract" type="application/json">
+<script id="oo-contract" type="application/json">
 {
   "version": "2.0",
   "instructions": {
@@ -534,23 +531,13 @@
     ],
     "required_sections": ["Overview", "Co-Founders", "Executive Team", "Board of Directors", "Research Leadership", "References"],
     "source_policy": {
-      "min_tier": 2,
       "prefer_domains": ["anthropic.com", "reuters.com", "bloomberg.com", "nytimes.com", "washingtonpost.com", "techcrunch.com", "theverge.com", "wired.com"],
       "deny_domains": ["reddit.com", "quora.com", "medium.com"],
-      "max_age_days": 365,
       "require_https": true
     }
   },
-  "quality": {
-    "veracity_threshold": 0.80,
-    "coverage_threshold": 0.70,
-    "min_sources": 5,
-    "max_uncited_claims": 2
-  },
   "budget": {
-    "max_cost_usd": 3.00,
-    "max_searches": 15,
-    "max_page_fetches": 25
+    "max_cost_usd": 3.00
   },
   "images": {
     "allow": true,
@@ -581,7 +568,7 @@
      ============================================================ -->
 
 <!-- SOURCE CACHE: previous research (empty on first run) -->
-<script id="liki-source-cache" type="application/json">
+<script id="oo-source-cache" type="application/json">
 {
   "last_updated": null,
   "sources": [],
@@ -590,11 +577,11 @@
 </script>
 
 <!-- CHANGELOG -->
-<script id="liki-changelog" type="application/json">
+<script id="oo-changelog" type="application/json">
 []
 </script>
 
-LIKI_HTML
+OO_HTML
 
 # ==============================================================
 # Shell execution — only reached by bash, never rendered by browser
@@ -611,11 +598,13 @@ SELF_NAME="$(basename "$SELF")"
 # --- Parse arguments ---
 AGENT="claude"
 MODEL=""
+FORCE=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --agent)  AGENT="$2"; shift 2 ;;
     --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
     --help|-h)
       echo "Usage: bash $SELF_NAME [OPTIONS]"
       echo ""
@@ -626,6 +615,7 @@ while [[ $# -gt 0 ]]; do
       echo "Options:"
       echo "  --agent NAME   Agent backend: claude (default)"
       echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
       echo "  --help, -h     Show this help"
       exit 0
       ;;
@@ -637,9 +627,39 @@ done
 BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
 BUDGET="${BUDGET:-0.50}"
 
+# --- Freshness gate: skip update if document is still fresh ---
+FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
+  case "$FRESHNESS" in
+    daily)   FRESH_SECS=86400 ;;
+    weekly)  FRESH_SECS=604800 ;;
+    monthly) FRESH_SECS=2592000 ;;
+    *)       FRESH_SECS=604800 ;;
+  esac
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
 # --- Build the prompt (minimal — the agent reads the file itself) ---
 read -r -d '' PROMPT << PROMPT_EOF || true
-You are a LIKI v2 research agent. Your task is to update a living document.
+You are a o-o research agent. Your task is to update a living document.
 
 The document is at: $SELF
 
@@ -647,16 +667,16 @@ This file is a polyglot HTML/bash file structured as follows:
 - Above window.stop(): browser-visible content (article, CSS, JS, manifest)
 - Below window.stop(): machine-readable zone (update contract, source cache, changelog)
 
-Read the update contract (the JSON block with id="liki-contract") — it contains
+Read the update contract (the JSON block with id="oo-contract") — it contains
 your complete instructions: the subject, research intents, required sections,
 quality thresholds, source policy, and output format rules.
 
-Check the liki-manifest "as_of" field for when this document was last updated.
+Check the oo-manifest "as_of" field for when this document was last updated.
 If empty, this is a first run — research everything. If it has a date, focus your
 research on new information since that date.
 
 Use the Edit tool to modify specific parts of the file in-place.
-Only modify: <article> content, liki-manifest, liki-source-cache, liki-changelog.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
 Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
 
 IMAGES: The contract may have an "images" section. If images are allowed:
@@ -673,13 +693,13 @@ IMAGES: The contract may have an "images" section. If images are allowed:
 PROMPT_EOF
 
 # --- Dispatch to the selected agent ---
-echo "LIKI: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
 
 case "$AGENT" in
   claude)
     if ! command -v claude &>/dev/null; then
-      echo "LIKI: Error — 'claude' CLI not found." >&2
-      echo "LIKI: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
       exit 1
     fi
 
@@ -697,13 +717,13 @@ case "$AGENT" in
     ;;
 
   *)
-    echo "LIKI: Unknown agent '$AGENT'." >&2
-    echo "LIKI: Currently supported: claude" >&2
-    echo "LIKI: The update contract is agent-agnostic — contributions for other backends welcome." >&2
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
+    echo "o-o: The update contract is agent-agnostic — contributions for other backends welcome." >&2
     exit 1
     ;;
 esac
 
-echo "LIKI: Update complete. Open '$SELF_NAME' in a browser to read."
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
 
 exit 0

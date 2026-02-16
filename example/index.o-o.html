@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# LIKI Document Library — index and management tool
+# o-o Document Library — index and management tool
 # Usage:
-#   bash index.ld.html                              # Rebuild index
-#   bash index.ld.html --new "Title / description"  # Create new document
-#   bash index.ld.html --update-all                 # Update all stale documents
-#   bash index.ld.html --help                       # Show help
-: << 'LIKI_HTML'
+#   bash index.o-o.html                              # Rebuild index
+#   bash index.o-o.html --new "Title / description"  # Create new document
+#   bash index.o-o.html --update-all                 # Update all stale documents
+#   bash index.o-o.html --help                       # Show help
+: << 'OO_HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>LIKI Document Library</title>
+<title>o-o Document Library</title>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
 <style>
@@ -22,9 +22,6 @@
     --accent: #2563eb;
     --accent-weak: #eff6ff;
     --heading: #111827;
-    --green: #10b981;
-    --yellow: #f59e0b;
-    --grey: #9ca3af;
   }
   html, body { height: 100%; }
   body {
@@ -104,6 +101,70 @@
   .search-bar input[type="search"]:focus {
     border-color: var(--accent);
   }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .card {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-color: var(--accent);
+  }
+  .card-title {
+    display: block;
+    color: var(--heading);
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .card:hover .card-title { color: var(--accent); }
+  .card-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .card-badge.fresh {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .card-badge.stale {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+  .card-badge.new {
+    background: var(--accent-weak);
+    color: var(--accent);
+    border: 1px solid #bfdbfe;
+  }
+  .card-excerpt {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
   #article {
     margin-top: 24px;
   }
@@ -112,6 +173,7 @@
     border-collapse: collapse;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     font-size: 14px;
+    color: var(--text);
   }
   th {
     text-align: left;
@@ -160,23 +222,6 @@
   td a:hover {
     text-decoration: underline;
   }
-  .quality-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .quality-badge.high {
-    background: var(--green);
-  }
-  .quality-badge.medium {
-    background: var(--yellow);
-  }
-  .quality-badge.low {
-    background: var(--grey);
-  }
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -204,39 +249,102 @@
     table { font-size: 13px; }
     th, td { padding: 8px; }
     .search-bar input[type="search"] { max-width: 100%; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-<h1 id="doc-title">LIKI Document Library</h1>
+<h1 id="doc-title">o-o Document Library</h1>
 <p class="subtitle">Self-updating living documents</p>
 </header>
 <div class="stats-bar">
-  <div class="stat"><strong id="doc-count">1</strong> documents</div>
-  <div class="stat">Last scanned: <span id="last-scan">2026-02-16 21:02</span></div>
+  <div class="stat"><strong id="doc-count">6</strong> documents</div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 00:05</span></div>
 </div>
 <div class="search-bar">
   <input type="search" id="search-input" placeholder="Search documents...">
 </div>
 <article id="article">
   <!-- INDEX-CONTENT-START -->
+  <div class="card-grid" id="card-grid">
+    <a class="card" href="yc-w26-batch.o-o.html">
+      <span class="card-title">Y Combinator W26 Batch</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">Y Combinator's Winter 2026 (W26) batch represents the accelerator's continued expansion under its four-batches-per-year ...</span>
+    </a>
+    <a class="card" href="vendor-comparison-vector-dbs.o-o.html">
+      <span class="card-title">Vector Databases Compared</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">Vector databases are purpose-built systems for storing, indexing, and querying high-dimensional vector embeddings at sca...</span>
+    </a>
+    <a class="card" href="ai-model-landscape.o-o.html">
+      <span class="card-title">The LLM Landscape: Models, Benchmarks & Pricing</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">The large language model landscape in early 2026 is defined by three converging forces: the commoditization of GPT-4-cla...</span>
+    </a>
+    <a class="card" href="openclaw.o-o.html">
+      <span class="card-title">OpenClaw: The Open-Source AI Agent</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Ma...</span>
+    </a>
+    <a class="card" href="competitor-costco.o-o.html">
+      <span class="card-title">Costco: Competitive Intelligence Briefing</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) continues to be the most feared operator in retail. In fiscal year 2025 (end...</span>
+    </a>
+    <a class="card" href="anthropic-leadership.o-o.html">
+      <span class="card-title">Anthropic Leadership Team</span>
+      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-excerpt">Anthropic is an American artificial intelligence safety company founded in 2021 by siblings Dario and Daniela Amodei, al...</span>
+    </a>
+  </div>
   <table>
     <thead>
       <tr>
         <th class="sortable" data-type="text">Title</th>
+        <th class="sortable" data-type="text">Size</th>
         <th class="sortable" data-type="date">Last Updated</th>
         <th class="sortable" data-type="number">Version</th>
-        <th class="sortable" data-type="text">Quality</th>
       </tr>
     </thead>
     <tbody>
 <tr>
-  <td><a href="anthropic-leadership.ld.html">Anthropic Leadership Team</a> <span class="file-size">15K</span></td>
-  <td>—</td>
-  <td>0</td>
-  <td><span class="quality-badge low">—</span></td>
+  <td><a href="competitor-costco.o-o.html">Costco: Competitive Intelligence Briefing</a></td>
+  <td>154K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
+</tr>
+<tr>
+  <td><a href="vendor-comparison-vector-dbs.o-o.html">Vector Databases Compared</a></td>
+  <td>46K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
+</tr>
+<tr>
+  <td><a href="ai-model-landscape.o-o.html">The LLM Landscape: Models, Benchmarks & Pricing</a></td>
+  <td>44K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
+</tr>
+<tr>
+  <td><a href="openclaw.o-o.html">OpenClaw: The Open-Source AI Agent</a></td>
+  <td>47K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
+</tr>
+<tr>
+  <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
+  <td>32K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
+</tr>
+<tr>
+  <td><a href="yc-w26-batch.o-o.html">Y Combinator W26 Batch</a></td>
+  <td>39K</td>
+  <td>2026-02-16</td>
+  <td>1</td>
 </tr>
     </tbody>
   </table>
@@ -322,7 +430,7 @@
 
 </body>
 </html>
-LIKI_HTML
+OO_HTML
 
 set -euo pipefail
 
@@ -331,7 +439,7 @@ SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
 SELF_DIR="$(dirname "$SELF")"
 SELF_NAME="$(basename "$SELF")"
 
-# Generate a new LIKI v2 file from template
+# Generate a new o-o file from template
 generate_liki_file() {
   local filepath="$1"
   local title="$2"
@@ -341,10 +449,10 @@ generate_liki_file() {
   # Write template with placeholders
   cat > "$filepath" << 'TEMPLATE_EOF'
 #!/usr/bin/env bash
-# LIKI v2 Living Document — self-updating via LLM agent
-# To update: bash __SLUG__.ld.html [--agent claude] [--model sonnet]
-# To read:   open __SLUG__.ld.html in any browser
-: << 'LIKI_HTML'
+# o-o Living Document — self-updating via LLM agent
+# To update: bash __SLUG__.o-o.html [--agent claude] [--model sonnet]
+# To read:   open __SLUG__.o-o.html in any browser
+: << 'OO_HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -501,6 +609,11 @@ generate_liki_file() {
   #references, h2#references { scroll-margin-top: 80px; }
   #article ol { margin: 10px 0 0 22px; }
   #article ol li { margin: 6px 0; }
+  #article table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 16px 0; color: var(--text); }
+  #article th, #article td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+  #article th { font-weight: 600; color: var(--heading); border-bottom-width: 2px; }
+  #article tr:hover td { background: var(--accent-weak); }
+  #article .table-wrap { overflow-x: auto; margin: 16px 0; }
   #article a { color: var(--accent); text-decoration: none; }
   #article a:hover { text-decoration: underline; }
   #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
@@ -597,7 +710,7 @@ generate_liki_file() {
 <header>
 <h1 id="doc-title">__TITLE__</h1>
 <div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
-<p class="note">This is a self-updating living document. Run <code>bash __SLUG__.ld.html</code> to update.</p>
+<p class="note">This is a self-updating living document. Run <code>bash __SLUG__.o-o.html</code> to update.</p>
 <div class="contract-panel" id="contract-panel"></div>
 </header>
 <nav class="toc" id="toc"></nav>
@@ -605,23 +718,19 @@ generate_liki_file() {
   <div class="stub-notice">
     <p><strong>This document has not been populated yet.</strong></p>
     <p>To fill it with researched content, run:</p>
-    <p><code>bash __SLUG__.ld.html</code></p>
+    <p><code>bash __SLUG__.o-o.html</code></p>
   </div>
 </article>
 <footer id="run-meta"></footer>
 </div>
 
 <!-- Manifest -->
-<script id="liki-manifest" type="application/json">
+<script id="oo-manifest" type="application/json">
 {
   "title": "__TITLE__",
   "freshness": "weekly",
   "version": 0,
   "as_of": "",
-  "quality": {
-    "veracity": null,
-    "coverage": null
-  },
   "changelog": []
 }
 </script>
@@ -629,7 +738,7 @@ generate_liki_file() {
 <!-- Binder JS -->
 <script>
 (function(){
-  var d = document, data = JSON.parse(d.getElementById('liki-manifest').textContent);
+  var d = document, data = JSON.parse(d.getElementById('oo-manifest').textContent);
   d.getElementById('doc-title').textContent = data.title || 'Living Article';
   d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
   d.getElementById('doc-version').textContent = data.version || '0';
@@ -703,13 +812,12 @@ generate_liki_file() {
         panel.classList.remove('open');
         return;
       }
-      var el = d.getElementById('liki-contract');
+      var el = d.getElementById('oo-contract');
       if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
       try {
         var c = JSON.parse(el.textContent);
         var id = c.identity || {};
         var r = c.research || {};
-        var q = c.quality || {};
         var b = c.budget || {};
         var html = '<dl>';
         if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
@@ -726,10 +834,7 @@ generate_liki_file() {
           r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
           html += '</dd>';
         }
-        if (q.veracity_threshold) html += '<dt>Veracity Threshold</dt><dd>' + (q.veracity_threshold * 100) + '%</dd>';
-        if (q.coverage_threshold) html += '<dt>Coverage Threshold</dt><dd>' + (q.coverage_threshold * 100) + '%</dd>';
         if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
-        if (b.max_searches) html += '<dt>Max Searches</dt><dd>' + b.max_searches + '</dd>';
         html += '</dl>';
         panel.innerHTML = html;
       } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
@@ -740,21 +845,21 @@ generate_liki_file() {
 </script>
 
 <!-- UPDATE CONTRACT: complete instructions for the research agent -->
-<script id="liki-contract" type="application/json">
+<script id="oo-contract" type="application/json">
 {
   "version": "2.0",
   "instructions": {
-    "role": "You are a LIKI v2 research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "role": "You are a o-o research agent. You maintain living documents by researching current information and updating the file in-place.",
     "procedure": [
       "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
-      "2. Read the liki-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
-      "3. Read the liki-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
       "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
       "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "7. Update liki-manifest: increment version, set as_of to today (YYYY-MM-DD), update quality scores if you can estimate them.",
-      "8. Update liki-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "9. Update liki-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
       "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
@@ -777,23 +882,12 @@ generate_liki_file() {
       "References"
     ],
     "source_policy": {
-      "min_tier": 2,
       "prefer_domains": [],
-      "deny_domains": ["reddit.com", "quora.com"],
-      "require_corroboration": true,
-      "max_source_age_days": 365
+      "deny_domains": ["reddit.com", "quora.com"]
     }
   },
-  "quality": {
-    "veracity_threshold": 0.80,
-    "coverage_threshold": 0.70,
-    "min_sources_per_claim": 1,
-    "require_exact_quotes": false
-  },
   "budget": {
-    "max_cost_usd": 0.50,
-    "max_searches": 15,
-    "max_page_fetches": 25
+    "max_cost_usd": 0.50
   },
   "images": {
     "allow": true,
@@ -824,7 +918,7 @@ generate_liki_file() {
      ============================================================ -->
 
 <!-- SOURCE CACHE: previous research (empty on first run) -->
-<script id="liki-source-cache" type="application/json">
+<script id="oo-source-cache" type="application/json">
 {
   "last_updated": null,
   "sources": [],
@@ -833,7 +927,7 @@ generate_liki_file() {
 </script>
 
 <!-- CHANGELOG -->
-<script id="liki-changelog" type="application/json">
+<script id="oo-changelog" type="application/json">
 {
   "entries": []
 }
@@ -841,7 +935,7 @@ generate_liki_file() {
 
 </body>
 </html>
-LIKI_HTML
+OO_HTML
 
 set -euo pipefail
 
@@ -852,11 +946,13 @@ SELF_NAME="$(basename "$SELF")"
 # --- Parse arguments ---
 AGENT="claude"
 MODEL=""
+FORCE=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --agent)  AGENT="$2"; shift 2 ;;
     --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
     --help|-h)
       echo "Usage: bash $SELF_NAME [OPTIONS]"
       echo ""
@@ -865,6 +961,7 @@ while [[ $# -gt 0 ]]; do
       echo "Options:"
       echo "  --agent NAME   Agent backend: claude (default)"
       echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
       echo "  --help, -h     Show this help"
       exit 0
       ;;
@@ -876,9 +973,39 @@ done
 BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
 BUDGET="${BUDGET:-0.50}"
 
+# --- Freshness gate: skip update if document is still fresh ---
+FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
+  case "$FRESHNESS" in
+    daily)   FRESH_SECS=86400 ;;
+    weekly)  FRESH_SECS=604800 ;;
+    monthly) FRESH_SECS=2592000 ;;
+    *)       FRESH_SECS=604800 ;;
+  esac
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
 # --- Build the prompt (minimal — the agent reads the file itself) ---
 read -r -d '' PROMPT << PROMPT_EOF || true
-You are a LIKI v2 research agent. Your task is to update a living document.
+You are a o-o research agent. Your task is to update a living document.
 
 The document is at: $SELF
 
@@ -886,16 +1013,16 @@ This file is a polyglot HTML/bash file structured as follows:
 - Above window.stop(): browser-visible content (article, CSS, JS, manifest)
 - Below window.stop(): machine-readable zone (update contract, source cache, changelog)
 
-Read the update contract (the JSON block with id="liki-contract") — it contains
+Read the update contract (the JSON block with id="oo-contract") — it contains
 your complete instructions: the subject, research intents, required sections,
 quality thresholds, source policy, and output format rules.
 
-Check the liki-manifest "as_of" field for when this document was last updated.
+Check the oo-manifest "as_of" field for when this document was last updated.
 If empty, this is a first run — research everything. If it has a date, focus your
 research on new information since that date.
 
 Use the Edit tool to modify specific parts of the file in-place.
-Only modify: <article> content, liki-manifest, liki-source-cache, liki-changelog.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
 Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
 
 IMAGES: The contract may have an "images" section. If images are allowed:
@@ -912,13 +1039,13 @@ IMAGES: The contract may have an "images" section. If images are allowed:
 PROMPT_EOF
 
 # --- Dispatch to the selected agent ---
-echo "LIKI: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
 
 case "$AGENT" in
   claude)
     if ! command -v claude &>/dev/null; then
-      echo "LIKI: Error — 'claude' CLI not found." >&2
-      echo "LIKI: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
       exit 1
     fi
 
@@ -936,13 +1063,13 @@ case "$AGENT" in
     ;;
 
   *)
-    echo "LIKI: Unknown agent '$AGENT'." >&2
-    echo "LIKI: Currently supported: claude" >&2
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
     exit 1
     ;;
 esac
 
-echo "LIKI: Update complete. Open '$SELF_NAME' in a browser to read."
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
 
 exit 0
 TEMPLATE_EOF
@@ -962,12 +1089,13 @@ slugify() {
 
 # Rebuild the index
 rebuild_index() {
-  echo "LIKI Index: Scanning for .ld.html files..."
+  echo "o-o Index: Scanning for .o-o.html files..."
 
   local count=0
   local table_rows=""
+  local card_data=""
 
-  # Find all .ld.html files (excluding index.ld.html)
+  # Find all .o-o.html files (excluding index.o-o.html)
   while IFS= read -r file; do
     [[ "$file" == "$SELF" ]] && continue
 
@@ -975,8 +1103,6 @@ rebuild_index() {
     local title=$(grep -o '"title"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
     local version=$(grep -o '"version"[[:space:]]*:[[:space:]]*[0-9]*' "$file" | head -1 | grep -o '[0-9]*$')
     local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
-    local veracity=$(grep -o '"veracity"[[:space:]]*:[[:space:]]*[0-9.]*' "$file" | head -1 | grep -o '[0-9.]*$')
-    local coverage=$(grep -o '"coverage"[[:space:]]*:[[:space:]]*[0-9.]*' "$file" | head -1 | grep -o '[0-9.]*$')
 
     # Get file info
     local rel_path=$(basename "$file")
@@ -987,53 +1113,90 @@ rebuild_index() {
     [[ -z "$version" ]] && version="0"
     [[ -z "$as_of" ]] && as_of="—"
 
-    # Calculate quality score (average of veracity and coverage if both exist)
-    local quality_badge=""
-    if [[ -n "$veracity" && -n "$coverage" ]]; then
-      local avg=$(echo "scale=2; ($veracity + $coverage) / 2" | bc 2>/dev/null || echo "0")
-      local int_avg=$(echo "$avg * 100 / 100" | bc 2>/dev/null || echo "0")
-
-      if (( $(echo "$avg >= 0.8" | bc -l 2>/dev/null || echo 0) )); then
-        quality_badge="<span class=\"quality-badge high\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
-      elif (( $(echo "$avg >= 0.6" | bc -l 2>/dev/null || echo 0) )); then
-        quality_badge="<span class=\"quality-badge medium\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
-      else
-        quality_badge="<span class=\"quality-badge low\">$(printf "%.0f%%" "$(echo "$avg * 100" | bc)")</span>"
-      fi
-    else
-      quality_badge="<span class=\"quality-badge low\">—</span>"
-    fi
-
     # Build table row
     table_rows="${table_rows}<tr>
-  <td><a href=\"${rel_path}\">${title}</a> <span class=\"file-size\">${file_size}</span></td>
+  <td><a href=\"${rel_path}\">${title}</a></td>
+  <td>${file_size}</td>
   <td>${as_of}</td>
   <td>${version}</td>
-  <td>${quality_badge}</td>
 </tr>
 "
 
+    # Collect card data (sort_date|title|rel_path|display_date|excerpt)
+    local excerpt=""
+    excerpt=$(awk '/<article/,/<\/article/' "$file" | grep -o '<p>[^<]*<' | head -1 | sed 's/<p>//;s/<$//' | cut -c1-120)
+    [[ -n "$excerpt" ]] && excerpt="${excerpt}..."
+    local sort_date="$as_of"
+    [[ "$sort_date" == "—" || -z "$sort_date" ]] && sort_date="0000-00-00"
+    card_data="${card_data}${sort_date}|${title}|${rel_path}|${as_of}|${excerpt}
+"
+
     count=$((count + 1))
-  done < <(find "$SELF_DIR" -name "*.ld.html" -type f)
+  done < <(find "$SELF_DIR" -name "*.o-o.html" -type f)
+
+  # Build card grid (top 8 most recently updated)
+  local card_html=""
+  if [[ -n "$card_data" ]]; then
+    local sorted_cards
+    sorted_cards=$(echo "$card_data" | grep -v '^$' | sort -t'|' -k1 -r | head -8)
+    while IFS='|' read -r c_sort c_title c_path c_date c_excerpt; do
+      [[ -z "$c_title" ]] && continue
+      local c_badge=""
+      if [[ -n "$c_date" && "$c_date" != "—" ]]; then
+        # Format date nicely: 2026-02-16 → Feb 16, 2026
+        local nice_date="$c_date"
+        if date -j -f "%Y-%m-%d" "$c_date" "+%b %-d, %Y" &>/dev/null 2>&1; then
+          nice_date=$(date -j -f "%Y-%m-%d" "$c_date" "+%b %-d, %Y")
+        elif date -d "$c_date" "+%b %-d, %Y" &>/dev/null 2>&1; then
+          nice_date=$(date -d "$c_date" "+%b %-d, %Y")
+        fi
+        # Check freshness (>7 days = stale)
+        local badge_class="fresh"
+        local now_epoch=$(date +%s)
+        local date_epoch=""
+        if date -j -f "%Y-%m-%d" "$c_date" "+%s" &>/dev/null 2>&1; then
+          date_epoch=$(date -j -f "%Y-%m-%d" "$c_date" "+%s")
+        elif date -d "$c_date" "+%s" &>/dev/null 2>&1; then
+          date_epoch=$(date -d "$c_date" "+%s")
+        fi
+        if [[ -n "$date_epoch" ]]; then
+          local age=$(( now_epoch - date_epoch ))
+          [[ "$age" -gt 604800 ]] && badge_class="stale"
+        fi
+        c_badge="<span class=\"card-badge ${badge_class}\">${nice_date}</span>"
+      else
+        c_badge="<span class=\"card-badge new\">New</span>"
+      fi
+      card_html="${card_html}    <a class=\"card\" href=\"${c_path}\">
+      <span class=\"card-title\">${c_title}</span>
+      ${c_badge}
+      <span class=\"card-excerpt\">${c_excerpt}</span>
+    </a>
+"
+    done <<< "$sorted_cards"
+  fi
 
   # Build the new content
   local now=$(date "+%Y-%m-%d %H:%M")
   local new_content
 
   if [[ "$count" -eq 0 ]]; then
-    new_content='  <div class="empty-state">
+    new_content='  <div class="card-grid" id="card-grid"></div>
+  <div class="empty-state">
     <p><strong>No documents found.</strong></p>
     <p>Create one with:</p>
-    <p><code>bash index.ld.html --new "Your Topic"</code></p>
+    <p><code>bash index.o-o.html --new "Your Topic"</code></p>
   </div>'
   else
-    new_content="  <table>
+    new_content="  <div class=\"card-grid\" id=\"card-grid\">
+${card_html}  </div>
+  <table>
     <thead>
       <tr>
         <th class=\"sortable\" data-type=\"text\">Title</th>
+        <th class=\"sortable\" data-type=\"text\">Size</th>
         <th class=\"sortable\" data-type=\"date\">Last Updated</th>
         <th class=\"sortable\" data-type=\"number\">Version</th>
-        <th class=\"sortable\" data-type=\"text\">Quality</th>
       </tr>
     </thead>
     <tbody>
@@ -1053,7 +1216,7 @@ ${table_rows}    </tbody>
       -e "s|<span id=\"last-scan\">[^<]*</span>|<span id=\"last-scan\">$now</span>|" \
       "$SELF" > "$tmp" && mv "$tmp" "$SELF"
 
-  echo "LIKI Index: Found $count document(s). Index updated."
+  echo "o-o Index: Found $count document(s). Index updated."
 }
 
 # Create a new document
@@ -1072,103 +1235,115 @@ create_new() {
 
   # Slugify title for filename
   local slug=$(slugify "$title")
-  local filepath="${SELF_DIR}/${slug}.ld.html"
+  local filepath="${SELF_DIR}/${slug}.o-o.html"
 
   # Check if file exists
   if [[ -e "$filepath" ]]; then
-    echo "LIKI Index: Error — file already exists: $filepath" >&2
+    echo "o-o Index: Error — file already exists: $filepath" >&2
     exit 1
   fi
 
-  echo "LIKI Index: Creating new document: $title"
-  echo "LIKI Index: File: $filepath"
+  echo "o-o Index: Creating new document: $title"
+  echo "o-o Index: File: $filepath"
 
   # Generate the file
   generate_liki_file "$filepath" "$title" "$desc" "$slug"
 
-  echo "LIKI Index: Created $filepath"
-  echo "LIKI Index: Running first update..."
+  echo "o-o Index: Created $filepath"
+  echo "o-o Index: Running first update..."
 
   # Run the file to trigger first update
   bash "$filepath"
 
-  echo "LIKI Index: Document created and populated. Open in browser to read."
+  echo "o-o Index: Document created and populated. Open in browser to read."
 }
 
 # Update all stale documents
 update_all() {
-  echo "LIKI Index: Checking for stale documents..."
+  local force="${1:-0}"
+  echo "o-o Index: Checking for stale documents..."
 
   local now_epoch=$(date +%s)
-  local stale_threshold=$((7 * 24 * 60 * 60)) # 7 days in seconds
   local updated_count=0
 
   while IFS= read -r file; do
     [[ "$file" == "$SELF" ]] && continue
 
-    # Extract as_of date
     local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+    local freshness=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
 
-    # Check if stale (empty or older than 7 days)
     local should_update=0
 
-    if [[ -z "$as_of" || "$as_of" == "null" ]]; then
+    if [[ "$force" -eq 1 ]]; then
+      should_update=1
+    elif [[ -z "$as_of" || "$as_of" == "null" ]]; then
       should_update=1
     else
-      # Try to parse date (portable across systems)
+      local fresh_secs=604800
+      case "${freshness:-weekly}" in
+        daily)   fresh_secs=86400 ;;
+        weekly)  fresh_secs=604800 ;;
+        monthly) fresh_secs=2592000 ;;
+      esac
+
       local as_of_epoch
       if date -j -f "%Y-%m-%d" "$as_of" "+%s" &>/dev/null; then
-        # BSD date (macOS)
         as_of_epoch=$(date -j -f "%Y-%m-%d" "$as_of" "+%s")
       elif date -d "$as_of" "+%s" &>/dev/null; then
-        # GNU date (Linux)
         as_of_epoch=$(date -d "$as_of" "+%s")
       else
-        # Can't parse date, assume stale
         should_update=1
       fi
 
-      if [[ -n "$as_of_epoch" ]]; then
+      if [[ -n "${as_of_epoch:-}" && "$should_update" -eq 0 ]]; then
         local age=$((now_epoch - as_of_epoch))
-        if [[ "$age" -gt "$stale_threshold" ]]; then
+        if [[ "$age" -gt "$fresh_secs" ]]; then
           should_update=1
         fi
       fi
     fi
 
     if [[ "$should_update" -eq 1 ]]; then
-      echo "LIKI Index: Updating $(basename "$file")..."
-      bash "$file"
+      echo "o-o Index: Updating $(basename "$file")..."
+      if [[ "$force" -eq 1 ]]; then
+        bash "$file" --force
+      else
+        bash "$file"
+      fi
       updated_count=$((updated_count + 1))
+    else
+      echo "o-o Index: $(basename "$file") is still fresh. Skipping."
     fi
-  done < <(find "$SELF_DIR" -name "*.ld.html" -type f)
+  done < <(find "$SELF_DIR" -name "*.o-o.html" -type f)
 
   if [[ "$updated_count" -gt 0 ]]; then
-    echo "LIKI Index: Updated $updated_count document(s)."
-    echo "LIKI Index: Rebuilding index..."
+    echo "o-o Index: Updated $updated_count document(s)."
+    echo "o-o Index: Rebuilding index..."
     rebuild_index
   else
-    echo "LIKI Index: All documents are up to date."
+    echo "o-o Index: All documents are up to date."
   fi
 }
 
 # Show help
 show_help() {
   cat << 'HELP_EOF'
-LIKI Document Library — index and management tool
+o-o Document Library — index and management tool
 
 Usage:
-  bash index.ld.html                              Rebuild the index
-  bash index.ld.html --new "Title / description"  Create a new living document
-  bash index.ld.html --update-all                 Update all stale documents (>7 days old)
-  bash index.ld.html --help                       Show this help
+  bash index.o-o.html                              Rebuild the index
+  bash index.o-o.html --new                         Create new document (interactive)
+  bash index.o-o.html --new "Title / description"   Create new document (quick)
+  bash index.o-o.html --update-all                 Update stale documents (respects freshness)
+  bash index.o-o.html --update-all --force          Force update all documents
+  bash index.o-o.html --help                       Show this help
 
 Examples:
-  bash index.ld.html --new "History of the USA"
-  bash index.ld.html --new "Python Async / Guide to Python async/await patterns"
-  bash index.ld.html --update-all
+  bash index.o-o.html --new "History of the USA"
+  bash index.o-o.html --new "Python Async / Guide to Python async/await patterns"
+  bash index.o-o.html --update-all
 
-The index.ld.html file is both a web page (open in browser) and a management tool (run with bash).
+The index.o-o.html file is both a web page (open in browser) and a management tool (run with bash).
 
 HELP_EOF
 }
@@ -1177,14 +1352,60 @@ HELP_EOF
 case "${1:-}" in
   --new)
     if [[ -z "${2:-}" ]]; then
-      echo "LIKI Index: Error — --new requires a title argument" >&2
-      echo "Usage: bash index.ld.html --new \"Title / description\"" >&2
-      exit 1
+      # Interactive mode
+      echo ""
+      echo "  LIKI — Create New Living Document"
+      echo "  ─────────────────────────────────"
+      echo ""
+      read -p "  Title: " LIKI_NEW_TITLE
+      if [[ -z "$LIKI_NEW_TITLE" ]]; then
+        echo "  Error: Title is required." >&2
+        exit 1
+      fi
+      echo ""
+      read -p "  Scope (what should this document cover?): " LIKI_NEW_SCOPE
+      [[ -z "$LIKI_NEW_SCOPE" ]] && LIKI_NEW_SCOPE="$LIKI_NEW_TITLE"
+      echo ""
+      read -p "  Audience [General readers]: " LIKI_NEW_AUDIENCE
+      [[ -z "$LIKI_NEW_AUDIENCE" ]] && LIKI_NEW_AUDIENCE="General readers"
+      read -p "  Tone [Informative, well-researched, accessible]: " LIKI_NEW_TONE
+      [[ -z "$LIKI_NEW_TONE" ]] && LIKI_NEW_TONE="Informative, well-researched, accessible"
+      read -p "  Budget USD [0.50]: " LIKI_NEW_BUDGET
+      [[ -z "$LIKI_NEW_BUDGET" ]] && LIKI_NEW_BUDGET="0.50"
+      echo ""
+
+      LIKI_NEW_SLUG=$(slugify "$LIKI_NEW_TITLE")
+      LIKI_NEW_PATH="${SELF_DIR}/${LIKI_NEW_SLUG}.o-o.html"
+
+      if [[ -e "$LIKI_NEW_PATH" ]]; then
+        echo "  Error: File already exists: $LIKI_NEW_PATH" >&2
+        exit 1
+      fi
+
+      echo "  Creating: ${LIKI_NEW_SLUG}.o-o.html"
+      generate_liki_file "$LIKI_NEW_PATH" "$LIKI_NEW_TITLE" "$LIKI_NEW_SCOPE" "$LIKI_NEW_SLUG"
+
+      # Customize audience, tone, budget if not defaults
+      LIKI_TMP="/tmp/liki_custom_$$"
+      sed -e "s|\"audience\": \"General readers\"|\"audience\": \"${LIKI_NEW_AUDIENCE}\"|" \
+          -e "s|\"tone\": \"Informative, well-researched, accessible\"|\"tone\": \"${LIKI_NEW_TONE}\"|" \
+          -e "s|\"max_cost_usd\": 0.50|\"max_cost_usd\": ${LIKI_NEW_BUDGET}|" \
+          "$LIKI_NEW_PATH" > "$LIKI_TMP" && mv "$LIKI_TMP" "$LIKI_NEW_PATH"
+      chmod +x "$LIKI_NEW_PATH"
+
+      echo "  Running first update..."
+      echo ""
+      bash "$LIKI_NEW_PATH"
+    else
+      create_new "$2"
     fi
-    create_new "$2"
     ;;
   --update-all)
-    update_all
+    if [[ "${2:-}" == "--force" ]]; then
+      update_all 1
+    else
+      update_all 0
+    fi
     ;;
   --help|-h)
     show_help
@@ -1193,8 +1414,8 @@ case "${1:-}" in
     rebuild_index
     ;;
   *)
-    echo "LIKI Index: Unknown command: $1" >&2
-    echo "Run: bash index.ld.html --help" >&2
+    echo "o-o Index: Unknown command: $1" >&2
+    echo "Run: bash index.o-o.html --help" >&2
     exit 1
     ;;
 esac

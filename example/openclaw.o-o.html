@@ -1,0 +1,903 @@
+#!/usr/bin/env bash
+# o-o Living Document — self-updating via LLM agent
+# To update: bash openclaw.o-o.html [--agent claude] [--model sonnet]
+# To read:   open openclaw.o-o.html in any browser
+: << 'OO_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>OpenClaw: The Open-Source AI Agent</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-weak: #eff6ff;
+    --heading: #111827;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--bg);
+    font-size: 0;
+    line-height: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  #doc-title {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 14px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  .meta .version-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    background: #fff;
+    font-weight: 600;
+  }
+  .meta .version-badge { cursor: pointer; }
+  .meta .version-badge:hover { background: var(--accent-weak); border-color: var(--accent); }
+  .contract-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .contract-panel.open { display: block; }
+  .contract-panel dt { font-weight: 600; color: var(--heading); margin-top: 10px; }
+  .contract-panel dt:first-child { margin-top: 0; }
+  .contract-panel dd { margin: 2px 0 0 0; color: var(--muted); }
+  .contract-panel .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 2px 3px 2px 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .note {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav.toc {
+    position: fixed;
+    left: calc((100vw - 900px) / 4 - 100px);
+    top: 16px;
+    width: 220px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  nav.toc strong { font-weight: 700; }
+  nav.toc a {
+    display: block;
+    margin: 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    padding-left: 10px;
+    position: relative;
+  }
+  nav.toc a.toc-h3 {
+    padding-left: 22px;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 3px 0;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc a.active { font-weight: 700; text-decoration: none; }
+  nav.toc a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    color: var(--muted);
+  }
+  nav.toc a.active::before { content: '\2192'; }
+  #article h2 {
+    margin-top: 28px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  #article h3 { margin-top: 20px; margin-bottom: 6px; color: var(--heading); }
+  #article p { margin: 10px 0 0; }
+  #references, h2#references { scroll-margin-top: 80px; }
+  #article ol { margin: 10px 0 0 22px; }
+  #article ol li { margin: 6px 0; }
+  #article table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 16px 0; color: var(--text); }
+  #article th, #article td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+  #article th { font-weight: 600; color: var(--heading); border-bottom-width: 2px; }
+  #article tr:hover td { background: var(--accent-weak); }
+  #article .table-wrap { overflow-x: auto; margin: 16px 0; }
+  #article a { color: var(--accent); text-decoration: none; }
+  #article a:hover { text-decoration: underline; }
+  #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
+  #article figure { margin: 16px 0; padding: 0; }
+  #article figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  #article figcaption {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  #article figcaption .img-src { font-size: 12px; }
+  #article figcaption .img-src a { color: var(--muted); }
+  #article figure.fig-full img { width: 100%; }
+  #article figure.fig-center { max-width: 70%; margin: 20px auto; }
+  #article figure.fig-right {
+    float: right;
+    max-width: 28%;
+    margin: 4px 0 12px 20px;
+  }
+  #article figure.fig-left {
+    float: left;
+    max-width: 28%;
+    margin: 4px 20px 12px 0;
+  }
+  #article h2, #article h3 { clear: both; }
+  .stub-notice {
+    margin: 40px 0;
+    padding: 24px;
+    background: var(--accent-weak);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  .stub-notice code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  @media (max-width: 1200px) {
+    .wrap { padding: 16px 14px 48px; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      left: auto;
+      width: 100%;
+      max-height: none;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      box-shadow: none;
+      border: 0;
+      background: #ffffff;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      z-index: 20;
+    }
+    nav.toc a {
+      display: inline-block;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+      padding-left: 0;
+    }
+    nav.toc a::before {
+      position: static;
+      margin-right: 6px;
+      left: auto;
+      top: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 14px 48px; }
+    #doc-title { font-size: 24px; }
+    nav.toc { font-size: 13px; padding: 8px 10px; }
+    #article figure.fig-left,
+    #article figure.fig-right {
+      float: none;
+      max-width: 100%;
+      margin: 16px 0;
+    }
+    #article figure.fig-center { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">OpenClaw: The Open-Source AI Agent</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash openclaw.o-o.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+
+<!-- pid:overview:a1b2c3d4 -->
+<h2 id="overview">Overview</h2>
+
+<!-- pid:overview:e5f6a7b8 -->
+<p>OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Marketed as "the AI that actually does things," OpenClaw runs on users' own devices and connects to messaging platforms they already use — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, and more — to automate tasks ranging from email management and calendar scheduling to web browsing and file manipulation. [s1]</p>
+
+<!-- pid:overview:c9d0e1f2 -->
+<p>The project, formerly known as Clawdbot and Moltbot, went viral in late January 2026, amassing over 200,000 GitHub stars and 36,000 forks within weeks of gaining mainstream attention. [s2] Unlike competing AI agents such as Meta's Manus, OpenClaw is fully open-source under the MIT license, allowing developers to inspect, modify, and extend its code freely. The agent bridges leading AI models — particularly Anthropic's Claude and OpenAI's GPT series — with system-level tools and over 50 integrations, enabling autonomous task execution while keeping sensitive data local. [s3]</p>
+
+<!-- pid:overview:a3b4c5d6 -->
+<p>In February 2026, Steinberger announced he was joining OpenAI, while OpenClaw itself would be transferred to an independent open-source foundation with OpenAI's sponsorship. [s4]</p>
+
+<!-- pid:history:f7e8d9c0 -->
+<h2 id="history">History &amp; Origins</h2>
+
+<!-- pid:history:b1a2c3d4 -->
+<p>OpenClaw began as a personal "playground project" by Peter Steinberger, a veteran Austrian developer best known as the founder of PSPDFKit, a company he built over 13 years into a leading document-processing SDK. Steinberger's goal was simple: "to have fun and inspire people" — and to build an AI agent that "even my mum can use." [s5]</p>
+
+<!-- pid:history:e5f6a7b8 -->
+<h3 id="naming-history">Naming History</h3>
+
+<!-- pid:history:c9d0e1f2 -->
+<p>The project has undergone several name changes in its short public life. It was initially known as <strong>Moltbot</strong>, then rebranded to <strong>Clawdbot</strong> around January 28–29, 2026. By January 30, the project had settled on its current name, <strong>OpenClaw</strong>, with the community affectionately referring to the agent as "Molty." The associated companion application was briefly known as <strong>Moltbook</strong>. [s6] [s7]</p>
+
+<!-- pid:history:a3b4c5d6 -->
+<h3 id="viral-growth">Viral Growth</h3>
+
+<!-- pid:history:f7e8d9c0 -->
+<p>OpenClaw's rise was explosive. Within 72 hours of gaining widespread attention in late January 2026, the project collected over 60,000 GitHub stars. [s7] Developers described it as "the closest thing to JARVIS we've seen." By mid-February 2026, the repository had surpassed 200,000 stars and 36,000 forks, making it one of the fastest-growing open-source projects in history. [s2] Its open-source nature, combined with broad platform support and a thriving skills ecosystem, drove adoption far beyond the developer community into mainstream tech audiences.</p>
+
+<!-- pid:architecture:b1c2d3e4 -->
+<h2 id="architecture">Architecture</h2>
+
+<!-- pid:architecture:f5a6b7c8 -->
+<p>OpenClaw is built around a hub-and-spoke architecture with three clearly defined layers: the Gateway, Channel adapters, and the LLM interface. The system is written in TypeScript, runs on Node.js 22+, and uses pnpm as its package manager. [s2] [s8]</p>
+
+<!-- pid:architecture:d9e0f1a2 -->
+<h3 id="gateway">The Gateway</h3>
+
+<!-- pid:architecture:b3c4d5e6 -->
+<p>At the centre of the architecture is the Gateway — a WebSocket RPC server that serves as the central control plane. Running on port 18789 by default, the Gateway coordinates inbound message routing from multiple channels, agent execution with model provider integration, tool invocation, session management, and outbound delivery back to originating channels. Clients connect via <code>ws://127.0.0.1:18789</code>. [s8]</p>
+
+<!-- pid:architecture:f7a8b9c0 -->
+<h3 id="channels">Channel Adapters</h3>
+
+<!-- pid:architecture:d1e2f3a4 -->
+<p>Each supported messaging platform — Telegram (via grammY), Discord (via discord.js), WhatsApp (via Baileys), Slack (via Bolt), Signal, Google Chat, Microsoft Teams, Matrix, and others — has a dedicated channel adapter. These adapters normalize messages from different platforms into a unified internal format, extracting attachments and metadata in the process. This plugin architecture means adding support for new platforms requires only writing a new adapter. [s2] [s8]</p>
+
+<!-- pid:architecture:b5c6d7e8 -->
+<h3 id="agent-loop">The Agent Loop</h3>
+
+<!-- pid:architecture:f9a0b1c2 -->
+<p>The core processing cycle follows a consistent pattern: receive a message from a channel, route it to an appropriate session (main, group, or isolated), load context and skills for that session, send the conversation to the configured LLM, execute any tools the model requests, stream the reply back through the channel, and persist the conversation and memory to the local workspace. This cycle — receive → route → context + LLM + tools → stream → persist — repeats for every interaction. [s8]</p>
+
+<!-- pid:architecture:d3e4f5a6 -->
+<h3 id="multi-agent">Multi-Agent Routing</h3>
+
+<!-- pid:architecture:b7c8d9e0 -->
+<p>OpenClaw supports routing different channels, contacts, or groups to different agents, each with its own workspace, prompts, skills, and memories. This allows a single installation to run a support-oriented agent for a team Slack channel while simultaneously operating a personal assistant through iMessage with an entirely different personality and toolset. [s8]</p>
+
+<!-- pid:features:f1a2b3c4 -->
+<h2 id="features">Features &amp; Capabilities</h2>
+
+<!-- pid:features:d5e6f7a8 -->
+<p>OpenClaw offers a broad set of capabilities that position it as a general-purpose autonomous agent: [s2] [s3]</p>
+
+<!-- pid:features:b9c0d1e2 -->
+<p><strong>Multi-Channel Inbox</strong> — supports WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, BlueBubbles (iMessage), Microsoft Teams, Matrix, Zalo, and WebChat, all routed to isolated agent sessions.</p>
+
+<!-- pid:features:f3a4b5c6 -->
+<p><strong>Voice Interaction</strong> — includes Voice Wake and Talk Mode, an always-on speech interface powered by ElevenLabs, enabling hands-free agent interaction.</p>
+
+<!-- pid:features:d7e8f9a0 -->
+<p><strong>Live Canvas &amp; A2UI</strong> — a visual workspace that allows the agent to create and manipulate interactive UI elements in real time.</p>
+
+<!-- pid:features:b1c2d3e4 -->
+<p><strong>Browser Control</strong> — dedicated Chromium instance for autonomous web browsing, form filling, and data extraction.</p>
+
+<!-- pid:features:f5a6b7c8 -->
+<p><strong>Device-Local Actions</strong> — access to camera, screen recording, notifications, and file system operations on macOS, iOS, Android, and Linux.</p>
+
+<!-- pid:features:d9e0f1a2 -->
+<p><strong>Persistent Memory</strong> — configuration data and interaction history stored locally in Markdown documents, enabling the agent to recall past interactions over weeks and adapt to user habits. [s7]</p>
+
+<!-- pid:features:b3c4d5e6 -->
+<p><strong>Automation</strong> — built-in support for cron jobs and webhook triggers, allowing scheduled and event-driven task execution without user intervention.</p>
+
+<!-- pid:features:f7a8b9c0 -->
+<p><strong>Model Agnostic</strong> — works with Anthropic Claude (recommended), OpenAI GPT, DeepSeek, and local models, with users providing their own API keys.</p>
+
+<!-- pid:features:d1e2f3a4 -->
+<h3 id="companion-apps">Companion Apps</h3>
+
+<!-- pid:features:b5c6d7e8 -->
+<p>OpenClaw provides native companion apps for macOS (a menu bar app with Voice Wake and Talk Mode overlay), iOS and Android (supporting Canvas, voice, camera, and screen recording as a node device), and Linux (suitable for remote Gateway deployments). [s2]</p>
+
+<!-- pid:ecosystem:f9a0b1c2 -->
+<h2 id="ecosystem">Ecosystem &amp; Skills</h2>
+
+<!-- pid:ecosystem:d3e4f5a6 -->
+<p>OpenClaw's extensibility centres on <strong>ClawHub</strong>, the project's public skill registry and marketplace. As of February 2026, ClawHub hosts over 5,700 community-built skills covering productivity, development, smart home automation, and AI model integrations. [s9]</p>
+
+<!-- pid:ecosystem:b7c8d9e0 -->
+<h3 id="skill-architecture">Skill Architecture</h3>
+
+<!-- pid:ecosystem:f1a2b3c4 -->
+<p>Each skill follows the <code>SKILL.md</code> standard — a manifest file that declares what the skill does, what permissions it needs, and how to invoke it. A skill is a versioned bundle of files that teaches OpenClaw how to perform a specific task. Each publish creates a new version, and the registry maintains a full version history for auditability. [s9]</p>
+
+<!-- pid:ecosystem:d5e6f7a8 -->
+<h3 id="clawhub-features">ClawHub Features</h3>
+
+<!-- pid:ecosystem:b9c0d1e2 -->
+<p>ClawHub is designed for fast browsing and provides a CLI-friendly API. Search is powered by embeddings (vector search) rather than simple keyword matching, enabling semantic discovery of skills. The platform supports one-click installation and includes moderation hooks for community governance. [s9]</p>
+
+<!-- pid:ecosystem:f3a4b5c6 -->
+<p>Following security incidents (detailed below), ClawHub now partners with VirusTotal for automated skill scanning, including hash-based detection, Code Insight analysis, daily re-scanning of active skills, and warning labels for suspicious submissions. [s10]</p>
+
+<!-- pid:security:d7e8f9a0 -->
+<h2 id="security">Security &amp; Privacy</h2>
+
+<!-- pid:security:b1c2d3e4 -->
+<p>OpenClaw's rapid adoption has been accompanied by significant security scrutiny. Within 48 hours of the project going viral, security researchers at Cisco Talos, Palo Alto Networks, and Token Security began documenting critical vulnerabilities. [s11]</p>
+
+<!-- pid:security:f5a6b7c8 -->
+<h3 id="exposed-instances">Exposed Instances</h3>
+
+<!-- pid:security:d9e0f1a2 -->
+<p>Between January 27 and February 8, 2026, researchers observed over 30,000 distinct OpenClaw instances exposed to the public internet, with peak daily counts exceeding 6,000 simultaneously online. By mid-February, estimates from Bitdefender placed the total number of exposed instances at over 135,000. [s12] [s13] Out of the box, OpenClaw binds its control interface to all network interfaces (<code>0.0.0.0:18789</code>), making it accessible from the public internet unless explicitly restricted. Many instances were running outdated versions despite patches being available. [s12]</p>
+
+<!-- pid:security:b3c4d5e6 -->
+<h3 id="cves">Known Vulnerabilities</h3>
+
+<!-- pid:security:f7a8b9c0 -->
+<p>Three critical CVEs with publicly available exploit code were identified, all patched in version 2026.1.29 (January 29, 2026): [s10]</p>
+
+<!-- pid:security:d1e2f3a4 -->
+<p><strong>CVE-2026-25253</strong> (CVSS 8.8) — One-click remote code execution via malicious link, capable of bypassing localhost-only configurations.</p>
+
+<!-- pid:security:b5c6d7e8 -->
+<p><strong>CVE-2026-25157</strong> (CVSS 7.8) — SSH command injection in the macOS app via malicious project paths.</p>
+
+<!-- pid:security:f9a0b1c2 -->
+<p><strong>CVE-2026-24763</strong> (CVSS 8.8) — Docker sandbox escape through PATH manipulation.</p>
+
+<!-- pid:security:d3e4f5a6 -->
+<p>An additional security audit in late January 2026 identified 512 total vulnerabilities, eight classified as critical. Approximately 15,000 exposed instances were found vulnerable to remote code execution, and 53,000 were correlated with prior breach activity. [s10] [s13]</p>
+
+<!-- pid:security:b7c8d9e0 -->
+<h3 id="malicious-skills">Malicious Skills</h3>
+
+<!-- pid:security:f1a2b3c4 -->
+<p>The ClawHub skills ecosystem became a vector for supply-chain attacks. Researchers identified approximately 900 malicious skills — roughly 20% of all packages at the time. Koi Security confirmed 341 malicious entries across multiple campaigns, and a single user ("hightower6eu") uploaded 354 malicious packages. The majority delivered Atomic Stealer (AMOS), a macOS-targeting infostealer. [s10]</p>
+
+<!-- pid:security:d5e6f7a8 -->
+<p>Notable attack campaigns included <strong>ClawHavoc</strong> (300+ skills using social engineering and base64-encoded payloads), <strong>AuthTool</strong> (a dormant payload triggered by specific prompts with reverse shell capability), and credential exfiltration targeting the plain-text API keys stored in <code>~/.clawdbot/.env</code>. [s10]</p>
+
+<!-- pid:security:b9c0d1e2 -->
+<h3 id="prompt-injection">Prompt Injection</h3>
+
+<!-- pid:security:f3a4b5c6 -->
+<p>OpenClaw instances are vulnerable to indirect prompt injection, where an attacker embeds malicious instructions in messages or web pages that the agent reads and faithfully executes. Because the agent has broad system access — file read/write, shell execution, and service integrations — a successful prompt injection can cascade into full system compromise. [s12]</p>
+
+<!-- pid:security:d7e8f9a0 -->
+<h3 id="remediation">Recommended Mitigations</h3>
+
+<!-- pid:security:b1c2d3e4 -->
+<p>Security researchers recommend using Tailscale VPN integration instead of public exposure, enforcing localhost-only access, implementing strong credential policies, restricting integrations to minimal necessary services, deploying within isolated network segments, and monitoring for suspicious agent activity. DMs use a pairing policy by default on major channels, requiring approval codes before processing messages from unknown senders. [s2] [s12]</p>
+
+<!-- pid:community:f5a6b7c8 -->
+<h2 id="community">Community &amp; Adoption</h2>
+
+<!-- pid:community:d9e0f1a2 -->
+<p>OpenClaw's community growth has been extraordinary. The project surpassed 200,000 GitHub stars and 36,000 forks by mid-February 2026, making it one of the most rapidly adopted open-source projects in recent memory. [s2] Developers praised the project as "the closest thing to JARVIS we've seen," and its open-source nature enabled rapid ecosystem growth with hundreds of third-party skills and integrations. [s7]</p>
+
+<!-- pid:community:b3c4d5e6 -->
+<p>Unlike competing commercial agents, OpenClaw costs nothing beyond API credits for the underlying LLM. This zero-subscription model, combined with full code transparency and local data control, has attracted both individual developers and enterprise users. DigitalOcean offers a security-hardened 1-Click deployment for production use. [s7]</p>
+
+<!-- pid:community:f7a8b9c0 -->
+<h3 id="comparison">Comparison with Competitors</h3>
+
+<!-- pid:community:d1e2f3a4 -->
+<p>OpenClaw's primary competitor is <strong>Manus</strong>, the cloud-based AI agent acquired by Meta in January 2026 for approximately $2 billion after accumulating 2 million waitlist users and an estimated $100 million ARR. [s14] While Manus offers zero-setup convenience at $39–$199/month with all processing on Meta's cloud, OpenClaw provides open-source auditability, local data control, unlimited customization, and zero operating cost beyond API credits. However, OpenClaw's complex setup process and self-hosting requirements present higher barriers to entry. [s14]</p>
+
+<!-- pid:community:b5c6d7e8 -->
+<p>Other alternatives include <strong>Devin</strong>, which focuses specifically on software engineering automation rather than general personal productivity, and various proprietary agents from major AI labs. OpenClaw distinguishes itself through model-agnosticism, messaging-platform-native interaction, and the ClawHub skills ecosystem. [s14]</p>
+
+<!-- pid:recent:f9a0b1c2 -->
+<h2 id="recent">Recent Developments</h2>
+
+<!-- pid:recent:d3e4f5a6 -->
+<h3 id="openai-hire">Steinberger Joins OpenAI</h3>
+
+<!-- pid:recent:b7c8d9e0 -->
+<p>On February 14–15, 2026, Peter Steinberger announced he was joining OpenAI to work on "bringing agents to everyone." Sam Altman, CEO of OpenAI, described Steinberger as a "genius with many amazing ideas about the future of highly intelligent agents." Steinberger reportedly received competing offers from both Meta and OpenAI before choosing the latter. [s4] [s15]</p>
+
+<!-- pid:recent:f1a2b3c4 -->
+<p>Steinberger framed his decision as choosing building over empire-building: "I'm a builder at heart. I previously spent 13 years creating a company" — a reference to PSPDFKit — and joining OpenAI represented an opportunity to build with cutting-edge models and broader safety considerations. [s5]</p>
+
+<!-- pid:recent:d5e6f7a8 -->
+<h3 id="foundation">Open-Source Foundation</h3>
+
+<!-- pid:recent:b9c0d1e2 -->
+<p>Concurrent with the OpenAI announcement, Steinberger revealed that OpenClaw would be transferred to an independent open-source foundation. The project retains its MIT license and gains community governance. OpenAI has pledged to sponsor and fund the foundation rather than absorb or close the project, creating a hybrid model of corporate backing with community autonomy. [s4] [s16]</p>
+
+<!-- pid:recent:f3a4b5c6 -->
+<p>From a cybersecurity perspective, the foundation transition enhances governance, transparency, and maintenance — including formal vulnerability reporting, code signing, dependency hygiene, and secure releases — while eliminating single-maintainer risk. [s16] Steinberger stated the foundation aims to support "thinkers, hackers and people that want a way to own their data" while keeping OpenClaw model-agnostic and multi-vendor. [s5]</p>
+
+<!-- pid:recent:d7e8f9a0 -->
+<h3 id="security-response">Ongoing Security Response</h3>
+
+<!-- pid:recent:b1c2d3e4 -->
+<p>In response to the security incidents, the OpenClaw team has partnered with VirusTotal for ClawHub skill scanning, patched the three critical CVEs in version 2026.1.29, and implemented pairing policies for DM channels. However, security researchers continue to note that the fundamental design challenge of an AI agent with broad system permissions remains unresolved. As Sophos described it, "the OpenClaw experiment is a warning shot for enterprise AI security." [s10] [s17]</p>
+
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://openclaw.ai/">OpenClaw — Personal AI Assistant</a> (openclaw.ai)</li>
+<li><a href="https://github.com/openclaw/openclaw">GitHub — openclaw/openclaw: Your own personal AI assistant</a> (github.com)</li>
+<li><a href="https://www.digitalocean.com/resources/articles/what-is-openclaw">What is OpenClaw? Your Open-Source AI Assistant for 2026</a> (DigitalOcean)</li>
+<li><a href="https://techcrunch.com/2026/02/15/openclaw-creator-peter-steinberger-joins-openai/">OpenClaw creator Peter Steinberger joins OpenAI</a> (TechCrunch, February 15 2026)</li>
+<li><a href="https://steipete.me/posts/2026/openclaw">OpenClaw, OpenAI and the future</a> (steipete.me, February 2026)</li>
+<li><a href="https://www.cnbc.com/2026/02/02/openclaw-open-source-ai-agent-rise-controversy-clawdbot-moltbot-moltbook.html">From Clawdbot to Moltbot to OpenClaw: Meet the AI agent generating buzz and fear globally</a> (CNBC, February 2 2026)</li>
+<li><a href="https://www.digitalocean.com/resources/articles/what-is-openclaw">What is OpenClaw? Your Open-Source AI Assistant for 2026</a> (DigitalOcean)</li>
+<li><a href="https://docs.openclaw.ai/concepts/architecture">Gateway Architecture — OpenClaw</a> (docs.openclaw.ai)</li>
+<li><a href="https://github.com/openclaw/clawhub">GitHub — openclaw/clawhub: Skill Directory for OpenClaw</a> (github.com)</li>
+<li><a href="https://blog.cyberdesserts.com/openclaw-malicious-skills-security/">OpenClaw Security Risks: Malicious Skills, Exposed Instances, Critical CVEs</a> (Cyberdesserts)</li>
+<li><a href="https://venturebeat.com/security/openclaw-agentic-ai-security-risk-ciso-guide">OpenClaw proves agentic AI works. It also proves your security model doesn't</a> (VentureBeat)</li>
+<li><a href="https://www.bitsight.com/blog/openclaw-ai-security-risks-exposed-instances">OpenClaw Security: Risks of Exposed AI Agents Explained</a> (Bitsight)</li>
+<li><a href="https://www.bitdefender.com/en-us/blog/hotforsecurity/135k-openclaw-ai-agents-exposed-online">135K OpenClaw AI Agents Exposed to Internet</a> (Bitdefender)</li>
+<li><a href="https://www.getaiperks.com/en/blogs/11-openclaw-vs-manus-ai">OpenClaw vs Manus AI: Open-Source vs Cloud Agent in 2026</a> (GetAIPerks)</li>
+<li><a href="https://www.cnbc.com/2026/02/15/openclaw-creator-peter-steinberger-joining-openai-altman-says.html">OpenClaw creator Peter Steinberger joining OpenAI, Altman says</a> (CNBC, February 15 2026)</li>
+<li><a href="https://www.opensourceforu.com/2026/02/openclaw-remains-open-source-despite-openai-tie-up/">OpenClaw Remains Open Source Despite OpenAI Tie-Up</a> (Open Source For You)</li>
+<li><a href="https://www.sophos.com/en-us/blog/the-openclaw-experiment-is-a-warning-shot-for-enterprise-ai-security">The OpenClaw experiment is a warning shot for enterprise AI security</a> (Sophos)</li>
+</ol>
+
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="oo-manifest" type="application/json">
+{
+  "title": "OpenClaw: The Open-Source AI Agent",
+  "freshness": "weekly",
+  "version": 1,
+  "as_of": "2026-02-16",
+  "changelog": [
+    { "version": 1, "date": "2026-02-16", "summary": "Initial research and article creation covering all required sections" }
+  ]
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d = document, data = JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent = data.title || 'Living Article';
+  d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
+  d.getElementById('doc-version').textContent = data.version || '0';
+
+  // PID binding
+  var art = d.getElementById('article');
+  if (art) {
+    try {
+      var w = document.createTreeWalker(art, NodeFilter.SHOW_COMMENT), nodes = [];
+      while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function(n) {
+        var m = (n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if (m) {
+          var t = n.nextElementSibling;
+          if (t) t.setAttribute('data-pid', m[1]);
+          n.parentNode.removeChild(n);
+        }
+      });
+    } catch(e){}
+  }
+
+  // TOC with h2/h3 hierarchy
+  var toc = d.getElementById('toc');
+  var hh = d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML = '<strong>Contents</strong><br>' +
+    Array.prototype.map.call(hh, function(h){
+      var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
+      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+    }).join('');
+
+  // Auto-link citations: [s1] -> <a href="#s1" class="cite">[s1]</a>
+  var refSection = d.getElementById('references');
+  if (refSection) {
+    var ol = refSection.nextElementSibling;
+    while (ol && ol.tagName !== 'OL') ol = ol.nextElementSibling;
+    if (ol) {
+      var items = ol.querySelectorAll('li');
+      items.forEach(function(li, i) { li.id = 's' + (i + 1); });
+    }
+    var paras = art.querySelectorAll('p');
+    paras.forEach(function(p) {
+      p.innerHTML = p.innerHTML.replace(/\[s(\d+)\]/g, function(match, num) {
+        return '<a href="#s'+num+'" class="cite">[s'+num+']</a>';
+      });
+    });
+  }
+
+  // Scroll highlighting
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href')] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map['#'+e.target.id];
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '0px 0px -70% 0px' });
+  d.querySelectorAll('#article h2').forEach(function(h){ obs.observe(h); });
+  if (location.hash && map[location.hash]) map[location.hash].classList.add('active');
+  else if (links[0]) links[0].classList.add('active');
+
+  // Contract panel: toggle on version badge click
+  var badge = d.querySelector('.version-badge');
+  var panel = d.getElementById('contract-panel');
+  if (badge && panel) {
+    badge.addEventListener('click', function() {
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        return;
+      }
+      var el = d.getElementById('oo-contract');
+      if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try {
+        var c = JSON.parse(el.textContent);
+        var id = c.identity || {};
+        var r = c.research || {};
+        var b = c.budget || {};
+        var html = '<dl>';
+        if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
+        if (id.scope) html += '<dt>Scope</dt><dd>' + id.scope + '</dd>';
+        if (id.audience) html += '<dt>Audience</dt><dd>' + id.audience + '</dd>';
+        if (id.tone) html += '<dt>Tone</dt><dd>' + id.tone + '</dd>';
+        if (r.intents && r.intents.length) {
+          html += '<dt>Research Intents</dt><dd>';
+          r.intents.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (r.required_sections && r.required_sections.length) {
+          html += '<dt>Required Sections</dt><dd>';
+          r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
+        html += '</dl>';
+        panel.innerHTML = html;
+      } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<!-- UPDATE CONTRACT: complete instructions for the research agent -->
+<script id="oo-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a o-o research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "procedure": [
+      "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
+      "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
+      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+    ]
+  },
+  "identity": {
+    "subject": "OpenClaw",
+    "scope": "Comprehensive overview of OpenClaw (formerly Clawdbot/Moltbot), the open-source autonomous AI agent created by Peter Steinberger — architecture, capabilities, ClawHub ecosystem, security concerns, and recent developments including founder joining OpenAI",
+    "audience": "Developers, AI enthusiasts, security researchers, tech industry observers",
+    "tone": "Informative, balanced, technically detailed"
+  },
+  "research": {
+    "intents": [
+      "OpenClaw AI agent overview features",
+      "OpenClaw security vulnerabilities exposed instances",
+      "OpenClaw ClawHub skills ecosystem",
+      "Peter Steinberger OpenClaw founder OpenAI",
+      "OpenClaw architecture gateway channels",
+      "OpenClaw vs other AI agents comparison",
+      "OpenClaw open source foundation governance"
+    ],
+    "required_sections": [
+      "Overview",
+      "History & Origins",
+      "Architecture",
+      "Features & Capabilities",
+      "Ecosystem & Skills",
+      "Security & Privacy",
+      "Community & Adoption",
+      "Recent Developments",
+      "References"
+    ],
+    "source_policy": {
+      "prefer_domains": ["openclaw.ai", "github.com", "techcrunch.com", "wired.com", "arstechnica.com", "theverge.com"],
+      "deny_domains": ["reddit.com", "quora.com"]
+    }
+  },
+  "budget": {
+    "max_cost_usd": 2.00
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 6,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["openclaw.ai", "github.com/openclaw", "official press materials"],
+    "layout_guidance": "fig-right for founder photo, fig-full for architecture diagrams, fig-center for UI screenshots, fig-left for logo",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="oo-source-cache" type="application/json">
+{
+  "last_updated": "2026-02-16",
+  "sources": [
+    { "id": "s1", "url": "https://openclaw.ai/", "title": "OpenClaw — Personal AI Assistant", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s2", "url": "https://github.com/openclaw/openclaw", "title": "GitHub — openclaw/openclaw", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s3", "url": "https://www.digitalocean.com/resources/articles/what-is-openclaw", "title": "What is OpenClaw? — DigitalOcean", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s4", "url": "https://techcrunch.com/2026/02/15/openclaw-creator-peter-steinberger-joins-openai/", "title": "OpenClaw creator joins OpenAI — TechCrunch", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s5", "url": "https://steipete.me/posts/2026/openclaw", "title": "OpenClaw, OpenAI and the future — steipete.me", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s6", "url": "https://www.cnbc.com/2026/02/02/openclaw-open-source-ai-agent-rise-controversy-clawdbot-moltbot-moltbook.html", "title": "From Clawdbot to Moltbot to OpenClaw — CNBC", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s7", "url": "https://www.digitalocean.com/resources/articles/what-is-openclaw", "title": "What is OpenClaw? — DigitalOcean", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s8", "url": "https://docs.openclaw.ai/concepts/architecture", "title": "Gateway Architecture — OpenClaw Docs", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s9", "url": "https://github.com/openclaw/clawhub", "title": "GitHub — openclaw/clawhub: Skill Directory", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s10", "url": "https://blog.cyberdesserts.com/openclaw-malicious-skills-security/", "title": "OpenClaw Security Risks: Malicious Skills, CVEs — Cyberdesserts", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s11", "url": "https://venturebeat.com/security/openclaw-agentic-ai-security-risk-ciso-guide", "title": "OpenClaw proves agentic AI works — VentureBeat", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s12", "url": "https://www.bitsight.com/blog/openclaw-ai-security-risks-exposed-instances", "title": "OpenClaw Security Risks — Bitsight", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s13", "url": "https://www.bitdefender.com/en-us/blog/hotforsecurity/135k-openclaw-ai-agents-exposed-online", "title": "135K OpenClaw AI Agents Exposed — Bitdefender", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s14", "url": "https://www.getaiperks.com/en/blogs/11-openclaw-vs-manus-ai", "title": "OpenClaw vs Manus AI — GetAIPerks", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s15", "url": "https://www.cnbc.com/2026/02/15/openclaw-creator-peter-steinberger-joining-openai-altman-says.html", "title": "Steinberger joining OpenAI — CNBC", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s16", "url": "https://www.opensourceforu.com/2026/02/openclaw-remains-open-source-despite-openai-tie-up/", "title": "OpenClaw Remains Open Source — Open Source For You", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s17", "url": "https://www.sophos.com/en-us/blog/the-openclaw-experiment-is-a-warning-shot-for-enterprise-ai-security", "title": "OpenClaw warning shot for enterprise AI security — Sophos", "tier": "secondary", "accessed": "2026-02-16" }
+  ],
+  "facts": [
+    "OpenClaw created by Peter Steinberger, Austrian developer and founder of PSPDFKit",
+    "Originally named Moltbot, then Clawdbot, then OpenClaw (late January 2026)",
+    "200,000+ GitHub stars and 36,000+ forks by mid-February 2026",
+    "MIT licensed, local-first architecture, TypeScript/Node.js 22+",
+    "Gateway WebSocket RPC server on port 18789, hub-and-spoke architecture",
+    "Supports 12+ messaging channels including WhatsApp, Telegram, Slack, Discord, Signal, iMessage",
+    "ClawHub skills registry with 5,700+ community skills as of February 2026",
+    "135,000+ instances exposed to public internet by mid-February 2026",
+    "3 critical CVEs: CVE-2026-25253 (8.8), CVE-2026-25157 (7.8), CVE-2026-24763 (8.8), patched 2026.1.29",
+    "~900 malicious skills found on ClawHub (~20% of packages), primarily Atomic Stealer (AMOS)",
+    "Steinberger joined OpenAI on February 14-15, 2026; OpenClaw transferred to foundation",
+    "OpenAI sponsoring the foundation; MIT license and community governance preserved",
+    "Primary competitor: Manus (acquired by Meta for ~$2B in January 2026)"
+  ]
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="oo-changelog" type="application/json">
+{
+  "entries": [
+    {
+      "version": 1,
+      "timestamp": "2026-02-16T00:00:00Z",
+      "summary": "Initial article creation. Researched and wrote all 8 required sections: Overview, History & Origins, Architecture, Features & Capabilities, Ecosystem & Skills, Security & Privacy, Community & Adoption, and Recent Developments. Compiled 17 sources from primary and secondary tiers including official docs, GitHub, TechCrunch, CNBC, Bitsight, Bitdefender, Sophos, and the founder's blog."
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
+OO_HTML
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+FORCE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Freshness gate: skip update if document is still fresh ---
+FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
+  case "$FRESHNESS" in
+    daily)   FRESH_SECS=86400 ;;
+    weekly)  FRESH_SECS=604800 ;;
+    monthly) FRESH_SECS=2592000 ;;
+    *)       FRESH_SECS=604800 ;;
+  esac
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a o-o research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="oo-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the oo-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
+- Verify it is an image: file /tmp/liki_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
+  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/liki_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/liki_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
+    exit 1
+    ;;
+esac
+
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0

@@ -1,76 +1,83 @@
-# LIKI v2 — Living Documents
+# o-o (looky-looky)
 
-LIKI (LLM Insight and Knowledge Interface) is a format for **self-updating living documents**. Each `.ld.html` file is a polyglot — simultaneously a readable HTML page and a bash script that updates itself via an LLM research agent.
-
-**Open it in a browser** to read. **Run it with bash** to update.
+**The page has eyes.** Each `.o-o.html` file is a self-updating living document — open it in a browser to read, run it with `bash` to update.
 
 ```
-browser:  open example/anthropic-leadership.ld.html
-update:   bash example/anthropic-leadership.ld.html
+open  article.o-o.html   # read it
+bash  article.o-o.html   # update it
+```
+
+No build step, no server, no database. The file *is* the app.
+
+Every `.o-o.html` is a polyglot — valid HTML *and* valid bash. The browser renders a formatted article with TOC, citations, and embedded images. Bash reads an embedded update contract, launches an LLM research agent, and the agent edits the article in-place with fresh information from the web.
+
+## Quick Start
+
+```bash
+# Update an existing document
+bash example/anthropic-leadership.o-o.html
+
+# Create a new living document
+bash example/index.o-o.html --new "Quantum Computing / Overview of recent breakthroughs and practical applications"
+
+# Update all stale documents
+bash example/index.o-o.html --update-all
 ```
 
 ## How It Works
 
-A `.ld.html` file has three zones:
-
 ```
 ┌─────────────────────────────────────────┐
 │  Shell preamble (hidden from browser    │  ← bash reads this
-│  via : << 'LIKI_HTML' heredoc)          │
+│  via : << 'OO_HTML' heredoc)            │
 ├─────────────────────────────────────────┤
 │  HTML + CSS + Article content           │  ← browser renders this
 │  Manifest, Binder JS, Contract          │
 ├── window.stop() ────────────────────────┤
 │  Machine-readable zone                  │  ← agent reads this
 │  (source cache, changelog)              │
-├── LIKI_HTML ────────────────────────────┤
+├── OO_HTML ──────────────────────────────┤
 │  Shell execution code                   │  ← bash runs this
 │  (arg parsing, agent dispatch)          │
 └─────────────────────────────────────────┘
 ```
 
-When you run `bash file.ld.html`:
+When you run `bash file.o-o.html`:
 
-1. The shell preamble is skipped (it's a heredoc comment)
-2. The shell code at the bottom parses `--agent` / `--model` flags
-3. It extracts the budget from the embedded contract
-4. It launches `claude -p` with a minimal prompt telling the agent to read the file itself
-5. The agent reads the update contract (`liki-contract` JSON), researches via web search, and edits the article content in-place using the Edit tool
+1. The shell preamble hides the HTML via a heredoc
+2. The shell code at the bottom parses flags and extracts the budget
+3. It launches `claude -p` with a minimal prompt: *read the file yourself*
+4. The agent reads the embedded contract, searches the web, and edits the article in-place
 
 The agent never receives the whole file as prompt context — it reads the file itself and only modifies the `<article>`, manifest, source cache, and changelog.
 
-## File Anatomy
-
-Each document contains:
-
-| Block | Purpose |
-|---|---|
-| **Shell preamble** | `#!/usr/bin/env bash` + heredoc to hide HTML from bash |
-| **CSS** | Self-contained styles, no external dependencies |
-| **Article** | `<article id="article">` with `<!-- pid:section:hash -->` paragraph IDs |
-| **Manifest** | `liki-manifest` JSON — title, version, as_of date, quality scores |
-| **Binder JS** | Runtime JS — TOC generation, citation linking, scroll highlighting, contract panel |
-| **Contract** | `liki-contract` JSON — agent instructions, research intents, quality thresholds, budget |
-| **`window.stop()`** | Rendering boundary — browser stops here |
-| **Source cache** | `liki-source-cache` JSON — previous research for incremental updates |
-| **Changelog** | `liki-changelog` JSON — version history |
-| **Shell code** | Argument parsing, agent dispatch |
-
 ## The Update Contract
 
-The contract is a JSON block that tells the agent everything:
+Each document embeds a JSON contract that tells the agent everything:
 
-- **identity** — subject, scope, audience, tone
-- **research** — search intents, required sections, source policy (preferred/denied domains, min tier, max age)
-- **quality** — veracity and coverage thresholds, min sources
-- **budget** — max cost, max searches, max page fetches
-- **images** — whether to embed base64 images, size limits, layout guidance
+- **Identity** — subject, scope, audience, tone
+- **Research** — search intents, required sections, source policy (preferred/denied domains)
+- **Budget** — max cost per update ($0.50–$3.00 typical)
+- **Images** — whether to embed base64 images, size limits, layout guidance
+- **Freshness** — daily/weekly/monthly — the file self-checks before spending money
 
 Click the **version badge** in the header to inspect the contract in-browser.
 
+## Index / Library Manager
+
+`index.o-o.html` serves as both a browsable document library and a management tool:
+
+```bash
+bash index.o-o.html                                    # Rebuild index
+bash index.o-o.html --new "Topic / extended scope"     # Create new document
+bash index.o-o.html --new                              # Create (interactive)
+bash index.o-o.html --update-all                       # Update stale documents
+bash index.o-o.html --update-all --force               # Force update all
+```
+
 ## Images
 
-Documents can include base64-embedded images. The agent downloads, resizes (preserving PNG transparency), and encodes images inline as data URIs. Four layout classes:
+Documents can include base64-embedded images. The agent downloads, resizes, and encodes images inline as data URIs.
 
 | Class | Use case | Width |
 |---|---|---|
@@ -79,57 +86,23 @@ Documents can include base64-embedded images. The agent downloads, resizes (pres
 | `fig-full` | Diagrams, charts, group photos | 100% |
 | `fig-center` | Standalone feature photos | 70%, centered |
 
-All images include source attribution. Floats collapse to full-width on mobile.
+## Options
 
-## Index / Library Manager
-
-`index.ld.html` serves as both a browsable document library and a management tool:
-
-```bash
-bash index.ld.html                                    # Rebuild index
-bash index.ld.html --new "Topic / extended scope"     # Create new document
-bash index.ld.html --update-all                       # Update all stale documents
 ```
+bash document.o-o.html [OPTIONS]
 
-The `--new` command scaffolds a complete `.ld.html` from the embedded template, then immediately runs the first update to populate it.
+  --agent NAME    Agent backend (default: claude)
+  --model NAME    Override model (e.g. opus, sonnet, haiku)
+  --force         Update even if document is still fresh
+  --help, -h      Show help
+```
 
 ## Requirements
 
 - **bash 3.2+** (ships with macOS) or any modern Linux bash
 - **[Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)** (`claude` command)
-- No Python, Node, jq, or GNU coreutils needed
 
-All shell code is portable across macOS (BSD) and Linux (GNU). No `sed -i`, no `realpath`, no `chmod --reference`.
-
-## Options
-
-```
-bash document.ld.html [OPTIONS]
-
-  --agent NAME    Agent backend (default: claude)
-  --model NAME    Override model (e.g. opus, sonnet, haiku)
-  --help, -h      Show help
-```
-
-## Example
-
-```bash
-# Create a new living document about quantum computing
-bash example/index.ld.html --new "Quantum Computing / Overview of quantum computing technology, major players, recent breakthroughs, and practical applications"
-
-# Update an existing document
-bash example/anthropic-leadership.ld.html
-
-# Update with a specific model
-bash example/anthropic-leadership.ld.html --model opus
-
-# Rebuild the index after manual changes
-bash example/index.ld.html
-```
-
-## Cost
-
-Each update costs roughly $0.50–$3.00 depending on the budget set in the contract and the model used. The budget is extracted from the contract automatically — no separate configuration needed.
+No Python, Node, jq, or GNU coreutils. Portable across macOS and Linux.
 
 ## License
 

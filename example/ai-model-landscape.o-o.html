@@ -1,0 +1,851 @@
+#!/usr/bin/env bash
+# o-o Living Document — self-updating via LLM agent
+# To update: bash ai-model-landscape.o-o.html [--agent claude] [--model sonnet]
+# To read:   open ai-model-landscape.o-o.html in any browser
+: << 'OO_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>The LLM Landscape: Models, Benchmarks &amp; Pricing</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-weak: #eff6ff;
+    --heading: #111827;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--bg);
+    font-size: 0;
+    line-height: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  header {
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  #doc-title {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 14px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+  .meta .version-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--heading);
+    background: #fff;
+    font-weight: 600;
+  }
+  .meta .version-badge { cursor: pointer; }
+  .meta .version-badge:hover { background: var(--accent-weak); border-color: var(--accent); }
+  .contract-panel {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .contract-panel.open { display: block; }
+  .contract-panel dt { font-weight: 600; color: var(--heading); margin-top: 10px; }
+  .contract-panel dt:first-child { margin-top: 0; }
+  .contract-panel dd { margin: 2px 0 0 0; color: var(--muted); }
+  .contract-panel .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 2px 3px 2px 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .note {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  nav.toc {
+    position: fixed;
+    left: calc((100vw - 900px) / 4 - 100px);
+    top: 16px;
+    width: 220px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    z-index: 10;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  nav.toc strong { font-weight: 700; }
+  nav.toc a {
+    display: block;
+    margin: 6px 0;
+    color: var(--text);
+    text-decoration: none;
+    padding-left: 10px;
+    position: relative;
+  }
+  nav.toc a.toc-h3 {
+    padding-left: 22px;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 3px 0;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  nav.toc a.active { font-weight: 700; text-decoration: none; }
+  nav.toc a::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    color: var(--muted);
+  }
+  nav.toc a.active::before { content: '\2192'; }
+  #article h2 {
+    margin-top: 28px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--heading);
+    letter-spacing: -0.01em;
+  }
+  #article h3 { margin-top: 20px; margin-bottom: 6px; color: var(--heading); }
+  #article p { margin: 10px 0 0; }
+  #references, h2#references { scroll-margin-top: 80px; }
+  #article ol { margin: 10px 0 0 22px; }
+  #article ol li { margin: 6px 0; }
+  #article table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 16px 0; color: var(--text); }
+  #article th, #article td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+  #article th { font-weight: 600; color: var(--heading); border-bottom-width: 2px; }
+  #article tr:hover td { background: var(--accent-weak); }
+  #article .table-wrap { overflow-x: auto; margin: 16px 0; }
+  #article a { color: var(--accent); text-decoration: none; }
+  #article a:hover { text-decoration: underline; }
+  #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
+  #article figure { margin: 16px 0; padding: 0; }
+  #article figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  #article figcaption {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  #article figcaption .img-src { font-size: 12px; }
+  #article figcaption .img-src a { color: var(--muted); }
+  #article figure.fig-full img { width: 100%; }
+  #article figure.fig-center { max-width: 70%; margin: 20px auto; }
+  #article figure.fig-right {
+    float: right;
+    max-width: 28%;
+    margin: 4px 0 12px 20px;
+  }
+  #article figure.fig-left {
+    float: left;
+    max-width: 28%;
+    margin: 4px 20px 12px 0;
+  }
+  #article h2, #article h3 { clear: both; }
+  .stub-notice {
+    margin: 40px 0;
+    padding: 24px;
+    background: var(--accent-weak);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+  .stub-notice code {
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 15px;
+  }
+  @media (max-width: 1200px) {
+    .wrap { padding: 16px 14px 48px; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      left: auto;
+      width: 100%;
+      max-height: none;
+      margin: 0 0 12px;
+      padding: 8px 10px;
+      box-shadow: none;
+      border: 0;
+      background: #ffffff;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      z-index: 20;
+    }
+    nav.toc a {
+      display: inline-block;
+      margin: 0 12px 0 0;
+      white-space: nowrap;
+      padding-left: 0;
+    }
+    nav.toc a::before {
+      position: static;
+      margin-right: 6px;
+      left: auto;
+      top: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 16px 14px 48px; }
+    #doc-title { font-size: 24px; }
+    nav.toc { font-size: 13px; padding: 8px 10px; }
+    #article figure.fig-left,
+    #article figure.fig-right {
+      float: none;
+      max-width: 100%;
+      margin: 16px 0;
+    }
+    #article figure.fig-center { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">The LLM Landscape: Models, Benchmarks &amp; Pricing</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash ai-model-landscape.o-o.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+<!-- pid:overview:a1b2c3d4 -->
+<h2 id="overview">Overview</h2>
+<!-- pid:overview:e5f6a7b8 -->
+<p>The large language model landscape in early 2026 is defined by three converging forces: the commoditization of GPT-4-class intelligence, the rise of agentic capabilities as the primary differentiator, and the rapid closure of the gap between open-weight and proprietary models. GPT-4-level performance now costs roughly 1/100th of what it did two years ago [s1], and frontier models have pushed well beyond that bar — with Gemini 3 Pro, Claude Opus 4.6, and GPT-5.2 competing for the top slot across reasoning, coding, and real-world task benchmarks [s2][s3].</p>
+<!-- pid:overview:c9d0e1f2 -->
+<p>Mixture-of-Experts (MoE) architecture has become the default for frontier-scale models, enabling massive total parameter counts while keeping inference costs manageable by activating only a fraction of parameters per token [s4]. Context windows have exploded: Llama 4 Scout offers 10 million tokens, and multiple models now support 1 million tokens as standard [s5]. Meanwhile, every major release in 2026 emphasizes agentic workflows — AI that can decompose goals, execute multi-step plans across tools, and recover from errors autonomously [s6].</p>
+
+<!-- pid:frontier:a2b3c4d5 -->
+<h2 id="frontier-models">Frontier Models</h2>
+<!-- pid:frontier:e6f7a8b9 -->
+<p>Frontier models represent the highest-capability systems from the leading AI labs. As of February 2026, the top tier includes offerings from Anthropic, OpenAI, Google DeepMind, and xAI, with Chinese labs closing fast.</p>
+
+<!-- pid:frontier:c0d1e2f3 -->
+<h3 id="anthropic-claude">Anthropic — Claude</h3>
+<!-- pid:frontier:a4b5c6d7 -->
+<p>Claude Opus 4.6, released February 7, 2026, takes first place on the Artificial Analysis Intelligence Index — a composite of 10 evaluations including MMLU-Pro, GPQA Diamond, AIME, SciCode, and TerminalBench [s3]. Key specs: 1M token context window (beta, up from 200K), 128K max output tokens (doubled from Opus 4.5), and pricing at $5/$25 per million input/output tokens — unchanged from its predecessor [s3]. Its standout feature is Adaptive Thinking Mode, which replaces fixed extended thinking with dynamic effort settings (low, medium, high, max), letting the model autonomously allocate reasoning depth per query. Opus 4.6 leads on GDPval-AA (agentic tasks), TerminalBench (coding), and CritPT (research-level physics) [s3].</p>
+<!-- pid:frontier:e8f9a0b1 -->
+<p>Claude Sonnet 4.5 remains the workhorse for production use at $3/$15 per million tokens, with strong coding performance — the Claude Opus 4.5 (thinking) variant tops the Chatbot Arena coding leaderboard with an Elo of 1510 [s7].</p>
+
+<!-- pid:frontier:c2d3e4f5 -->
+<h3 id="openai-gpt">OpenAI — GPT</h3>
+<!-- pid:frontier:a6b7c8d9 -->
+<p>OpenAI's GPT-5.2 sits at the frontier, with its highest-effort "xhigh" configuration ranking among the top two models on composite intelligence benchmarks [s2]. The flagship GPT-5 costs approximately $10/$30 per million input/output tokens. The premium GPT-5.2 Pro tier commands $21/$168, reflecting the 8x output-to-input price multiplier [s8]. OpenAI continues to release specialized variants: GPT-5.2 Codex (January 14, 2026) and GPT-5.3 Codex (February 5, 2026) are optimized for agentic coding workflows [s9]. GPT-5 models support 400K token context windows, positioning them below Gemini and Claude's 1M offerings but above most competitors [s5].</p>
+
+<!-- pid:frontier:e0f1a2b3 -->
+<h3 id="google-gemini">Google DeepMind — Gemini</h3>
+<!-- pid:frontier:c4d5e6f7 -->
+<p>Gemini 3 Pro holds the #1 position on the Chatbot Arena with an Elo of 1492 [s7], and scores the highest on MMLU-Pro at 89.8% [s10]. Gemini 2.5 Pro remains widely deployed, offering a 1M token context window with native multimodal processing across text, images, audio, and video at $1.25/$10 per million tokens — making it one of the best value propositions at the frontier [s8]. Gemini 2.5 Flash-Lite leads the speed category at 499 tokens/second [s2], while Gemini 3 Pro supports up to 10M tokens of context at $12 per million input tokens [s5].</p>
+
+<!-- pid:frontier:a8b9c0d1 -->
+<h3 id="xai-grok">xAI — Grok</h3>
+<!-- pid:frontier:e2f3a4b5 -->
+<p>Grok-4.1-Thinking has surged to #2 on the Chatbot Arena at 1482 Elo [s7], demonstrating a massive leap in complex reasoning. The Grok 4.1 family includes Fast Reasoning and Thinking variants, with competitive pricing and strong performance on text reasoning and coding tasks. Grok 4.1 Fast offers a 2M token context window [s2].</p>
+
+<!-- pid:open-weight:c6d7e8f9 -->
+<h2 id="open-weight-models">Open-Weight Models</h2>
+<!-- pid:open-weight:a0b1c2d3 -->
+<p>The open-weight ecosystem has matured dramatically. In 2026, models like DeepSeek V3.2, Llama 4, Qwen 3, and Mistral 3 regularly match or exceed the previous generation of proprietary models on standard benchmarks, while costing a fraction to deploy [s11][s12].</p>
+
+<!-- pid:open-weight:e4f5a6b7 -->
+<h3 id="meta-llama">Meta — Llama 4</h3>
+<!-- pid:open-weight:c8d9e0f1 -->
+<p>Llama 4 launched as Meta's most ambitious open-source release. Llama 4 Maverick features 400B total parameters with 17B active (128 experts), natively multimodal via early fusion, and a 1M token context window. It matches or exceeds GPT-4o and Gemini 2.0 on coding, reasoning, and multilingual benchmarks [s13]. Llama 4 Scout uses a leaner 109B total / 17B active (16 experts) configuration but delivers an industry-leading 10M token context window — enough to process approximately 7,500 pages of text [s13][s5]. Both are fully open source.</p>
+
+<!-- pid:open-weight:a2b3c4d5 -->
+<h3 id="deepseek">DeepSeek</h3>
+<!-- pid:open-weight:e6f7a8b9 -->
+<p>DeepSeek V3.2, released December 2025, has 685B total parameters but activates only 37B per token, yielding a remarkably efficient MoE architecture [s11]. It was trained with a fraction of the compute budget of its competitors, proving what is possible with efficient training methods. Pricing is among the most competitive at $0.14–$0.25 per million input tokens and $0.28–$0.38 per million output tokens [s8][s14]. DeepSeek-V3.2-Speciale, the reasoning variant, surpasses GPT-5 and approaches Gemini-3.0-Pro-level reasoning on benchmarks such as AIME and HMMT [s1].</p>
+
+<!-- pid:open-weight:c0d1e2f3 -->
+<h3 id="alibaba-qwen">Alibaba — Qwen 3</h3>
+<!-- pid:open-weight:a4b5c6d7 -->
+<p>Qwen 3's flagship MoE model has 235B total parameters with 22B active per token, pre-trained on 36 trillion tokens covering 119 languages [s15]. The model supports dual modes: Thinking Mode (step-by-step reasoning) and Non-Thinking Mode (instant responses). In February 2026, the Qwen3-Coder-Next model (80B total, 3B active) achieved SWE-Bench Pro performance on par with Claude Sonnet 4.5, a remarkable result for a model of its size [s12]. A smaller Qwen3-30B-A3B variant is also available for edge deployment.</p>
+
+<!-- pid:open-weight:e8f9a0b1 -->
+<h3 id="mistral">Mistral — Mistral 3</h3>
+<!-- pid:open-weight:c2d3e4f5 -->
+<p>Mistral Large 3 employs a 675B total / 41B active MoE architecture with 256K token context, trained with emphasis on non-English languages [s16]. The entire Mistral 3 family is released under the Apache 2.0 license, permitting unrestricted commercial use. The smaller Ministral models beat Google's and Microsoft's similarly-sized alternatives on most benchmarks, while the flagship model is competitive with DeepSeek V3.1 [s12].</p>
+
+<!-- pid:open-weight:a6b7c8d9 -->
+<h3 id="other-open-weight">Other Notable Open-Weight Models</h3>
+<!-- pid:open-weight:e0f1a2b3 -->
+<p>GLM-4.7 has reached 1445 Elo on the Chatbot Arena, outperforming older GPT-4 variants [s7]. GLM-5 ranks among the top four intelligence leaders alongside Claude Opus 4.6, GPT-5.2, and Claude Opus 4.5 [s2]. Moonshot AI's Kimi K2.5 (released January 27, 2026) is an open-source model with GPQA of 0.9, continuing the trend of strong Chinese open-source competitors [s9]. MiniMax M2.5, released February 12, 2026, is a lightweight open-source model from the Chinese developer [s9].</p>
+
+<!-- pid:benchmarks:c4d5e6f7 -->
+<h2 id="benchmarks-rankings">Benchmarks &amp; Rankings</h2>
+<!-- pid:benchmarks:a8b9c0d1 -->
+<p>Model evaluation in 2026 relies on a multi-faceted approach combining human preference voting with standardized benchmarks. No single metric tells the full story; the most respected leaderboards synthesize multiple signals [s10].</p>
+
+<!-- pid:benchmarks:e2f3a4b5 -->
+<h3 id="chatbot-arena">Chatbot Arena (Human Preference)</h3>
+<!-- pid:benchmarks:c6d7e8f9 -->
+<p>Chatbot Arena, now at arena.ai, uses over 6 million crowdsourced human pairwise comparisons to compute Elo ratings [s7]. As of February 2026, the top overall rankings are:</p>
+<!-- pid:benchmarks:a0b1c2d3 -->
+<p><strong>1.</strong> Gemini-3-Pro — 1492 Elo<br/>
+<strong>2.</strong> Grok-4.1-Thinking — 1482 Elo<br/>
+<strong>3.</strong> GPT-5.1-high — 1464 Elo<br/>
+<strong>4.</strong> GLM-4.7 — 1445 Elo</p>
+<!-- pid:benchmarks:e4f5a6b7 -->
+<p>For the coding-specific leaderboard, Claude Opus 4.5 (thinking) leads at 1510 Elo [s7].</p>
+
+<!-- pid:benchmarks:c8d9e0f1 -->
+<h3 id="academic-benchmarks">Academic &amp; Composite Benchmarks</h3>
+<!-- pid:benchmarks:a2b3c4d5 -->
+<p>The Artificial Analysis Intelligence Index v3 (AAII v3) incorporates 10 evaluations: MMLU-Pro, Humanity's Last Exam (HLE), AA-LCR (long-context retrieval), GPQA Diamond, AIME, IFBench, SciCode, LiveCodeBench, TerminalBench Hard, and τ²-Bench Telecom [s10]. Top MMLU-Pro scores as of February 2026:</p>
+<!-- pid:benchmarks:e6f7a8b9 -->
+<p><strong>1.</strong> Gemini 3 Pro Preview (high) — 89.8%<br/>
+<strong>2.</strong> Gemini 3 Pro Preview (low) — 89.5%<br/>
+<strong>3.</strong> Claude Opus 4.5 (Reasoning) — 89.5%</p>
+<!-- pid:benchmarks:c0d1e2f3 -->
+<p>Claude Opus 4.6 (Adaptive) takes the overall #1 on the full AAII v3 composite, leading on GDPval-AA (agentic tasks), TerminalBench (coding/terminal), and CritPT (research-level physics). However, it shows small regressions on AA-LCR long-context retrieval (-3pp) and IFBench instruction following (-5pp) compared to Opus 4.5 [s3].</p>
+
+<!-- pid:pricing:a4b5c6d7 -->
+<h2 id="pricing-comparison">Pricing Comparison</h2>
+<!-- pid:pricing:e8f9a0b1 -->
+<p>Output tokens consistently cost 3–10x more than input tokens across all major providers, making output-heavy workloads (such as code generation) disproportionately expensive [s8]. The table below summarizes API pricing per million tokens as of February 2026:</p>
+
+<!-- pid:pricing:c2d3e4f5 -->
+<h3 id="pricing-frontier-tier">Frontier Tier</h3>
+<!-- pid:pricing:a6b7c8d9 -->
+<p><strong>GPT-5.2 Pro</strong> — $21 input / $168 output (8x multiplier)<br/>
+<strong>GPT-5</strong> — ~$10 input / ~$30 output<br/>
+<strong>Claude Opus 4.6</strong> — $5 input / $25 output<br/>
+<strong>Claude Opus 4.5</strong> — $5 input / $25 output<br/>
+<strong>Gemini 3 Pro</strong> — $12 input (10M context tier)</p>
+
+<!-- pid:pricing:e0f1a2b3 -->
+<h3 id="pricing-mid-tier">Mid Tier</h3>
+<!-- pid:pricing:c4d5e6f7 -->
+<p><strong>Claude Sonnet 4.5</strong> — $3 input / $15 output<br/>
+<strong>Gemini 2.5 Pro</strong> — $1.25 input / $10 output<br/>
+<strong>GPT-4o</strong> — ~$2.50 input / ~$10 output</p>
+
+<!-- pid:pricing:a8b9c0d1 -->
+<h3 id="pricing-budget-tier">Budget &amp; Open-Weight Tier</h3>
+<!-- pid:pricing:e2f3a4b5 -->
+<p><strong>DeepSeek V3.2</strong> — $0.14–$0.25 input / $0.28–$0.38 output<br/>
+<strong>Gemma 3n E4B</strong> — $0.03 per million tokens<br/>
+<strong>DeepSeek-OCR</strong> — $0.05 per million tokens<br/>
+<strong>Llama 4 Scout/Maverick</strong> — Free weights; hosted API pricing varies by provider</p>
+
+<!-- pid:pricing:c6d7e8f9 -->
+<h3 id="pricing-optimization">Cost Optimization</h3>
+<!-- pid:pricing:a0b1c2d3 -->
+<p>Both OpenAI and Anthropic offer significant discounts for non-real-time workloads. OpenAI's Batch API provides a 50% discount across all models. Anthropic's prompt caching can reduce costs by up to 90% on cached tokens [s8]. For production workloads, self-hosting open-weight models like DeepSeek V3.2 or Llama 4 Maverick can reduce per-token costs by an additional order of magnitude, depending on hardware and utilization.</p>
+
+<!-- pid:context:e4f5a6b7 -->
+<h2 id="context-windows-capabilities">Context Windows &amp; Capabilities</h2>
+<!-- pid:context:c8d9e0f1 -->
+<p>Context windows have grown by orders of magnitude, but raw window size is only part of the story. The AA-LCR (Long Context Retrieval) benchmark tests whether models can actually find and use information from anywhere in their window [s5][s10].</p>
+
+<!-- pid:context:a2b3c4d5 -->
+<h3 id="context-by-size">Context Windows by Size</h3>
+<!-- pid:context:e6f7a8b9 -->
+<p><strong>10M tokens:</strong> Llama 4 Scout, Gemini 3 Pro<br/>
+<strong>2M tokens:</strong> Grok 4.1 Fast<br/>
+<strong>1M tokens:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Claude Opus 4.6 (beta), Llama 4 Maverick, Claude Sonnet 4<br/>
+<strong>400K tokens:</strong> GPT-5 family<br/>
+<strong>256K tokens:</strong> Mistral Large 3<br/>
+<strong>200K tokens:</strong> Claude Opus 4.5<br/>
+<strong>164K tokens:</strong> DeepSeek V3.2</p>
+
+<!-- pid:context:c0d1e2f3 -->
+<h3 id="multimodal-capabilities">Multimodal &amp; Agentic Capabilities</h3>
+<!-- pid:context:a4b5c6d7 -->
+<p>Multimodality is now table stakes for frontier models. Gemini 3 and Llama 4 both use "early fusion" — integrating vision, audio, and text at the architecture level rather than bolting on separate encoders [s1][s13]. Agentic capabilities are the primary differentiator in 2026: models are evaluated on their ability to use tools, browse the web, write and execute code, and operate across multi-step workflows. Benchmarks like GDPval-AA, TerminalBench, and τ²-Bench specifically measure these capabilities [s3][s10].</p>
+
+<!-- pid:context:e8f9a0b1 -->
+<h3 id="speed-latency">Speed &amp; Latency</h3>
+<!-- pid:context:c2d3e4f5 -->
+<p>For latency-sensitive applications, the speed leaders are Gemini 2.5 Flash-Lite at 499 tokens/second and Granite 3.3 8B at 472 tokens/second [s2]. DeepSeek-OCR achieves the lowest time-to-first-token at 0.18 seconds. Reasoning models (thinking variants) trade speed for accuracy, often taking 10–60 seconds of "thinking time" before generating output, which is reflected in significantly higher output token costs [s3].</p>
+
+<!-- pid:recent:a6b7c8d9 -->
+<h2 id="recent-releases">Recent Releases</h2>
+<!-- pid:recent:e0f1a2b3 -->
+<p>The pace of releases in early 2026 has been relentless, with major model drops occurring weekly. Key releases in January–February 2026:</p>
+<!-- pid:recent:c4d5e6f7 -->
+<p><strong>February 12</strong> — MiniMax M2.5: lightweight open-source model from Chinese AI developer [s9].<br/>
+<strong>February 7</strong> — Claude Opus 4.6: Anthropic's new flagship with adaptive thinking, 1M context (beta), #1 on AAII v3 composite [s3].<br/>
+<strong>February 5</strong> — GPT-5.3 Codex: OpenAI's latest coding-optimized variant [s9].<br/>
+<strong>February 5</strong> — LongCat-Flash-Lite: fast open-source model from Meituan (GPQA: 0.7) [s9].<br/>
+<strong>January 27</strong> — Kimi K2.5: open-source model from Moonshot AI with GPQA of 0.9 [s9].<br/>
+<strong>January 14</strong> — GPT-5.2 Codex: OpenAI's coding variant [s9].<br/>
+<strong>January 14</strong> — LongCat-Flash-Thinking-2601: fast reasoning model from Meituan (GPQA: 0.8) [s9].</p>
+<!-- pid:recent:a8b9c0d1 -->
+<p>Industry-wide, two dominant themes emerge: first, the proliferation of coding-specialized variants (GPT-5.x Codex, Qwen3-Coder-Next, Claude Code), reflecting the enormous commercial demand for AI-assisted software engineering; second, the continued strength of Chinese AI labs (DeepSeek, Qwen, Moonshot, Meituan, MiniMax), which are releasing competitive open-source models at a rapid clip [s6][s12].</p>
+
+<!-- pid:references:c6d7e8f9 -->
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://azumo.com/artificial-intelligence/ai-insights/top-10-llms-0625">10 Best LLMs of February 2026: Performance, Pricing &amp; Use Cases</a> — Azumo, Feb 2026</li>
+<li><a href="https://artificialanalysis.ai/leaderboards/models">LLM Leaderboard — Comparison of over 100 AI models</a> — Artificial Analysis, Feb 2026</li>
+<li><a href="https://artificialanalysis.ai/articles/opus-4.6-everything-you-need-to-know">Opus 4.6 — Everything you need to know</a> — Artificial Analysis, Feb 2026</li>
+<li><a href="https://largo.dev/articles/frontier-llm-architectures-2026/">2026 Frontier LLM Architectures Compared</a> — largo.dev, 2026</li>
+<li><a href="https://www.elvex.com/blog/context-length-comparison-ai-models-2026">Context Length Comparison: Leading AI Models in 2026</a> — Elvex, 2026</li>
+<li><a href="https://llm-stats.com/ai-trends">AI Trends 2026 — LLM Statistics &amp; Industry Insights</a> — llm-stats.com, 2026</li>
+<li><a href="https://aidevdayindia.org/blogs/lmsys-chatbot-arena-current-rankings/lmsys-chatbot-arena-leaderboard-current-top-models.html">LMSYS Chatbot Arena Leaderboard Current Top Models: Feb 2026 Rankings</a> — AI Dev Day India, Feb 2026</li>
+<li><a href="https://www.cloudidr.com/blog/llm-pricing-comparison-2026">Complete LLM Pricing Comparison 2026</a> — CloudIDR, 2026</li>
+<li><a href="https://llm-stats.com/llm-updates">AI Updates Today (February 2026) — Latest AI Model Releases</a> — llm-stats.com, Feb 2026</li>
+<li><a href="https://llm-stats.com/benchmarks">LLM Benchmarks 2026 — Complete Evaluation Suite</a> — llm-stats.com, 2026</li>
+<li><a href="https://o-mega.ai/articles/top-10-open-source-llms-the-deepseek-revolution-2026">Top 10 Open Source LLMs 2026: DeepSeek Revolution Guide</a> — o-mega.ai, 2026</li>
+<li><a href="https://contabo.com/blog/open-source-llms/">Best Open Source LLMs: Complete 2026 Guide</a> — Contabo, 2026</li>
+<li><a href="https://ai.meta.com/blog/llama-4-multimodal-intelligence/">The Llama 4 herd: The beginning of a new era of natively multimodal AI innovation</a> — Meta AI, 2025</li>
+<li><a href="https://artificialanalysis.ai/models/comparisons/deepseek-v3-2-vs-llama-4-maverick">DeepSeek V3.2 vs Llama 4 Maverick: Model Comparison</a> — Artificial Analysis, 2026</li>
+<li><a href="https://qwenlm.github.io/blog/qwen3/">Qwen3: Think Deeper, Act Faster</a> — Qwen Team, 2025</li>
+<li><a href="https://venturebeat.com/ai/mistral-launches-mistral-3-a-family-of-open-models-designed-to-run-on">Mistral launches Mistral 3</a> — VentureBeat, 2025</li>
+</ol>
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="oo-manifest" type="application/json">
+{
+  "title": "The LLM Landscape: Models, Benchmarks & Pricing",
+  "freshness": "weekly",
+  "version": 1,
+  "as_of": "2026-02-16",
+  "changelog": ["v1: Initial comprehensive research — frontier models, open-weight models, benchmarks, pricing, context windows, and recent releases as of Feb 2026"]
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d = document, data = JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent = data.title || 'Living Article';
+  d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
+  d.getElementById('doc-version').textContent = data.version || '0';
+
+  // PID binding
+  var art = d.getElementById('article');
+  if (art) {
+    try {
+      var w = document.createTreeWalker(art, NodeFilter.SHOW_COMMENT), nodes = [];
+      while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function(n) {
+        var m = (n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if (m) {
+          var t = n.nextElementSibling;
+          if (t) t.setAttribute('data-pid', m[1]);
+          n.parentNode.removeChild(n);
+        }
+      });
+    } catch(e){}
+  }
+
+  // TOC with h2/h3 hierarchy
+  var toc = d.getElementById('toc');
+  var hh = d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML = '<strong>Contents</strong><br>' +
+    Array.prototype.map.call(hh, function(h){
+      var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
+      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+    }).join('');
+
+  // Auto-link citations: [s1] -> <a href="#s1" class="cite">[s1]</a>
+  var refSection = d.getElementById('references');
+  if (refSection) {
+    var ol = refSection.nextElementSibling;
+    while (ol && ol.tagName !== 'OL') ol = ol.nextElementSibling;
+    if (ol) {
+      var items = ol.querySelectorAll('li');
+      items.forEach(function(li, i) { li.id = 's' + (i + 1); });
+    }
+    var paras = art.querySelectorAll('p');
+    paras.forEach(function(p) {
+      p.innerHTML = p.innerHTML.replace(/\[s(\d+)\]/g, function(match, num) {
+        return '<a href="#s'+num+'" class="cite">[s'+num+']</a>';
+      });
+    });
+  }
+
+  // Scroll highlighting
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href')] = a; });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var a = map['#'+e.target.id];
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '0px 0px -70% 0px' });
+  d.querySelectorAll('#article h2').forEach(function(h){ obs.observe(h); });
+  if (location.hash && map[location.hash]) map[location.hash].classList.add('active');
+  else if (links[0]) links[0].classList.add('active');
+
+  // Contract panel: toggle on version badge click
+  var badge = d.querySelector('.version-badge');
+  var panel = d.getElementById('contract-panel');
+  if (badge && panel) {
+    badge.addEventListener('click', function() {
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        return;
+      }
+      var el = d.getElementById('oo-contract');
+      if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try {
+        var c = JSON.parse(el.textContent);
+        var id = c.identity || {};
+        var r = c.research || {};
+        var b = c.budget || {};
+        var html = '<dl>';
+        if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
+        if (id.scope) html += '<dt>Scope</dt><dd>' + id.scope + '</dd>';
+        if (id.audience) html += '<dt>Audience</dt><dd>' + id.audience + '</dd>';
+        if (id.tone) html += '<dt>Tone</dt><dd>' + id.tone + '</dd>';
+        if (r.intents && r.intents.length) {
+          html += '<dt>Research Intents</dt><dd>';
+          r.intents.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (r.required_sections && r.required_sections.length) {
+          html += '<dt>Required Sections</dt><dd>';
+          r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
+          html += '</dd>';
+        }
+        if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
+        html += '</dl>';
+        panel.innerHTML = html;
+      } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<!-- UPDATE CONTRACT: complete instructions for the research agent -->
+<script id="oo-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a o-o research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "procedure": [
+      "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
+      "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
+      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+    ]
+  },
+  "identity": {
+    "subject": "The LLM Landscape: Models, Benchmarks & Pricing",
+    "scope": "Comprehensive tracker of all major large language models including capabilities, performance benchmarks, API pricing, context windows, and release timelines",
+    "audience": "AI engineers, developers, technical decision-makers",
+    "tone": "Technical, data-dense, comparative"
+  },
+  "research": {
+    "intents": [
+      "LLM models comparison 2026",
+      "AI model benchmarks MMLU Arena Elo",
+      "LLM API pricing comparison per token 2026",
+      "new AI model releases 2026",
+      "LLM context window sizes comparison",
+      "open source LLM models leaderboard 2026"
+    ],
+    "required_sections": [
+      "Overview",
+      "Frontier Models",
+      "Open-Weight Models",
+      "Benchmarks & Rankings",
+      "Pricing Comparison",
+      "Context Windows & Capabilities",
+      "Recent Releases",
+      "References"
+    ],
+    "source_policy": {
+      "prefer_domains": ["openai.com", "anthropic.com", "google.ai", "deepmind.google", "huggingface.co", "arxiv.org", "artificialanalysis.ai"],
+      "deny_domains": ["reddit.com", "quora.com"]
+    }
+  },
+  "budget": {
+    "max_cost_usd": 2.00
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 4,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["official company pages", "arxiv papers", "benchmark sites"],
+    "layout_guidance": "fig-full for comparison tables/charts, fig-right for model logos, fig-center for benchmark visualizations",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="oo-source-cache" type="application/json">
+{
+  "last_updated": "2026-02-16",
+  "sources": [
+    {"id": "s1", "url": "https://azumo.com/artificial-intelligence/ai-insights/top-10-llms-0625", "title": "10 Best LLMs of February 2026", "tier": "industry", "accessed": "2026-02-16"},
+    {"id": "s2", "url": "https://artificialanalysis.ai/leaderboards/models", "title": "LLM Leaderboard — 100+ AI models", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s3", "url": "https://artificialanalysis.ai/articles/opus-4.6-everything-you-need-to-know", "title": "Opus 4.6 — Everything you need to know", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s4", "url": "https://largo.dev/articles/frontier-llm-architectures-2026/", "title": "2026 Frontier LLM Architectures Compared", "tier": "technical", "accessed": "2026-02-16"},
+    {"id": "s5", "url": "https://www.elvex.com/blog/context-length-comparison-ai-models-2026", "title": "Context Length Comparison: AI Models 2026", "tier": "industry", "accessed": "2026-02-16"},
+    {"id": "s6", "url": "https://llm-stats.com/ai-trends", "title": "AI Trends 2026 — LLM Statistics", "tier": "aggregator", "accessed": "2026-02-16"},
+    {"id": "s7", "url": "https://aidevdayindia.org/blogs/lmsys-chatbot-arena-current-rankings/lmsys-chatbot-arena-leaderboard-current-top-models.html", "title": "Chatbot Arena Top Models Feb 2026", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s8", "url": "https://www.cloudidr.com/blog/llm-pricing-comparison-2026", "title": "Complete LLM Pricing Comparison 2026", "tier": "aggregator", "accessed": "2026-02-16"},
+    {"id": "s9", "url": "https://llm-stats.com/llm-updates", "title": "AI Updates Today Feb 2026", "tier": "aggregator", "accessed": "2026-02-16"},
+    {"id": "s10", "url": "https://llm-stats.com/benchmarks", "title": "LLM Benchmarks 2026 — Complete Evaluation Suite", "tier": "aggregator", "accessed": "2026-02-16"},
+    {"id": "s11", "url": "https://o-mega.ai/articles/top-10-open-source-llms-the-deepseek-revolution-2026", "title": "Top 10 Open Source LLMs 2026", "tier": "industry", "accessed": "2026-02-16"},
+    {"id": "s12", "url": "https://contabo.com/blog/open-source-llms/", "title": "Best Open Source LLMs 2026 Guide", "tier": "industry", "accessed": "2026-02-16"},
+    {"id": "s13", "url": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/", "title": "The Llama 4 herd — Meta AI", "tier": "official", "accessed": "2026-02-16"},
+    {"id": "s14", "url": "https://artificialanalysis.ai/models/comparisons/deepseek-v3-2-vs-llama-4-maverick", "title": "DeepSeek V3.2 vs Llama 4 Maverick", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s15", "url": "https://qwenlm.github.io/blog/qwen3/", "title": "Qwen3: Think Deeper, Act Faster", "tier": "official", "accessed": "2026-02-16"},
+    {"id": "s16", "url": "https://venturebeat.com/ai/mistral-launches-mistral-3-a-family-of-open-models-designed-to-run-on", "title": "Mistral launches Mistral 3", "tier": "news", "accessed": "2026-02-16"}
+  ],
+  "facts": [
+    "Gemini 3 Pro #1 on Chatbot Arena at 1492 Elo (Feb 2026)",
+    "Claude Opus 4.6 released Feb 7 2026, #1 on AAII v3 composite",
+    "Claude Opus 4.6 pricing: $5/$25 per 1M input/output tokens, 1M context (beta)",
+    "GPT-5.2 Pro pricing: $21/$168 per 1M input/output tokens",
+    "Gemini 2.5 Pro pricing: $1.25/$10 per 1M input/output tokens",
+    "DeepSeek V3.2: 685B total / 37B active, $0.14-0.25/$0.28-0.38 per 1M tokens",
+    "Llama 4 Scout: 10M context window, 109B total / 17B active",
+    "Llama 4 Maverick: 400B total / 17B active, 1M context",
+    "Qwen3 flagship: 235B total / 22B active, 36T training tokens, 119 languages",
+    "Mistral Large 3: 675B total / 41B active, 256K context, Apache 2.0",
+    "MMLU-Pro leader: Gemini 3 Pro Preview at 89.8%",
+    "Grok-4.1-Thinking #2 on Arena at 1482 Elo",
+    "Claude Opus 4.5 (thinking) leads coding Arena at 1510 Elo",
+    "Speed leaders: Gemini 2.5 Flash-Lite 499 t/s, Granite 3.3 8B 472 t/s"
+  ]
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="oo-changelog" type="application/json">
+{
+  "entries": [
+    {
+      "version": 1,
+      "timestamp": "2026-02-16T00:00:00Z",
+      "summary": "Initial population: researched and wrote all 7 required sections covering frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, Grok 4.1), open-weight models (Llama 4, DeepSeek V3.2, Qwen 3, Mistral 3), Chatbot Arena Elo rankings, MMLU-Pro scores, AAII v3 composite results, comprehensive pricing tiers, context window comparison, speed benchmarks, and Jan-Feb 2026 release timeline. 16 sources cited."
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
+OO_HTML
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+FORCE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Freshness gate: skip update if document is still fresh ---
+FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
+  case "$FRESHNESS" in
+    daily)   FRESH_SECS=86400 ;;
+    weekly)  FRESH_SECS=604800 ;;
+    monthly) FRESH_SECS=2592000 ;;
+    *)       FRESH_SECS=604800 ;;
+  esac
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a o-o research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="oo-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the oo-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/liki_img_N.ext
+- Verify it is an image: file /tmp/liki_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/liki_img_N.ext --out /tmp/liki_img_N_r.ext
+  Linux: convert /tmp/liki_img_N.ext -resize <px>x /tmp/liki_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/liki_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/liki_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
+    exit 1
+    ;;
+esac
+
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0

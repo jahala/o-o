@@ -102,6 +102,10 @@ No Python, Node, jq, or GNU coreutils. Portable across macOS and Linux.
 
 Each update costs **$0.50–$3.00** depending on scope and model. The budget is embedded in the contract — set it once, forget it.
 
+## Support
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/jahala)
+
 ## License
 
 MIT

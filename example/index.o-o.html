@@ -77,7 +77,7 @@ td a:hover { text-decoration:underline; }
 </header>
 <div class="stats-bar">
   <div class="stat"><strong id="doc-count">8</strong> documents</div>
-  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 02:05</span></div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 02:08</span></div>
 </div>
 <div class="search-bar">
   <input type="search" id="search-input" placeholder="Search documents...">
@@ -88,7 +88,7 @@ td a:hover { text-decoration:underline; }
     <a class="card" href="yc-w26-batch.o-o.html">
       <span class="card-title">Y Combinator W26 Batch</span>
       <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt"></span>
+      <span class="card-excerpt">Y Combinator's Winter 2026 (W26) batch is the first of four batches in YC's expanded 2026 calendar, running from January...</span>
     </a>
     <a class="card" href="vendor-comparison-vector-dbs.o-o.html">
       <span class="card-title">Vector Databases Compared</span>
@@ -98,7 +98,7 @@ td a:hover { text-decoration:underline; }
     <a class="card" href="trump-incarceration.o-o.html">
       <span class="card-title">Trump Incarceration</span>
       <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt"></span>
+      <span class="card-excerpt">Donald Trump has not been incarcerated. As of February 2026, no criminal case against Trump has resulted in jail time. T...</span>
     </a>
     <a class="card" href="ai-model-landscape.o-o.html">
       <span class="card-title">The LLM Landscape: Models, Benchmarks & Pricing</span>
@@ -701,7 +701,7 @@ rebuild_index() {
 
     # Collect card data (sort_date|title|rel_path|display_date|excerpt|update_days)
     local excerpt=""
-    excerpt=$(awk '/<article/,/<\/article/' "$file" | grep -o '<p>[^<]*<' | head -1 | sed 's/<p>//;s/<$//' | cut -c1-120)
+    excerpt=$(awk '/<article/,/<\/article/{if(/<p>/){gsub(/<[^>]*>/,"");gsub(/&amp;/,"\\&");gsub(/&mdash;/,"—");gsub(/\[s[0-9]+\]/,"");gsub(/^[[:space:]]+|[[:space:]]+$/,"");print substr($0,1,120);exit}}' "$file")
     [[ -n "$excerpt" ]] && excerpt="${excerpt}..."
     local sort_date="$as_of"
     [[ "$sort_date" == "—" || -z "$sort_date" ]] && sort_date="0000-00-00"

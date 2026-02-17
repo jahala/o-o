@@ -1,6 +1,7 @@
-# o-o (looky-looky)
+# o-o
+*looky-looky*
 
-**The page has eyes.** Each `.o-o.html` file is a self-updating living document — open it in a browser to read, run it with `bash` to update.
+Each `.o-o.html` file is a self-updating living document — open it in a browser to read, run it with `bash` to update.
 
 ```
 open  article.o-o.html   # read it

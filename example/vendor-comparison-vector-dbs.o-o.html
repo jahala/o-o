@@ -742,14 +742,15 @@
       "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
       "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
       "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
-      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date. If there is little new information to report, use remaining budget to enrich the article: add images, improve entity links, or add missing context rather than making only a minimal changelog entry.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
       "6. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
-      "7. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "8. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
-      "9. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "10. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
-      "11. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+      "7. ENRICH: If the article contains fewer than 2 embedded images and budget remains, search for and embed at least one relevant image (official sites, wikimedia, press kits). Images make articles significantly more useful to readers. See the IMAGES instructions below.",
+      "8. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "9. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "10. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "11. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "12. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
   "identity": {

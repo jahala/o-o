@@ -98,6 +98,21 @@ bash document.o-o.html [OPTIONS]
 
 No Python, Node, jq, or GNU coreutils. Portable across macOS and Linux.
 
+## Ideas
+
+- A self-updating competitive intel brief on your main rival
+- A sentinel doc that watches for a regulatory ruling and alerts when it drops
+- A living product comparison that re-benchmarks every month
+- A due diligence file on a company you're evaluating
+- A weekly team briefing that writes itself
+- A personal wiki that keeps itself current
+
+## On the Roadmap
+
+- **`cron` + o-o** — fully hands-off updates on a schedule (`0 6 * * 1 bash ~/docs/*.o-o.html`)
+- **GitHub Actions** — auto-update docs in a repo, commit the diff, open a PR with the changelog
+- **Diff viewer** — visual side-by-side showing exactly what changed between versions
+
 ## Cost
 
 Each update costs **$0.50–$3.00** depending on scope and model. The budget is embedded in the contract — set it once, forget it.

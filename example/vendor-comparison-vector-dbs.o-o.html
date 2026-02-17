@@ -286,23 +286,23 @@
 <p>Pinecone is a fully managed, serverless vector database that abstracts away all infrastructure management. It offers automatic scaling, real-time indexing, and strong SLA guarantees, making it the go-to choice for teams that want production vector search without operational overhead. Pinecone supports metadata filtering with operators like <code>$eq</code>, <code>$lte</code>, and others, and integrates natively with LangChain and LlamaIndex. [s1] [s4]</p>
 
 <!-- pid:vendor-profiles:f1a2b3c4 -->
-<p>Pinecone reports 7ms p99 latency and has been proven at billions of vectors in production workloads. Its serverless architecture eliminates capacity planning, but the trade-off is vendor lock-in and higher costs at scale compared to self-hosted alternatives. [s5]</p>
+<p>Pinecone reports 7ms p99 latency and has been proven at billions of vectors in production workloads. Its serverless architecture eliminates capacity planning, but the trade-off is vendor lock-in and higher costs at scale compared to self-hosted alternatives. In late 2025, Pinecone introduced Dedicated Read Nodes (DRN) for predictable performance at high throughput, a "cascading search" pipeline with re-ranking and a proprietary sparse vector embedding model, and enterprise security features including RBAC, audit logs, and AWS PrivateLink. [s5] [s13]</p>
 
 <h3 id="weaviate">Weaviate</h3>
 
 <!-- pid:vendor-profiles:d5e6f7a8 -->
-<p>Weaviate is an open-source vector database with a strong focus on hybrid search — combining dense vector similarity with keyword matching and structured metadata filtering. It uses a GraphQL-first API (REST is also available) and supports automatic vectorization through pluggable modules like <code>text2vec-openai</code>. Built-in generative search (RAG) capabilities make it unique among vector databases. [s2] [s4]</p>
+<p>Weaviate is an open-source vector database with a strong focus on hybrid search — combining dense vector similarity with keyword matching and structured metadata filtering. It uses a GraphQL-first API (REST is also available) and supports automatic vectorization through pluggable modules like <code>text2vec-openai</code>. Built-in generative search (RAG) capabilities make it unique among vector databases. In early 2026, Weaviate launched three AI-powered agents — Query Agent (natural language search), Transformation Agent (automated data enrichment), and Personalization Agent (per-user result tailoring) — along with a generally available embedding service. [s2] [s4] [s14]</p>
 
 <!-- pid:vendor-profiles:b9c0d1e2 -->
-<p>Weaviate achieves sub-100ms latency on 768-dimensional embeddings and is well-suited for applications that need both semantic and keyword relevance. It runs efficiently below 50 million vectors but requires significantly more memory and compute above that threshold. A managed cloud option is available alongside the open-source distribution. [s5] [s6]</p>
+<p>Weaviate achieves sub-100ms latency on 768-dimensional embeddings and is well-suited for applications that need both semantic and keyword relevance. It runs efficiently below 50 million vectors but requires significantly more memory and compute above that threshold. In late 2025, Weaviate rebranded its cloud tiers — Serverless became "Shared Cloud" and Enterprise became "Dedicated Cloud" — with pricing now starting at $25/month for Standard SLA. [s5] [s6] [s14]</p>
 
 <h3 id="qdrant">Qdrant</h3>
 
 <!-- pid:vendor-profiles:f3a4b5c6 -->
-<p>Qdrant is a high-performance, open-source vector database written in Rust, designed for real-time applications with strong filtering requirements. Its advanced query planning engine avoids the common filtered search pitfalls (speed degradation, accuracy collapse) that affect competitors. HNSW indexing is configurable (e.g., <code>m=16</code>, <code>ef_construct=100</code>), and on-disk vector storage is supported for cost-effective large dataset handling. [s4] [s7]</p>
+<p>Qdrant is a high-performance, open-source vector database written in Rust, designed for real-time applications with strong filtering requirements. Its advanced query planning engine avoids the common filtered search pitfalls (speed degradation, accuracy collapse) that affect competitors. HNSW indexing is configurable (e.g., <code>m=16</code>, <code>ef_construct=100</code>), and on-disk vector storage is supported for cost-effective large dataset handling. Version 1.16 (early 2026) added the ACORN algorithm for higher-accuracy filtered HNSW queries (97.2% vs 53.3% without it at 4% selectivity) and Inline Storage, which stores quantized vectors directly in HNSW nodes for 10x QPS improvement on disk-based workloads. [s4] [s7] [s15]</p>
 
 <!-- pid:vendor-profiles:d7e8f9a0 -->
-<p>Qdrant achieves the lowest latencies in most benchmark scenarios according to its published benchmarks, with 1ms p99 on smaller datasets. Its free tier — 1 GB of vector storage forever, no credit card required — is the most generous among managed offerings. The Rust foundation provides memory safety and a compact deployment footprint suitable for edge scenarios. [s5] [s7]</p>
+<p>Qdrant achieves the lowest latencies in most benchmark scenarios according to its published benchmarks, with 1ms p99 on smaller datasets. Its free tier — 1 GB of vector storage forever, no credit card required — is the most generous among managed offerings. The Rust foundation provides memory safety and a compact deployment footprint suitable for edge scenarios. In January 2026, Qdrant added vendor-agnostic GPU-accelerated indexing (via Vulkan API), delivering up to 10x faster index builds than CPU-only methods. Enterprise features now include SSO, RBAC, and tiered multitenancy. [s5] [s7] [s15] [s16]</p>
 
 <h3 id="milvus">Milvus</h3>
 
@@ -310,12 +310,12 @@
 <p>Milvus is a cloud-native, open-source vector database backed by Zilliz, designed from the ground up for billion-scale deployments. It separates storage and compute, supports GPU acceleration, and offers the widest range of indexing algorithms including IVF_FLAT, HNSW, and product quantization (PQ). SDKs are available for Python, Java, Go, and more. [s2] [s4]</p>
 
 <!-- pid:vendor-profiles:f5a6b7c8 -->
-<p>With over 35,000 GitHub stars, Milvus is the most popular open-source vector database. It achieves approximately 120,000 inserts per second with ~20ms query latency in benchmarks, and can handle 2–3x the QPS of competitors when configured with multiple query nodes and GPUs. The trade-off is operational complexity — production Milvus typically requires Kubernetes expertise. Managed hosting is available through Zilliz Cloud. [s3] [s5] [s8]</p>
+<p>With over 42,000 GitHub stars (as of early 2026), Milvus is the most popular open-source vector database, used in production by NVIDIA, Salesforce, eBay, Airbnb, and DoorDash. Milvus 2.6, released in mid-2025, introduced RaBitQ 1-bit quantization that reduces memory usage by 72% while delivering 4x throughput improvements, built-in embedding functions for OpenAI, AWS Bedrock, and Vertex AI, and full-text search with 3–4x higher throughput than Elasticsearch at equivalent recall. The trade-off is operational complexity — production Milvus typically requires Kubernetes expertise. Managed hosting is available through Zilliz Cloud. [s3] [s5] [s8] [s17]</p>
 
 <h3 id="chroma">Chroma</h3>
 
 <!-- pid:vendor-profiles:d9e0f1a2 -->
-<p>Chroma is an open-source (Apache 2.0) embedded vector database purpose-built for developer experience. Its Python-first, NumPy-like API requires zero configuration and runs within your application process, eliminating network latency. A 2025 Rust rewrite delivered 4x performance improvements over the original Python implementation. [s5] [s9]</p>
+<p>Chroma is an open-source (Apache 2.0) embedded vector database purpose-built for developer experience. Its Python-first, NumPy-like API requires zero configuration and runs within your application process, eliminating network latency. A 2025 Rust rewrite delivered 4x performance improvements over the original Python implementation. Chroma 1.5.0 (February 2026) added collection forking, Chroma Sync for real-time replication, and up to 70% higher data throughput through base64 vector encoding and continued Rust optimization. [s5] [s9] [s18]</p>
 
 <!-- pid:vendor-profiles:b3c4d5e6 -->
 <p>Chroma supports vector, full-text, regex, and metadata search out of the box. It is ideal for prototyping, MVPs, and applications under 10 million vectors, but is not designed for production scale beyond that. Chroma Cloud offers managed hosting with $5 of free credits to start. [s9] [s10]</p>
@@ -323,7 +323,7 @@
 <h3 id="pgvector">pgvector + pgvectorscale</h3>
 
 <!-- pid:vendor-profiles:f7a8b9c0 -->
-<p>pgvector is a PostgreSQL extension that adds vector similarity search to the world's most popular relational database. Combined with pgvectorscale (which adds DiskANN indexing and Statistical Binary Quantization), it offers competitive performance at a fraction of the cost of dedicated solutions — Instacart migrated from Elasticsearch to pgvector in 2025, achieving 80% cost savings. [s5] [s11]</p>
+<p>pgvector is a PostgreSQL extension that adds vector similarity search to the world's most popular relational database. Combined with pgvectorscale (which adds DiskANN indexing and Statistical Binary Quantization), it offers competitive performance at a fraction of the cost of dedicated solutions — Instacart migrated from Elasticsearch to pgvector in 2025, achieving 80% cost savings. pgvector 0.8.0 (released late 2025) introduced iterative index scans that solve the "overfiltering" problem in filtered vector queries, delivering up to 9x faster query processing and 100x more relevant results for filtered searches compared to previous versions. [s5] [s11] [s19]</p>
 
 <!-- pid:vendor-profiles:d1e2f3a4 -->
 <p>pgvectorscale achieves 471 QPS at 99% recall on 50 million vectors, and benchmarks show 28x lower p95 latency and 16x higher throughput than Pinecone's storage-optimized index at 25% the cost. The key advantage is unified transactions — vectors and relational data live in one system. Scaling beyond 100 million vectors hits architectural limits. [s8] [s11]</p>
@@ -379,16 +379,16 @@
 <td style="padding:6px;">Proprietary</td>
 <td style="padding:6px;">HNSW</td>
 <td style="padding:6px;">HNSW</td>
-<td style="padding:6px;">IVF, HNSW, PQ, GPU</td>
+<td style="padding:6px;">IVF, HNSW, PQ, RaBitQ, GPU</td>
 <td style="padding:6px;">HNSW</td>
 <td style="padding:6px;">IVFFlat, HNSW, DiskANN</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border);">
 <td style="padding:6px; font-weight:600;">Hybrid Search</td>
-<td style="padding:6px;">Metadata only</td>
+<td style="padding:6px;">Sparse + dense + reranking</td>
 <td style="padding:6px;">Vector + BM25</td>
 <td style="padding:6px;">Vector + payload</td>
-<td style="padding:6px;">Vector + scalar</td>
+<td style="padding:6px;">Vector + full-text + scalar</td>
 <td style="padding:6px;">Vector + full-text</td>
 <td style="padding:6px;">Vector + SQL</td>
 </tr>
@@ -414,7 +414,7 @@
 <td style="padding:6px; font-weight:600;">GPU Support</td>
 <td style="padding:6px;">No</td>
 <td style="padding:6px;">No</td>
-<td style="padding:6px;">No</td>
+<td style="padding:6px;">Yes (indexing)</td>
 <td style="padding:6px;">Yes</td>
 <td style="padding:6px;">No</td>
 <td style="padding:6px;">No</td>
@@ -481,12 +481,12 @@
 <p>At 50 million vectors, pgvectorscale achieves 471 QPS at 99% recall — 11.4x the throughput of Qdrant (41 QPS) at the same recall level on the same benchmark. At this scale, pgvectorscale also delivers 28x lower p95 latency and 16x higher throughput than Pinecone's storage-optimized (s1) index, at roughly 25% the cost. [s8] [s11]</p>
 
 <!-- pid:performance-benchmarks:b9c0d1e2 -->
-<p>Milvus dominates at extreme scale. With multi-node configurations and GPU acceleration, it has achieved 2–3x the QPS of other open-source databases in ANN-Benchmarks scenarios and sustains approximately 120,000 inserts per second. Qdrant's own benchmark suite shows it achieving the highest RPS and lowest latencies in almost all tested scenarios on an 8-vCPU / 32 GB server across datasets ranging from 1M to 10M vectors. [s7] [s8]</p>
+<p>Milvus dominates at extreme scale. Milvus 2.6's RaBitQ 1-bit quantization compresses indexes to 1/32 of FP32 size; benchmarks on 1M 768-dimensional vectors show 864 QPS with IVF_RABITQ (3x higher than IVF_FLAT) at 94.7% recall. With multi-node configurations and GPU acceleration, Milvus sustains approximately 120,000 inserts per second. Qdrant 1.16's Inline Storage mode achieved 211 QPS vs 20 QPS (10x improvement) on low-RAM disk-based systems with comparable accuracy to in-memory setups. [s7] [s8] [s15] [s17]</p>
 
 <h3 id="benchmark-caveats">What Matters More Than Benchmarks</h3>
 
 <!-- pid:performance-benchmarks:f3a4b5c6 -->
-<p>Tail latency (p99) matters more than median. A system with 10ms median but 500ms p99 feels slower to users than one with 20ms median and 50ms p99. Additionally, filtered search performance — how well the database handles queries with metadata constraints — varies dramatically between vendors and is often poorly represented in standard benchmarks. Qdrant's query planner specifically optimizes for this scenario. [s7] [s8]</p>
+<p>Tail latency (p99) matters more than median. A system with 10ms median but 500ms p99 feels slower to users than one with 20ms median and 50ms p99. Additionally, filtered search performance — how well the database handles queries with metadata constraints — varies dramatically between vendors and is often poorly represented in standard benchmarks. Qdrant's ACORN algorithm (v1.16) achieves 97.2% accuracy on filtered HNSW queries at 4% selectivity, compared to 53.3% without it. pgvector 0.8.0's iterative index scans solve the "overfiltering" problem that previously caused filtered queries to return incomplete results. [s7] [s8] [s15] [s19]</p>
 
 <h2 id="pricing">Pricing</h2>
 
@@ -512,9 +512,9 @@
 </tr>
 <tr style="border-bottom:1px solid var(--border);">
 <td style="padding:6px; font-weight:600;">Weaviate Cloud</td>
-<td style="padding:6px;">14-day trial</td>
-<td style="padding:6px;">$25/month</td>
-<td style="padding:6px;">AIU-based or serverless</td>
+<td style="padding:6px;">Free sandbox</td>
+<td style="padding:6px;">$25/month (Shared Cloud)</td>
+<td style="padding:6px;">Dimensions stored + SLA tier</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border);">
 <td style="padding:6px; font-weight:600;">Qdrant Cloud</td>
@@ -544,7 +544,7 @@
 </table>
 
 <!-- pid:pricing:f5a6b7c8 -->
-<p>For datasets under 50 million vectors, managed SaaS (Pinecone, Weaviate Cloud) is often cheaper than self-hosting when accounting for the hidden cost of DevOps, monitoring, and on-call. At high query volumes (1,000+ QPS), Pinecone's consumption-based read units can scale costs linearly — teams at this scale should evaluate self-hosted Qdrant or Milvus for cost control. [s5] [s12]</p>
+<p>For datasets under 50 million vectors, managed SaaS (Pinecone, Weaviate Cloud) is often cheaper than self-hosting when accounting for the hidden cost of DevOps, monitoring, and on-call. At high query volumes (1,000+ QPS), Pinecone's consumption-based read units can scale costs linearly — teams at this scale should evaluate Pinecone's Dedicated Read Nodes (DRN) for predictable pricing, or self-hosted Qdrant or Milvus for cost control. Pinecone now offers annual commit discounts for Standard and Enterprise plans. [s5] [s12] [s13]</p>
 
 <!-- pid:pricing:d9e0f1a2 -->
 <p>pgvector stands out as the most cost-effective option for teams already running PostgreSQL. Instacart's 2025 migration from Elasticsearch to pgvector reportedly achieved 80% cost savings on storage and indexing while simplifying their architecture. [s11]</p>
@@ -599,6 +599,13 @@
 <li><a href="https://www.trychroma.com/pricing">Chroma Pricing</a> — Chroma</li>
 <li><a href="https://dbadataverse.com/poetry/2025/12/postgresql-beat-vector-databases-dba-perspective">PostgreSQL vs Vector Database: Why PostgreSQL Wins (2025)</a> — DBA Dataverse</li>
 <li><a href="https://rahulkolekar.com/vector-db-pricing-comparison-pinecone-weaviate-2026/">Top 5 Vector Databases for Enterprise RAG: Cost Comparison (2026)</a> — Rahul Kolekar</li>
+<li><a href="https://docs.pinecone.io/release-notes/2025">2025 Release Notes: Dedicated Read Nodes, Sparse Vectors, RBAC</a> — Pinecone Docs</li>
+<li><a href="https://weaviate.io/blog">Weaviate Blog: AI Agents (Query, Transformation, Personalization)</a> — Weaviate</li>
+<li><a href="https://qdrant.tech/blog/qdrant-1.16.x/">Qdrant 1.16: Tiered Multitenancy, ACORN, Inline Storage</a> — Qdrant</li>
+<li><a href="https://qdrant.tech/blog/2025-recap/">Qdrant 2025 Recap: GPU Indexing, Enterprise Features</a> — Qdrant</li>
+<li><a href="https://milvus.io/blog/introduce-milvus-2-6-built-for-scale-designed-to-reduce-costs.md">Milvus 2.6: Affordable Vector Search at Billion Scale</a> — Milvus Blog</li>
+<li><a href="https://www.trychroma.com/changelog">Chroma Changelog: v1.5.0, Collection Forking, Sync</a> — Chroma</li>
+<li><a href="https://www.postgresql.org/about/news/pgvector-080-released-2952/">pgvector 0.8.0 Released: Iterative Index Scans</a> — PostgreSQL</li>
 </ol>
 
 </article>
@@ -609,9 +616,9 @@
 <script id="oo-manifest" type="application/json">
 {
   "title": "Vector Databases Compared",
-  "freshness": "weekly",
-  "version": 1,
-  "as_of": "2026-02-16",
+  "update_every_days": 7,
+  "version": 2,
+  "as_of": "2026-02-17",
   "changelog": []
 }
 </script>
@@ -737,11 +744,12 @@
       "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
       "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
-      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
-      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
-      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+      "6. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "7. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "8. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "9. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "10. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "11. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
   "identity": {
@@ -774,7 +782,7 @@
     }
   },
   "budget": {
-    "max_cost_usd": 2.00
+    "max_cost_usd": 5.00
   },
   "images": {
     "allow": true,
@@ -807,7 +815,7 @@
 <!-- SOURCE CACHE: previous research (empty on first run) -->
 <script id="oo-source-cache" type="application/json">
 {
-  "last_updated": "2026-02-16",
+  "last_updated": "2026-02-17",
   "sources": [
     {"id": "s1", "url": "https://liquidmetal.ai/casesAndBlogs/vector-comparison/", "title": "Vector Database Comparison (2025) — LiquidMetal AI", "tier": "industry", "accessed": "2026-02-16"},
     {"id": "s2", "url": "https://milvus.io/ai-quick-reference/how-do-i-choose-between-pinecone-weaviate-milvus-and-other-vector-databases", "title": "How do I choose between vector databases — Milvus", "tier": "vendor", "accessed": "2026-02-16"},
@@ -820,7 +828,14 @@
     {"id": "s9", "url": "https://www.trychroma.com/", "title": "Chroma — Open-source search and retrieval database", "tier": "vendor", "accessed": "2026-02-16"},
     {"id": "s10", "url": "https://www.trychroma.com/pricing", "title": "Chroma Pricing", "tier": "vendor", "accessed": "2026-02-16"},
     {"id": "s11", "url": "https://dbadataverse.com/poetry/2025/12/postgresql-beat-vector-databases-dba-perspective", "title": "PostgreSQL vs Vector Database (2025) — DBA Dataverse", "tier": "industry", "accessed": "2026-02-16"},
-    {"id": "s12", "url": "https://rahulkolekar.com/vector-db-pricing-comparison-pinecone-weaviate-2026/", "title": "Vector DB Pricing Comparison (2026) — Rahul Kolekar", "tier": "industry", "accessed": "2026-02-16"}
+    {"id": "s12", "url": "https://rahulkolekar.com/vector-db-pricing-comparison-pinecone-weaviate-2026/", "title": "Vector DB Pricing Comparison (2026) — Rahul Kolekar", "tier": "industry", "accessed": "2026-02-16"},
+    {"id": "s13", "url": "https://docs.pinecone.io/release-notes/2025", "title": "2025 Release Notes — Pinecone Docs", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s14", "url": "https://weaviate.io/blog", "title": "Weaviate Blog: AI Agents, Embedding Service GA", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s15", "url": "https://qdrant.tech/blog/qdrant-1.16.x/", "title": "Qdrant 1.16: Tiered Multitenancy, ACORN, Inline Storage", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s16", "url": "https://qdrant.tech/blog/2025-recap/", "title": "Qdrant 2025 Recap: GPU Indexing, Enterprise Features", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s17", "url": "https://milvus.io/blog/introduce-milvus-2-6-built-for-scale-designed-to-reduce-costs.md", "title": "Milvus 2.6: Affordable Vector Search at Billion Scale", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s18", "url": "https://www.trychroma.com/changelog", "title": "Chroma Changelog: v1.5.0, Collection Forking, Sync", "tier": "vendor", "accessed": "2026-02-17"},
+    {"id": "s19", "url": "https://www.postgresql.org/about/news/pgvector-080-released-2952/", "title": "pgvector 0.8.0 Released: Iterative Index Scans", "tier": "official", "accessed": "2026-02-17"}
   ],
   "facts": [
     "Qdrant achieves 8ms p50 / 25ms p99 latency on 1M vectors at 1536 dimensions",
@@ -829,10 +844,23 @@
     "Pinecone reports 7ms p99 latency at production scale",
     "Chroma 2025 Rust rewrite delivered 4x performance improvement",
     "Instacart migrated from Elasticsearch to pgvector in 2025, 80% cost savings",
-    "Milvus has 35K+ GitHub stars, most popular OSS vector database",
+    "Milvus has 42K+ GitHub stars, most popular OSS vector database",
     "Pinecone pricing: $0.33/GB storage + $8.25/1M read units + $2.00/1M write units",
     "Qdrant free tier: 1GB vector storage forever, no credit card",
-    "Weaviate Cloud starts at $25/month after 14-day trial"
+    "Weaviate Cloud starts at $25/month (Shared Cloud, Standard SLA)",
+    "Pinecone Dedicated Read Nodes (DRN) now in public preview for predictable high-throughput pricing",
+    "Pinecone added RBAC, audit logs, AWS PrivateLink, sparse vector indexes",
+    "Weaviate launched Query Agent, Transformation Agent, Personalization Agent",
+    "Weaviate rebranded Serverless to Shared Cloud, Enterprise to Dedicated Cloud (Oct 2025)",
+    "Qdrant 1.16 ACORN algorithm: 97.2% accuracy at 4% selectivity vs 53.3% without",
+    "Qdrant 1.16 Inline Storage: 10x QPS improvement (211 vs 20 QPS) on disk-based workloads",
+    "Qdrant GPU-accelerated indexing: 10x faster than CPU, vendor-agnostic via Vulkan API",
+    "Qdrant added SSO, RBAC, tiered multitenancy for enterprise",
+    "Milvus 2.6 RaBitQ: 72% memory reduction, 864 QPS (3x IVF_FLAT) at 94.7% recall",
+    "Milvus 2.6 full-text search: 3-4x higher throughput than Elasticsearch at equivalent recall",
+    "Milvus 2.6 built-in embedding functions for OpenAI, AWS Bedrock, Vertex AI",
+    "Chroma 1.5.0 (Feb 2026): collection forking, Sync, 70% throughput increase",
+    "pgvector 0.8.0: iterative index scans, up to 9x faster filtered queries, 100x more relevant results"
   ]
 }
 </script>
@@ -845,6 +873,11 @@
       "version": 1,
       "timestamp": "2026-02-16T00:00:00Z",
       "summary": "Initial population: comprehensive comparison of Pinecone, Weaviate, Qdrant, Milvus, Chroma, and pgvector covering vendor profiles, feature comparison table, performance benchmarks (1M and 50M vector scales), pricing tiers, and use case recommendations. 12 sources cited."
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-02-17T00:00:00Z",
+      "summary": "Incremental update with latest vendor releases: Pinecone DRN, RBAC, sparse vectors, cascading search; Weaviate AI agents (Query/Transformation/Personalization), embedding service GA, pricing rebrand; Qdrant 1.16 ACORN algorithm (97.2% filtered accuracy), Inline Storage (10x QPS), GPU indexing (10x faster), enterprise features; Milvus 2.6 RaBitQ quantization (72% memory reduction, 3x QPS), built-in embedding functions, full-text search 3-4x faster than ES, 42K+ GitHub stars; Chroma 1.5.0 collection forking, Sync, 70% throughput increase; pgvector 0.8.0 iterative scans solving overfiltering (9x faster filtered queries). Updated feature table (Qdrant GPU support). 7 new sources added (19 total)."
     }
   ]
 }
@@ -891,16 +924,12 @@ BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head
 BUDGET="${BUDGET:-0.50}"
 
 # --- Freshness gate: skip update if document is still fresh ---
-FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
 AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
 
-if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
-  case "$FRESHNESS" in
-    daily)   FRESH_SECS=86400 ;;
-    weekly)  FRESH_SECS=604800 ;;
-    monthly) FRESH_SECS=2592000 ;;
-    *)       FRESH_SECS=604800 ;;
-  esac
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
 
   NOW_EPOCH=$(date +%s)
   AS_OF_EPOCH=""
@@ -913,7 +942,7 @@ if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
   if [[ -n "$AS_OF_EPOCH" ]]; then
     AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
     if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
-      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
       echo "o-o: Use --force to update anyway."
       exit 0
     fi

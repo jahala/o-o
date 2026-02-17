@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# o-o Document Library — index and management tool
+# o-o — index and management tool
 # Usage:
 #   bash index.o-o.html                              # Rebuild index
 #   bash index.o-o.html --new "Title / description"  # Create new document
@@ -10,258 +10,74 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>o-o Document Library</title>
+<title>o-o</title>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+
+<!-- ─── STYLES ──────────────────────────────────────────── -->
 <style>
-  :root {
-    --bg: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --accent: #2563eb;
-    --accent-weak: #eff6ff;
-    --heading: #111827;
-  }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--bg);
-    font-size: 0;
-    line-height: 0;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-weight: 600;
-  }
-  .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 20px 64px;
-    color: var(--text);
-    font-size: 16px;
-    line-height: 1.65;
-  }
-  header {
-    padding-bottom: 16px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-  }
-  #doc-title {
-    margin: 0 0 6px 0;
-    font-size: 28px;
-    color: var(--heading);
-    letter-spacing: -0.01em;
-  }
-  .subtitle {
-    color: var(--muted);
-    font-size: 16px;
-    margin-top: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  }
-  .stats-bar {
-    background: #f9fafb;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: var(--muted);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .stats-bar .stat {
-    display: inline-block;
-  }
-  .stats-bar .stat strong {
-    color: var(--heading);
-    font-weight: 600;
-  }
-  .search-bar {
-    margin-bottom: 20px;
-  }
-  .search-bar input[type="search"] {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 14px;
-    font-size: 15px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-bar input[type="search"]:focus {
-    border-color: var(--accent);
-  }
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-  .card {
-    display: block;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    transition: box-shadow 0.2s, border-color 0.2s;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-  }
-  .card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-color: var(--accent);
-  }
-  .card-title {
-    display: block;
-    color: var(--heading);
-    font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-size: 17px;
-    line-height: 1.4;
-    margin-bottom: 6px;
-  }
-  .card:hover .card-title { color: var(--accent); }
-  .card-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    padding: 2px 8px;
-    border-radius: 999px;
-    margin-bottom: 8px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-  }
-  .card-badge.fresh {
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-  }
-  .card-badge.stale {
-    background: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fde68a;
-  }
-  .card-badge.new {
-    background: var(--accent-weak);
-    color: var(--accent);
-    border: 1px solid #bfdbfe;
-  }
-  .card-excerpt {
-    font-size: 15px;
-    color: var(--text);
-    line-height: 1.55;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  #article {
-    margin-top: 24px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-size: 14px;
-    color: var(--text);
-  }
-  th {
-    text-align: left;
-    padding: 12px;
-    background: #f9fafb;
-    color: var(--heading);
-    font-weight: 600;
-    border-bottom: 2px solid var(--border);
-  }
-  th.sortable {
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    padding-right: 24px;
-  }
-  th.sortable:hover {
-    background: #f3f4f6;
-  }
-  th.sortable::after {
-    content: '\2195';
-    position: absolute;
-    right: 8px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-  th.sortable.asc::after {
-    content: '\2191';
-    color: var(--accent);
-  }
-  th.sortable.desc::after {
-    content: '\2193';
-    color: var(--accent);
-  }
-  td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  tr:hover {
-    background: #fafbfc;
-  }
-  td a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-  }
-  td a:hover {
-    text-decoration: underline;
-  }
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty-state p {
-    margin: 8px 0;
-  }
-  .empty-state code {
-    background: #f9fafb;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    color: var(--heading);
-    border: 1px solid var(--border);
-  }
-  .file-size {
-    color: var(--muted);
-    font-size: 13px;
-  }
-  @media (max-width: 768px) {
-    .wrap { padding: 16px 14px 48px; }
-    #doc-title { font-size: 24px; }
-    .stats-bar { flex-direction: column; align-items: flex-start; }
-    table { font-size: 13px; }
-    th, td { padding: 8px; }
-    .search-bar input[type="search"] { max-width: 100%; }
-    .card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  }
+:root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
+h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
+.wrap { max-width:1200px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+#doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
+.subtitle { color:var(--muted); font-size:16px; margin-top:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+.stats-bar { background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:var(--muted); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.stats-bar .stat { display:inline-block; }
+.stats-bar .stat strong { color:var(--heading); font-weight:600; }
+.search-bar { margin-bottom:20px; }
+.search-bar input[type="search"] { width:100%; max-width:400px; padding:10px 14px; font-size:15px; border:1px solid var(--border); border-radius:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; outline:none; transition:border-color 0.2s; }
+.search-bar input[type="search"]:focus { border-color:var(--accent); }
+.card-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:28px; }
+.card { display:block; border:1px solid var(--border); border-radius:8px; padding:14px 16px; transition:box-shadow 0.2s, border-color 0.2s; text-decoration:none; color:inherit; cursor:pointer; }
+.card:hover { box-shadow:0 2px 8px rgba(0,0,0,0.06); border-color:var(--accent); }
+.card-title { display:block; color:var(--heading); font-weight:600; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:17px; line-height:1.4; margin-bottom:6px; }
+.card:hover .card-title { color:var(--accent); }
+.card-badge { display:inline-block; font-size:11px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; padding:2px 8px; border-radius:999px; margin-bottom:8px; font-weight:500; letter-spacing:0.01em; }
+.card-badge.fresh { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.card-badge.stale { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+.card-badge.new { background:var(--accent-weak); color:var(--accent); border:1px solid #bfdbfe; }
+.card-excerpt { font-size:15px; color:var(--text); line-height:1.55; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+#article { margin-top:24px; }
+table { width:100%; border-collapse:collapse; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:14px; color:var(--text); }
+th { text-align:left; padding:12px; background:#f9fafb; color:var(--heading); font-weight:600; border-bottom:2px solid var(--border); }
+th.sortable { cursor:pointer; user-select:none; position:relative; padding-right:24px; }
+th.sortable:hover { background:#f3f4f6; }
+th.sortable::after { content:'\2195'; position:absolute; right:8px; color:var(--muted); font-size:12px; }
+th.sortable.asc::after { content:'\2191'; color:var(--accent); }
+th.sortable.desc::after { content:'\2193'; color:var(--accent); }
+td { padding:12px; border-bottom:1px solid var(--border); }
+tr:hover { background:#fafbfc; }
+td a { color:var(--accent); text-decoration:none; font-weight:500; }
+td a:hover { text-decoration:underline; }
+.empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+.empty-state p { margin:8px 0; }
+.empty-state code { background:#f9fafb; padding:3px 8px; border-radius:4px; font-size:14px; color:var(--heading); border:1px solid var(--border); }
+.file-size { color:var(--muted); font-size:13px; }
+@media (max-width: 768px) {
+  .wrap { padding:16px 14px 48px; }
+  #doc-title { font-size:24px; }
+  .stats-bar { flex-direction:column; align-items:flex-start; }
+  table { font-size:13px; }
+  th, td { padding:8px; }
+  .search-bar input[type="search"] { max-width:100%; }
+  .card-grid { grid-template-columns:repeat(2, 1fr); gap:12px; }
+}
 </style>
 </head>
+
+<!-- ─── DOCUMENT LIBRARY ────────────────────────────────── -->
 <body>
 <div class="wrap">
 <header>
-<h1 id="doc-title">o-o Document Library</h1>
+<h1 id="doc-title">o-o</h1>
 <p class="subtitle">Self-updating living documents</p>
 </header>
 <div class="stats-bar">
-  <div class="stat"><strong id="doc-count">6</strong> documents</div>
-  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 00:05</span></div>
+  <div class="stat"><strong id="doc-count">8</strong> documents</div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 01:32</span></div>
 </div>
 <div class="search-bar">
   <input type="search" id="search-input" placeholder="Search documents...">
@@ -271,33 +87,43 @@
   <div class="card-grid" id="card-grid">
     <a class="card" href="yc-w26-batch.o-o.html">
       <span class="card-title">Y Combinator W26 Batch</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
       <span class="card-excerpt">Y Combinator's Winter 2026 (W26) batch represents the accelerator's continued expansion under its four-batches-per-year ...</span>
     </a>
     <a class="card" href="vendor-comparison-vector-dbs.o-o.html">
       <span class="card-title">Vector Databases Compared</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
       <span class="card-excerpt">Vector databases are purpose-built systems for storing, indexing, and querying high-dimensional vector embeddings at sca...</span>
+    </a>
+    <a class="card" href="trump-incarceration.o-o.html">
+      <span class="card-title">Trump Incarceration</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
+      <span class="card-excerpt"></span>
     </a>
     <a class="card" href="ai-model-landscape.o-o.html">
       <span class="card-title">The LLM Landscape: Models, Benchmarks & Pricing</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
-      <span class="card-excerpt">The large language model landscape in early 2026 is defined by three converging forces: the commoditization of GPT-4-cla...</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
+      <span class="card-excerpt">The large language model landscape in mid-February 2026 is defined by three converging forces: the commoditization of GP...</span>
     </a>
     <a class="card" href="openclaw.o-o.html">
       <span class="card-title">OpenClaw: The Open-Source AI Agent</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
       <span class="card-excerpt">OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Ma...</span>
     </a>
     <a class="card" href="competitor-costco.o-o.html">
       <span class="card-title">Costco: Competitive Intelligence Briefing</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
       <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) continues to be the most feared operator in retail. In fiscal year 2025 (end...</span>
     </a>
     <a class="card" href="anthropic-leadership.o-o.html">
       <span class="card-title">Anthropic Leadership Team</span>
-      <span class="card-badge fresh">Feb 16, 2026</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
       <span class="card-excerpt">Anthropic is an American artificial intelligence safety company founded in 2021 by siblings Dario and Daniela Amodei, al...</span>
+    </a>
+    <a class="card" href="agi-declared.o-o.html">
+      <span class="card-title">AGI Declared</span>
+      <span class="card-badge fresh">Feb 17, 2026</span>
+      <span class="card-excerpt">As of February 2026, no major AI company or research laboratory has made a formal, official declaration that it has achi...</span>
     </a>
   </div>
   <table>
@@ -312,39 +138,51 @@
     <tbody>
 <tr>
   <td><a href="competitor-costco.o-o.html">Costco: Competitive Intelligence Briefing</a></td>
-  <td>154K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>167K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
 </tr>
 <tr>
   <td><a href="vendor-comparison-vector-dbs.o-o.html">Vector Databases Compared</a></td>
-  <td>46K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>53K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
 </tr>
 <tr>
   <td><a href="ai-model-landscape.o-o.html">The LLM Landscape: Models, Benchmarks & Pricing</a></td>
-  <td>44K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>51K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
 </tr>
 <tr>
   <td><a href="openclaw.o-o.html">OpenClaw: The Open-Source AI Agent</a></td>
-  <td>47K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>59K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="trump-incarceration.o-o.html">Trump Incarceration</a></td>
+  <td>33K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
 </tr>
 <tr>
   <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
-  <td>32K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>41K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="agi-declared.o-o.html">AGI Declared</a></td>
+  <td>41K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
 </tr>
 <tr>
   <td><a href="yc-w26-batch.o-o.html">Y Combinator W26 Batch</a></td>
-  <td>39K</td>
-  <td>2026-02-16</td>
-  <td>1</td>
+  <td>52K</td>
+  <td>2026-02-17</td>
+  <td>3</td>
 </tr>
     </tbody>
   </table>
@@ -352,75 +190,38 @@
 </article>
 </div>
 
+<!-- ─── SCRIPTS ─────────────────────────────────────────── -->
 <script>
 (function(){
-  var d = document;
-  var input = d.getElementById('search-input');
-  var table = d.querySelector('table');
-
-  // Live search
-  if (input && table) {
-    input.addEventListener('keyup', function() {
-      var query = this.value.toLowerCase();
-      var rows = table.querySelectorAll('tbody tr');
-      rows.forEach(function(row) {
-        var text = row.textContent.toLowerCase();
-        row.style.display = text.indexOf(query) > -1 ? '' : 'none';
-      });
+  var d=document, input=d.getElementById('search-input'), table=d.querySelector('table');
+  if(input && table){
+    input.addEventListener('keyup',function(){
+      var query=this.value.toLowerCase(), rows=table.querySelectorAll('tbody tr');
+      rows.forEach(function(row){ var text=row.textContent.toLowerCase(); row.style.display=text.indexOf(query)>-1?'':'none'; });
     });
   }
-
-  // Table sorting
-  var currentSort = { col: -1, dir: 'asc' };
-
-  function sortTable(colIndex, type) {
-    if (!table) return;
-    var tbody = table.querySelector('tbody');
-    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-
-    var dir = 'asc';
-    if (currentSort.col === colIndex) {
-      dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
-    }
-    currentSort = { col: colIndex, dir: dir };
-
-    rows.sort(function(a, b) {
-      var aVal = a.cells[colIndex].textContent.trim();
-      var bVal = b.cells[colIndex].textContent.trim();
-
-      if (type === 'number') {
-        aVal = parseFloat(aVal) || 0;
-        bVal = parseFloat(bVal) || 0;
-      } else if (type === 'date') {
-        aVal = aVal === '\u2014' || aVal === '' ? 0 : new Date(aVal).getTime();
-        bVal = bVal === '\u2014' || bVal === '' ? 0 : new Date(bVal).getTime();
-      }
-
-      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
-      if (aVal > bVal) return dir === 'asc' ? 1 : -1;
+  var currentSort={col:-1,dir:'asc'};
+  function sortTable(colIndex,type){
+    if(!table)return;
+    var tbody=table.querySelector('tbody'), rows=Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+    var dir='asc';
+    if(currentSort.col===colIndex){ dir=currentSort.dir==='asc'?'desc':'asc'; }
+    currentSort={col:colIndex,dir:dir};
+    rows.sort(function(a,b){
+      var aVal=a.cells[colIndex].textContent.trim(), bVal=b.cells[colIndex].textContent.trim();
+      if(type==='number'){ aVal=parseFloat(aVal)||0; bVal=parseFloat(bVal)||0; }
+      else if(type==='date'){ aVal=aVal==='\u2014'||aVal===''?0:new Date(aVal).getTime(); bVal=bVal==='\u2014'||bVal===''?0:new Date(bVal).getTime(); }
+      if(aVal<bVal)return dir==='asc'?-1:1;
+      if(aVal>bVal)return dir==='asc'?1:-1;
       return 0;
     });
-
-    rows.forEach(function(row) { tbody.appendChild(row); });
-
-    // Update header classes
-    var ths = table.querySelectorAll('th.sortable');
-    ths.forEach(function(th, i) {
-      th.classList.remove('asc', 'desc');
-      if (i === colIndex) {
-        th.classList.add(dir);
-      }
-    });
+    rows.forEach(function(row){tbody.appendChild(row);});
+    var ths=table.querySelectorAll('th.sortable');
+    ths.forEach(function(th,i){ th.classList.remove('asc','desc'); if(i===colIndex){th.classList.add(dir);} });
   }
-
-  if (table) {
-    var ths = table.querySelectorAll('th.sortable');
-    ths.forEach(function(th, i) {
-      th.addEventListener('click', function() {
-        var type = this.getAttribute('data-type') || 'text';
-        sortTable(i, type);
-      });
-    });
+  if(table){
+    var ths=table.querySelectorAll('th.sortable');
+    ths.forEach(function(th,i){ th.addEventListener('click',function(){ var type=this.getAttribute('data-type')||'text'; sortTable(i,type); }); });
   }
 })();
 </script>
@@ -439,7 +240,7 @@ SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
 SELF_DIR="$(dirname "$SELF")"
 SELF_NAME="$(basename "$SELF")"
 
-# Generate a new o-o file from template
+# ─── DOCUMENT TEMPLATE ─────────────────────────────────────────
 generate_oo_file() {
   local filepath="$1"
   local title="$2"
@@ -461,248 +262,70 @@ generate_oo_file() {
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
 <style>
-  :root {
-    --bg: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --accent: #2563eb;
-    --accent-weak: #eff6ff;
-    --heading: #111827;
-  }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--bg);
-    font-size: 0;
-    line-height: 0;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    font-weight: 600;
-  }
-  .wrap {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px 20px 64px;
-    color: var(--text);
-    font-size: 16px;
-    line-height: 1.65;
-  }
-  header {
-    padding-bottom: 16px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-  }
-  #doc-title {
-    margin: 0 0 6px 0;
-    font-size: 28px;
-    color: var(--heading);
-    letter-spacing: -0.01em;
-  }
-  .meta {
-    color: var(--muted);
-    font-size: 14px;
-    background: #f9fafb;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 10px;
-    display: inline-block;
-    margin-top: 6px;
-  }
-  .meta .version-badge {
-    display: inline-block;
-    margin-left: 6px;
-    padding: 2px 6px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    color: var(--heading);
-    background: #fff;
-    font-weight: 600;
-  }
-  .meta .version-badge { cursor: pointer; }
-  .meta .version-badge:hover { background: var(--accent-weak); border-color: var(--accent); }
-  .contract-panel {
-    display: none;
-    margin-top: 12px;
-    padding: 16px;
-    background: #f9fafb;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    color: var(--text);
-    line-height: 1.5;
-  }
-  .contract-panel.open { display: block; }
-  .contract-panel dt { font-weight: 600; color: var(--heading); margin-top: 10px; }
-  .contract-panel dt:first-child { margin-top: 0; }
-  .contract-panel dd { margin: 2px 0 0 0; color: var(--muted); }
-  .contract-panel .tag {
-    display: inline-block;
-    padding: 1px 6px;
-    margin: 2px 3px 2px 0;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  .note {
-    margin-top: 12px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-  nav.toc {
-    position: fixed;
-    left: calc((100vw - 900px) / 4 - 100px);
-    top: 16px;
-    width: 220px;
-    max-height: calc(100vh - 32px);
-    overflow: auto;
-    z-index: 10;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  }
-  nav.toc strong { font-weight: 700; }
-  nav.toc a {
-    display: block;
-    margin: 6px 0;
-    color: var(--text);
-    text-decoration: none;
-    padding-left: 10px;
-    position: relative;
-  }
-  nav.toc a.toc-h3 {
-    padding-left: 22px;
-    font-size: 12px;
-    color: var(--muted);
-    margin: 3px 0;
-  }
-  nav.toc a:hover { text-decoration: underline; }
-  nav.toc a.active { font-weight: 700; text-decoration: none; }
-  nav.toc a::before {
-    content: '';
-    position: absolute;
-    left: -4px;
-    top: 0;
-    color: var(--muted);
-  }
-  nav.toc a.active::before { content: '\2192'; }
-  #article h2 {
-    margin-top: 28px;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-    color: var(--heading);
-    letter-spacing: -0.01em;
-  }
-  #article h3 { margin-top: 20px; margin-bottom: 6px; color: var(--heading); }
-  #article p { margin: 10px 0 0; }
-  #references, h2#references { scroll-margin-top: 80px; }
-  #article ol { margin: 10px 0 0 22px; }
-  #article ol li { margin: 6px 0; }
-  #article table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 16px 0; color: var(--text); }
-  #article th, #article td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
-  #article th { font-weight: 600; color: var(--heading); border-bottom-width: 2px; }
-  #article tr:hover td { background: var(--accent-weak); }
-  #article .table-wrap { overflow-x: auto; margin: 16px 0; }
-  #article a { color: var(--accent); text-decoration: none; }
-  #article a:hover { text-decoration: underline; }
-  #article a.cite { font-size: 12px; vertical-align: super; line-height: 0; }
-  #article figure { margin: 16px 0; padding: 0; }
-  #article figure img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
-  #article figcaption {
-    margin-top: 6px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-  #article figcaption .img-src { font-size: 12px; }
-  #article figcaption .img-src a { color: var(--muted); }
-  #article figure.fig-full img { width: 100%; }
-  #article figure.fig-center { max-width: 70%; margin: 20px auto; }
-  #article figure.fig-right {
-    float: right;
-    max-width: 28%;
-    margin: 4px 0 12px 20px;
-  }
-  #article figure.fig-left {
-    float: left;
-    max-width: 28%;
-    margin: 4px 20px 12px 0;
-  }
-  #article h2, #article h3 { clear: both; }
-  .stub-notice {
-    margin: 40px 0;
-    padding: 24px;
-    background: var(--accent-weak);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    text-align: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  }
-  .stub-notice code {
-    background: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 15px;
-  }
-  @media (max-width: 1200px) {
-    .wrap { padding: 16px 14px 48px; }
-    nav.toc {
-      position: sticky;
-      top: 0;
-      left: auto;
-      width: 100%;
-      max-height: none;
-      margin: 0 0 12px;
-      padding: 8px 10px;
-      box-shadow: none;
-      border: 0;
-      background: #ffffff;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      z-index: 20;
-    }
-    nav.toc a {
-      display: inline-block;
-      margin: 0 12px 0 0;
-      white-space: nowrap;
-      padding-left: 0;
-    }
-    nav.toc a::before {
-      position: static;
-      margin-right: 6px;
-      left: auto;
-      top: auto;
-    }
-  }
-  @media (max-width: 640px) {
-    .wrap { padding: 16px 14px 48px; }
-    #doc-title { font-size: 24px; }
-    nav.toc { font-size: 13px; padding: 8px 10px; }
-    #article figure.fig-left,
-    #article figure.fig-right {
-      float: none;
-      max-width: 100%;
-      margin: 16px 0;
-    }
-    #article figure.fig-center { max-width: 100%; }
-  }
+:root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
+h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
+.wrap { max-width:900px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+#doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
+.meta { color:var(--muted); font-size:14px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:8px 10px; display:inline-block; margin-top:6px; }
+.meta .version-badge { display:inline-block; margin-left:6px; padding:2px 6px; border-radius:999px; border:1px solid var(--border); color:var(--heading); background:#fff; font-weight:600; cursor:pointer; }
+.meta .version-badge:hover { background:var(--accent-weak); border-color:var(--accent); }
+.contract-panel { display:none; margin-top:12px; padding:16px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--text); line-height:1.5; }
+.contract-panel.open { display:block; }
+.contract-panel dt { font-weight:600; color:var(--heading); margin-top:10px; }
+.contract-panel dt:first-child { margin-top:0; }
+.contract-panel dd { margin:2px 0 0 0; color:var(--muted); }
+.contract-panel .tag { display:inline-block; padding:1px 6px; margin:2px 3px 2px 0; background:#fff; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+.note { margin-top:12px; color:var(--muted); font-size:14px; }
+nav.toc { position:fixed; left:calc((100vw - 900px) / 4 - 100px); top:16px; width:220px; max-height:calc(100vh - 32px); overflow:auto; z-index:10; background:#ffffff; border:1px solid var(--border); padding:10px 12px; border-radius:8px; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+nav.toc strong { font-weight:700; }
+nav.toc a { display:block; margin:6px 0; color:var(--text); text-decoration:none; padding-left:10px; position:relative; }
+nav.toc a.toc-h3 { padding-left:22px; font-size:12px; color:var(--muted); margin:3px 0; }
+nav.toc a:hover { text-decoration:underline; }
+nav.toc a.active { font-weight:700; text-decoration:none; }
+nav.toc a::before { content:''; position:absolute; left:-4px; top:0; color:var(--muted); }
+nav.toc a.active::before { content:'\2192'; }
+#article h2 { margin-top:28px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); color:var(--heading); letter-spacing:-0.01em; }
+#article h3 { margin-top:20px; margin-bottom:6px; color:var(--heading); }
+#article p { margin:10px 0 0; }
+#references, h2#references { scroll-margin-top:80px; }
+#article ol { margin:10px 0 0 22px; }
+#article ol li { margin:6px 0; }
+#article table { width:100%; border-collapse:collapse; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin:16px 0; color:var(--text); }
+#article th, #article td { padding:8px 6px; text-align:left; border-bottom:1px solid var(--border); }
+#article th { font-weight:600; color:var(--heading); border-bottom-width:2px; }
+#article tr:hover td { background:var(--accent-weak); }
+#article .table-wrap { overflow-x:auto; margin:16px 0; }
+#article a { color:var(--accent); text-decoration:none; }
+#article a:hover { text-decoration:underline; }
+#article a.cite { font-size:12px; vertical-align:super; line-height:0; }
+#article figure { margin:16px 0; padding:0; }
+#article figure img { display:block; max-width:100%; height:auto; border-radius:4px; }
+#article figcaption { margin-top:6px; font-size:13px; color:var(--muted); line-height:1.4; }
+#article figcaption .img-src { font-size:12px; }
+#article figcaption .img-src a { color:var(--muted); }
+#article figure.fig-full img { width:100%; }
+#article figure.fig-center { max-width:70%; margin:20px auto; }
+#article figure.fig-right { float:right; max-width:28%; margin:4px 0 12px 20px; }
+#article figure.fig-left { float:left; max-width:28%; margin:4px 20px 12px 0; }
+#article h2, #article h3 { clear:both; }
+.stub-notice { margin:40px 0; padding:24px; background:var(--accent-weak); border:1px solid var(--accent); border-radius:8px; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+.stub-notice code { background:#fff; padding:2px 8px; border-radius:4px; font-size:15px; }
+@media (max-width: 1200px) {
+  .wrap { padding:16px 14px 48px; }
+  nav.toc { position:sticky; top:0; left:auto; width:100%; max-height:none; margin:0 0 12px; padding:8px 10px; box-shadow:none; border:0; background:#ffffff; overflow-x:auto; overflow-y:hidden; white-space:nowrap; z-index:20; }
+  nav.toc a { display:inline-block; margin:0 12px 0 0; white-space:nowrap; padding-left:0; }
+  nav.toc a::before { position:static; margin-right:6px; left:auto; top:auto; }
+}
+@media (max-width: 640px) {
+  .wrap { padding:16px 14px 48px; }
+  #doc-title { font-size:24px; }
+  nav.toc { font-size:13px; padding:8px 10px; }
+  #article figure.fig-left, #article figure.fig-right { float:none; max-width:100%; margin:16px 0; }
+  #article figure.fig-center { max-width:100%; }
+}
 </style>
 </head>
 <body>
@@ -728,7 +351,7 @@ generate_oo_file() {
 <script id="oo-manifest" type="application/json">
 {
   "title": "__TITLE__",
-  "freshness": "weekly",
+  "update_every_days": 7,
   "version": 0,
   "as_of": "",
   "changelog": []
@@ -738,106 +361,62 @@ generate_oo_file() {
 <!-- Binder JS -->
 <script>
 (function(){
-  var d = document, data = JSON.parse(d.getElementById('oo-manifest').textContent);
-  d.getElementById('doc-title').textContent = data.title || 'Living Article';
-  d.getElementById('doc-asof').textContent = data.as_of || '\u2014';
-  d.getElementById('doc-version').textContent = data.version || '0';
-
-  // PID binding
-  var art = d.getElementById('article');
-  if (art) {
-    try {
-      var w = document.createTreeWalker(art, NodeFilter.SHOW_COMMENT), nodes = [];
-      while (w.nextNode()) nodes.push(w.currentNode);
-      nodes.forEach(function(n) {
-        var m = (n.nodeValue||'').trim().match(/^pid:(\S+)$/);
-        if (m) {
-          var t = n.nextElementSibling;
-          if (t) t.setAttribute('data-pid', m[1]);
-          n.parentNode.removeChild(n);
-        }
+  var d=document, data=JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent=data.title||'Living Article';
+  d.getElementById('doc-asof').textContent=data.as_of||'\u2014';
+  d.getElementById('doc-version').textContent=data.version||'0';
+  var art=d.getElementById('article');
+  if(art){
+    try{
+      var w=document.createTreeWalker(art,NodeFilter.SHOW_COMMENT), nodes=[];
+      while(w.nextNode())nodes.push(w.currentNode);
+      nodes.forEach(function(n){
+        var m=(n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if(m){ var t=n.nextElementSibling; if(t)t.setAttribute('data-pid',m[1]); n.parentNode.removeChild(n); }
       });
-    } catch(e){}
+    }catch(e){}
   }
-
-  // TOC with h2/h3 hierarchy
-  var toc = d.getElementById('toc');
-  var hh = d.querySelectorAll('#article h2, #article h3');
-  toc.innerHTML = '<strong>Contents</strong><br>' +
-    Array.prototype.map.call(hh, function(h){
-      var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
-      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
-    }).join('');
-
-  // Auto-link citations: [s1] -> <a href="#s1" class="cite">[s1]</a>
-  var refSection = d.getElementById('references');
-  if (refSection) {
-    var ol = refSection.nextElementSibling;
-    while (ol && ol.tagName !== 'OL') ol = ol.nextElementSibling;
-    if (ol) {
-      var items = ol.querySelectorAll('li');
-      items.forEach(function(li, i) { li.id = 's' + (i + 1); });
-    }
-    var paras = art.querySelectorAll('p');
-    paras.forEach(function(p) {
-      p.innerHTML = p.innerHTML.replace(/\[s(\d+)\]/g, function(match, num) {
-        return '<a href="#s'+num+'" class="cite">[s'+num+']</a>';
-      });
-    });
+  var toc=d.getElementById('toc'), hh=d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML='<strong>Contents</strong><br>'+Array.prototype.map.call(hh,function(h){
+    var cls=h.tagName==='H3'?' class="toc-h3"':'';
+    return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+  }).join('');
+  var refSection=d.getElementById('references');
+  if(refSection){
+    var ol=refSection.nextElementSibling;
+    while(ol&&ol.tagName!=='OL')ol=ol.nextElementSibling;
+    if(ol){ var items=ol.querySelectorAll('li'); items.forEach(function(li,i){li.id='s'+(i+1);}); }
+    var paras=art.querySelectorAll('p');
+    paras.forEach(function(p){ p.innerHTML=p.innerHTML.replace(/\[s(\d+)\]/g,function(match,num){ return '<a href="#s'+num+'" class="cite">[s'+num+']</a>'; }); });
   }
-
-  // Scroll highlighting
-  var links = Array.prototype.slice.call(toc.querySelectorAll('a'));
-  var map = {};
-  links.forEach(function(a){ map[a.getAttribute('href')] = a; });
-  var obs = new IntersectionObserver(function(entries){
+  var links=Array.prototype.slice.call(toc.querySelectorAll('a')), map={};
+  links.forEach(function(a){map[a.getAttribute('href')]=a;});
+  var obs=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
-      if (e.isIntersecting) {
-        links.forEach(function(l){ l.classList.remove('active'); });
-        var a = map['#'+e.target.id];
-        if (a) a.classList.add('active');
-      }
+      if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map['#'+e.target.id]; if(a)a.classList.add('active'); }
     });
-  }, { rootMargin: '0px 0px -70% 0px' });
-  d.querySelectorAll('#article h2').forEach(function(h){ obs.observe(h); });
-  if (location.hash && map[location.hash]) map[location.hash].classList.add('active');
-  else if (links[0]) links[0].classList.add('active');
-
-  // Contract panel: toggle on version badge click
-  var badge = d.querySelector('.version-badge');
-  var panel = d.getElementById('contract-panel');
-  if (badge && panel) {
-    badge.addEventListener('click', function() {
-      if (panel.classList.contains('open')) {
-        panel.classList.remove('open');
-        return;
-      }
-      var el = d.getElementById('oo-contract');
-      if (!el) { panel.innerHTML = '<em>No contract found.</em>'; panel.classList.add('open'); return; }
-      try {
-        var c = JSON.parse(el.textContent);
-        var id = c.identity || {};
-        var r = c.research || {};
-        var b = c.budget || {};
-        var html = '<dl>';
-        if (id.subject) html += '<dt>Subject</dt><dd>' + id.subject + '</dd>';
-        if (id.scope) html += '<dt>Scope</dt><dd>' + id.scope + '</dd>';
-        if (id.audience) html += '<dt>Audience</dt><dd>' + id.audience + '</dd>';
-        if (id.tone) html += '<dt>Tone</dt><dd>' + id.tone + '</dd>';
-        if (r.intents && r.intents.length) {
-          html += '<dt>Research Intents</dt><dd>';
-          r.intents.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
-          html += '</dd>';
-        }
-        if (r.required_sections && r.required_sections.length) {
-          html += '<dt>Required Sections</dt><dd>';
-          r.required_sections.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
-          html += '</dd>';
-        }
-        if (b.max_cost_usd) html += '<dt>Budget</dt><dd>$' + b.max_cost_usd.toFixed(2) + '</dd>';
-        html += '</dl>';
-        panel.innerHTML = html;
-      } catch(e) { panel.innerHTML = '<em>Error parsing contract.</em>'; }
+  },{rootMargin:'0px 0px -70% 0px'});
+  d.querySelectorAll('#article h2').forEach(function(h){obs.observe(h);});
+  if(location.hash&&map[location.hash])map[location.hash].classList.add('active');
+  else if(links[0])links[0].classList.add('active');
+  var badge=d.querySelector('.version-badge'), panel=d.getElementById('contract-panel');
+  if(badge&&panel){
+    badge.addEventListener('click',function(){
+      if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
+      var el=d.getElementById('oo-contract');
+      if(!el){ panel.innerHTML='<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try{
+        var c=JSON.parse(el.textContent), id=c.identity||{}, r=c.research||{}, b=c.budget||{}, html='<dl>';
+        if(id.subject)html+='<dt>Subject</dt><dd>'+id.subject+'</dd>';
+        if(id.scope)html+='<dt>Scope</dt><dd>'+id.scope+'</dd>';
+        if(id.audience)html+='<dt>Audience</dt><dd>'+id.audience+'</dd>';
+        if(id.tone)html+='<dt>Tone</dt><dd>'+id.tone+'</dd>';
+        if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
+        html+='</dl>';
+        panel.innerHTML=html;
+      }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
       panel.classList.add('open');
     });
   }
@@ -856,11 +435,12 @@ generate_oo_file() {
       "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
       "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
-      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
-      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
-      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+      "6. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "7. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "8. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "9. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "10. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "11. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
   "identity": {
@@ -871,7 +451,7 @@ generate_oo_file() {
   },
   "research": {
     "intents": [
-      "__TITLE__ overview 2026",
+      "__TITLE__ overview __YEAR__",
       "__TITLE__ recent developments",
       "__TITLE__ key facts history"
     ],
@@ -974,16 +554,12 @@ BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head
 BUDGET="${BUDGET:-0.50}"
 
 # --- Freshness gate: skip update if document is still fresh ---
-FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
 AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
 
-if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
-  case "$FRESHNESS" in
-    daily)   FRESH_SECS=86400 ;;
-    weekly)  FRESH_SECS=604800 ;;
-    monthly) FRESH_SECS=2592000 ;;
-    *)       FRESH_SECS=604800 ;;
-  esac
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
 
   NOW_EPOCH=$(date +%s)
   AS_OF_EPOCH=""
@@ -996,7 +572,7 @@ if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
   if [[ -n "$AS_OF_EPOCH" ]]; then
     AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
     if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
-      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
       echo "o-o: Use --force to update anyway."
       exit 0
     fi
@@ -1076,18 +652,18 @@ TEMPLATE_EOF
 
   # Replace placeholders
   local tmp="/tmp/oo_template_$$"
-  sed -e "s|__TITLE__|${title}|g" -e "s|__SCOPE__|${scope}|g" -e "s|__SLUG__|${slug}|g" "$filepath" > "$tmp" && mv "$tmp" "$filepath"
+  sed -e "s|__TITLE__|${title}|g" -e "s|__SCOPE__|${scope}|g" -e "s|__SLUG__|${slug}|g" -e "s|__YEAR__|$(date +%Y)|g" "$filepath" > "$tmp" && mv "$tmp" "$filepath"
 
   chmod +x "$filepath"
 }
 
-# Slugify a string for use as a filename
+# ─── UTILITIES ─────────────────────────────────────────────────
 slugify() {
   local str="$1"
   echo "$str" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g' | cut -c1-60
 }
 
-# Rebuild the index
+# ─── INDEX REBUILD ─────────────────────────────────────────────
 rebuild_index() {
   echo "o-o Index: Scanning for .o-o.html files..."
 
@@ -1103,6 +679,7 @@ rebuild_index() {
     local title=$(grep -o '"title"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
     local version=$(grep -o '"version"[[:space:]]*:[[:space:]]*[0-9]*' "$file" | head -1 | grep -o '[0-9]*$')
     local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+    local update_days=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$file" | head -1 | grep -o '[0-9]*$' || echo "7")
 
     # Get file info
     local rel_path=$(basename "$file")
@@ -1122,13 +699,13 @@ rebuild_index() {
 </tr>
 "
 
-    # Collect card data (sort_date|title|rel_path|display_date|excerpt)
+    # Collect card data (sort_date|title|rel_path|display_date|excerpt|update_days)
     local excerpt=""
     excerpt=$(awk '/<article/,/<\/article/' "$file" | grep -o '<p>[^<]*<' | head -1 | sed 's/<p>//;s/<$//' | cut -c1-120)
     [[ -n "$excerpt" ]] && excerpt="${excerpt}..."
     local sort_date="$as_of"
     [[ "$sort_date" == "—" || -z "$sort_date" ]] && sort_date="0000-00-00"
-    card_data="${card_data}${sort_date}|${title}|${rel_path}|${as_of}|${excerpt}
+    card_data="${card_data}${sort_date}|${title}|${rel_path}|${as_of}|${excerpt}|${update_days}
 "
 
     count=$((count + 1))
@@ -1139,7 +716,7 @@ rebuild_index() {
   if [[ -n "$card_data" ]]; then
     local sorted_cards
     sorted_cards=$(echo "$card_data" | grep -v '^$' | sort -t'|' -k1 -r | head -8)
-    while IFS='|' read -r c_sort c_title c_path c_date c_excerpt; do
+    while IFS='|' read -r c_sort c_title c_path c_date c_excerpt c_update_days; do
       [[ -z "$c_title" ]] && continue
       local c_badge=""
       if [[ -n "$c_date" && "$c_date" != "—" ]]; then
@@ -1150,7 +727,7 @@ rebuild_index() {
         elif date -d "$c_date" "+%b %-d, %Y" &>/dev/null 2>&1; then
           nice_date=$(date -d "$c_date" "+%b %-d, %Y")
         fi
-        # Check freshness (>7 days = stale)
+        # Check freshness based on update_every_days
         local badge_class="fresh"
         local now_epoch=$(date +%s)
         local date_epoch=""
@@ -1161,7 +738,8 @@ rebuild_index() {
         fi
         if [[ -n "$date_epoch" ]]; then
           local age=$(( now_epoch - date_epoch ))
-          [[ "$age" -gt 604800 ]] && badge_class="stale"
+          local stale_threshold=$(( ${c_update_days:-7} * 86400 ))
+          [[ "$age" -gt "$stale_threshold" ]] && badge_class="stale"
         fi
         c_badge="<span class=\"card-badge ${badge_class}\">${nice_date}</span>"
       else
@@ -1219,7 +797,7 @@ ${table_rows}    </tbody>
   echo "o-o Index: Found $count document(s). Index updated."
 }
 
-# Create a new document
+# ─── DOCUMENT CREATION ─────────────────────────────────────────
 create_new() {
   local input="$1"
   local title desc
@@ -1258,7 +836,7 @@ create_new() {
   echo "o-o Index: Document created and populated. Open in browser to read."
 }
 
-# Update all stale documents
+# ─── BATCH UPDATE ──────────────────────────────────────────────
 update_all() {
   local force="${1:-0}"
   echo "o-o Index: Checking for stale documents..."
@@ -1270,7 +848,8 @@ update_all() {
     [[ "$file" == "$SELF" ]] && continue
 
     local as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
-    local freshness=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$file" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+    local update_days=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$file" | head -1 | grep -o '[0-9]*$' || true)
+    update_days="${update_days:-7}"
 
     local should_update=0
 
@@ -1279,12 +858,7 @@ update_all() {
     elif [[ -z "$as_of" || "$as_of" == "null" ]]; then
       should_update=1
     else
-      local fresh_secs=604800
-      case "${freshness:-weekly}" in
-        daily)   fresh_secs=86400 ;;
-        weekly)  fresh_secs=604800 ;;
-        monthly) fresh_secs=2592000 ;;
-      esac
+      local fresh_secs=$((update_days * 86400))
 
       local as_of_epoch
       if date -j -f "%Y-%m-%d" "$as_of" "+%s" &>/dev/null; then
@@ -1325,10 +899,10 @@ update_all() {
   fi
 }
 
-# Show help
+# ─── HELP & DISPATCH ───────────────────────────────────────────
 show_help() {
   cat << 'HELP_EOF'
-o-o Document Library — index and management tool
+o-o — index and management tool
 
 Usage:
   bash index.o-o.html                              Rebuild the index

@@ -18,7 +18,7 @@ Every `.o-o.html` is a polyglot — valid HTML *and* valid bash. The browser ren
 bash example/anthropic-leadership.o-o.html
 
 # Create a new living document
-bash example/index.o-o.html --new "Quantum Computing / Overview of recent breakthroughs and practical applications"
+bash example/index.o-o.html --new "SpaceX Starship / Development progress and mission timeline"
 
 # Update all stale documents
 bash example/index.o-o.html --update-all
@@ -32,7 +32,7 @@ bash example/index.o-o.html --update-all
 │  via : << 'OO_HTML' heredoc)            │
 ├─────────────────────────────────────────┤
 │  HTML + CSS + Article content           │  ← browser renders this
-│  Manifest, Binder JS, Contract          │
+│  Manifest, Contract, Binder JS          │
 ├── window.stop() ────────────────────────┤
 │  Machine-readable zone                  │  ← agent reads this
 │  (source cache, changelog)              │
@@ -49,23 +49,28 @@ When you run `bash file.o-o.html`:
 3. It launches `claude -p` with a minimal prompt: *read the file yourself*
 4. The agent reads the embedded contract, searches the web, and edits the article in-place
 
-The agent never receives the whole file as prompt context — it reads the file itself and only modifies the `<article>`, manifest, source cache, and changelog.
+The agent never receives the whole file as prompt context — it reads the file itself and surgically modifies the `<article>`, manifest, source cache, and changelog.
 
 ## The Update Contract
 
-Each document embeds a JSON contract that tells the agent everything:
+Each document embeds a JSON contract that controls the agent:
 
-- **Identity** — subject, scope, audience, tone
-- **Research** — search intents, required sections, source policy (preferred/denied domains)
-- **Budget** — max cost per update ($0.50–$3.00 typical)
-- **Images** — whether to embed base64 images, size limits, layout guidance
-- **Freshness** — daily/weekly/monthly — the file self-checks before spending money
+```json
+{
+  "identity": { "subject": "...", "scope": "...", "audience": "...", "tone": "..." },
+  "research": { "intents": ["..."], "required_sections": ["..."], "source_policy": {...} },
+  "budget":   { "max_cost_usd": 0.50 },
+  "images":   { "allow": true, "max_per_article": 8, "resize_max_px": 800 }
+}
+```
 
-Click the **version badge** in the header to inspect the contract in-browser.
+The manifest tracks update frequency — `"update_every_days": 7` means the file self-checks and won't spend money if it was updated less than 7 days ago. Use `--force` to override.
+
+Click the **version badge** in any document's header to inspect its contract in-browser.
 
 ## Index / Library Manager
 
-`index.o-o.html` serves as both a browsable document library and a management tool:
+`index.o-o.html` serves as both a browsable card-grid library and a management CLI:
 
 ```bash
 bash index.o-o.html                                    # Rebuild index
@@ -75,17 +80,6 @@ bash index.o-o.html --update-all                       # Update stale documents
 bash index.o-o.html --update-all --force               # Force update all
 ```
 
-## Images
-
-Documents can include base64-embedded images. The agent downloads, resizes, and encodes images inline as data URIs.
-
-| Class | Use case | Width |
-|---|---|---|
-| `fig-right` | Portraits, headshots | 28%, floated right |
-| `fig-left` | Logos, icons | 28%, floated left |
-| `fig-full` | Diagrams, charts, group photos | 100% |
-| `fig-center` | Standalone feature photos | 70%, centered |
-
 ## Options
 
 ```
@@ -93,7 +87,7 @@ bash document.o-o.html [OPTIONS]
 
   --agent NAME    Agent backend (default: claude)
   --model NAME    Override model (e.g. opus, sonnet, haiku)
-  --force         Update even if document is still fresh
+  --force         Update even if not due yet
   --help, -h      Show help
 ```
 
@@ -103,6 +97,10 @@ bash document.o-o.html [OPTIONS]
 - **[Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)** (`claude` command)
 
 No Python, Node, jq, or GNU coreutils. Portable across macOS and Linux.
+
+## Cost
+
+Each update costs **$0.50–$3.00** depending on scope and model. The budget is embedded in the contract — set it once, forget it.
 
 ## License
 

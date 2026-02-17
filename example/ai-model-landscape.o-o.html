@@ -268,9 +268,9 @@
 <!-- pid:overview:a1b2c3d4 -->
 <h2 id="overview">Overview</h2>
 <!-- pid:overview:e5f6a7b8 -->
-<p>The large language model landscape in early 2026 is defined by three converging forces: the commoditization of GPT-4-class intelligence, the rise of agentic capabilities as the primary differentiator, and the rapid closure of the gap between open-weight and proprietary models. GPT-4-level performance now costs roughly 1/100th of what it did two years ago [s1], and frontier models have pushed well beyond that bar — with Gemini 3 Pro, Claude Opus 4.6, and GPT-5.2 competing for the top slot across reasoning, coding, and real-world task benchmarks [s2][s3].</p>
+<p>The large language model landscape in mid-February 2026 is defined by three converging forces: the commoditization of GPT-4-class intelligence, the rise of agentic autonomy as the primary differentiator, and the rapid closure of the gap between open-weight and proprietary models. GPT-4-level performance now costs roughly 1/100th of what it did two years ago [s1], and frontier models have pushed well beyond that bar — with Gemini 3 Pro, Claude Opus 4.6, GPT-5.2, and GLM-5 competing for the top slots across reasoning, coding, and real-world task benchmarks [s2][s3][s23].</p>
 <!-- pid:overview:c9d0e1f2 -->
-<p>Mixture-of-Experts (MoE) architecture has become the default for frontier-scale models, enabling massive total parameter counts while keeping inference costs manageable by activating only a fraction of parameters per token [s4]. Context windows have exploded: Llama 4 Scout offers 10 million tokens, and multiple models now support 1 million tokens as standard [s5]. Meanwhile, every major release in 2026 emphasizes agentic workflows — AI that can decompose goals, execute multi-step plans across tools, and recover from errors autonomously [s6].</p>
+<p>Mixture-of-Experts (MoE) architecture has become the default for frontier-scale models, enabling massive total parameter counts while keeping inference costs manageable by activating only a fraction of parameters per token [s4]. Context windows have exploded: Llama 4 Scout offers 10 million tokens, and multiple models now support 1 million tokens as standard [s5]. The week of February 3–5 alone saw the release of Claude Sonnet 5, Claude Opus 4.6, and GPT-5.3 Codex, while Chinese labs followed with GLM-5 (Feb 11) and Qwen 3.5 (Feb 16). Every major release emphasizes agentic workflows — AI that can decompose goals, execute multi-step plans across tools, and recover from errors autonomously [s6].</p>
 
 <!-- pid:frontier:a2b3c4d5 -->
 <h2 id="frontier-models">Frontier Models</h2>
@@ -280,24 +280,24 @@
 <!-- pid:frontier:c0d1e2f3 -->
 <h3 id="anthropic-claude">Anthropic — Claude</h3>
 <!-- pid:frontier:a4b5c6d7 -->
-<p>Claude Opus 4.6, released February 7, 2026, takes first place on the Artificial Analysis Intelligence Index — a composite of 10 evaluations including MMLU-Pro, GPQA Diamond, AIME, SciCode, and TerminalBench [s3]. Key specs: 1M token context window (beta, up from 200K), 128K max output tokens (doubled from Opus 4.5), and pricing at $5/$25 per million input/output tokens — unchanged from its predecessor [s3]. Its standout feature is Adaptive Thinking Mode, which replaces fixed extended thinking with dynamic effort settings (low, medium, high, max), letting the model autonomously allocate reasoning depth per query. Opus 4.6 leads on GDPval-AA (agentic tasks), TerminalBench (coding), and CritPT (research-level physics) [s3].</p>
+<p>Claude Opus 4.6, released February 5, 2026, takes first place on the Artificial Analysis Intelligence Index v4 — a composite of 10 evaluations including GDPval-AA, Terminal-Bench Hard, SciCode, Humanity's Last Exam, GPQA Diamond, and CritPT [s3]. Key specs: 1M token context window (beta), 128K max output tokens (doubled from Opus 4.5), with tiered pricing — $5/$25 per million input/output tokens for standard prompts (≤200K context) and $10/$37.50 for extended prompts (>200K) [s3][s17]. Its standout feature is Adaptive Thinking Mode, which replaces fixed extended thinking with dynamic effort allocation. Opus 4.6 leads on GDPval-AA at 1,606 Elo (144 points ahead of GPT-5.2), Terminal-Bench 2.0 coding at 65.4%, Humanity's Last Exam, and BrowseComp [s3]. On ARC-AGI-2, reasoning nearly doubled from 37.6% to 68.8%, and MRCR v2 long-context retrieval jumped from 18.5% to 76% [s17].</p>
 <!-- pid:frontier:e8f9a0b1 -->
-<p>Claude Sonnet 4.5 remains the workhorse for production use at $3/$15 per million tokens, with strong coding performance — the Claude Opus 4.5 (thinking) variant tops the Chatbot Arena coding leaderboard with an Elo of 1510 [s7].</p>
+<p>Claude Sonnet 5, codenamed "Fennec," launched on February 3, 2026 and immediately set a new SWE-Bench Verified record of 82.1% — surpassing both Opus 4.5 (80.9%) and GPT-5.1 (76.3%) [s18]. At $3/$15 per million input/output tokens with a 1M token context window, Sonnet 5 delivers frontier coding performance at roughly 80% less cost than Opus 4.5. Claude Sonnet 4.5 continues to serve production workloads, while the Claude Opus 4.5 (thinking) variant leads the Chatbot Arena coding leaderboard at 1510 Elo [s7].</p>
 
 <!-- pid:frontier:c2d3e4f5 -->
 <h3 id="openai-gpt">OpenAI — GPT</h3>
 <!-- pid:frontier:a6b7c8d9 -->
-<p>OpenAI's GPT-5.2 sits at the frontier, with its highest-effort "xhigh" configuration ranking among the top two models on composite intelligence benchmarks [s2]. The flagship GPT-5 costs approximately $10/$30 per million input/output tokens. The premium GPT-5.2 Pro tier commands $21/$168, reflecting the 8x output-to-input price multiplier [s8]. OpenAI continues to release specialized variants: GPT-5.2 Codex (January 14, 2026) and GPT-5.3 Codex (February 5, 2026) are optimized for agentic coding workflows [s9]. GPT-5 models support 400K token context windows, positioning them below Gemini and Claude's 1M offerings but above most competitors [s5].</p>
+<p>OpenAI's GPT-5.2 sits at the frontier, with GPT-5.2-high ranked #5 on the Chatbot Arena at 1465 Elo [s7]. The flagship GPT-5 costs approximately $10/$30 per million input/output tokens, while the premium GPT-5.2 Pro tier commands $21/$168 [s8]. GPT-5.3 Codex, released February 5, 2026, is the standout performer for coding: it scores 77.3% on Terminal-Bench 2.0, 56.8% on SWE-Bench Pro, and 64.7% on OSWorld — setting a new industry high on agentic coding benchmarks and running 25% faster than its predecessor [s19]. OpenAI describes it as the first model "instrumental in creating itself," having been used to debug its own training and diagnose evaluation results [s19]. GPT-5 models support 400K token context windows [s5].</p>
 
 <!-- pid:frontier:e0f1a2b3 -->
 <h3 id="google-gemini">Google DeepMind — Gemini</h3>
 <!-- pid:frontier:c4d5e6f7 -->
-<p>Gemini 3 Pro holds the #1 position on the Chatbot Arena with an Elo of 1492 [s7], and scores the highest on MMLU-Pro at 89.8% [s10]. Gemini 2.5 Pro remains widely deployed, offering a 1M token context window with native multimodal processing across text, images, audio, and video at $1.25/$10 per million tokens — making it one of the best value propositions at the frontier [s8]. Gemini 2.5 Flash-Lite leads the speed category at 499 tokens/second [s2], while Gemini 3 Pro supports up to 10M tokens of context at $12 per million input tokens [s5].</p>
+<p>Gemini 3 Pro holds the #1 position on the Chatbot Arena at 1492 Elo, with its sibling Gemini 3 Flash close behind at #3 with 1470 Elo [s7]. Gemini 3 Pro remains in preview status as of mid-February 2026, with GA expected imminently [s20]. It delivers significant improvements in reasoning, complex instruction following, tool use, and long-context capabilities over Gemini 2.5 Pro [s20]. Gemini 2.5 Pro remains widely deployed, offering a 1M token context window with native multimodal processing at $1.25/$10 per million tokens [s8]. Gemini 2.5 Flash-Lite leads the speed category at 499 tokens/second [s2], while Gemini 3 Pro supports up to 10M tokens of context at $12 per million input tokens [s5].</p>
 
 <!-- pid:frontier:a8b9c0d1 -->
 <h3 id="xai-grok">xAI — Grok</h3>
 <!-- pid:frontier:e2f3a4b5 -->
-<p>Grok-4.1-Thinking has surged to #2 on the Chatbot Arena at 1482 Elo [s7], demonstrating a massive leap in complex reasoning. The Grok 4.1 family includes Fast Reasoning and Thinking variants, with competitive pricing and strong performance on text reasoning and coding tasks. Grok 4.1 Fast offers a 2M token context window [s2].</p>
+<p>Grok-4.1-Thinking has surged to #2 on the Chatbot Arena at 1482 Elo, with the base Grok-4.1 at #7 (1463 Elo) [s7]. The Grok 4.1 family demonstrates a massive leap in complex reasoning, with competitive pricing and strong performance on text reasoning and coding tasks. Grok 4.1 Fast offers a 2M token context window [s2]. xAI founder Elon Musk announced on February 15 that Grok 4.20 will launch the following week, describing it as a "significant improvement" with enhanced multimodal capabilities and reduced hallucinations [s21].</p>
 
 <!-- pid:open-weight:c6d7e8f9 -->
 <h2 id="open-weight-models">Open-Weight Models</h2>
@@ -317,7 +317,7 @@
 <!-- pid:open-weight:c0d1e2f3 -->
 <h3 id="alibaba-qwen">Alibaba — Qwen 3</h3>
 <!-- pid:open-weight:a4b5c6d7 -->
-<p>Qwen 3's flagship MoE model has 235B total parameters with 22B active per token, pre-trained on 36 trillion tokens covering 119 languages [s15]. The model supports dual modes: Thinking Mode (step-by-step reasoning) and Non-Thinking Mode (instant responses). In February 2026, the Qwen3-Coder-Next model (80B total, 3B active) achieved SWE-Bench Pro performance on par with Claude Sonnet 4.5, a remarkable result for a model of its size [s12]. A smaller Qwen3-30B-A3B variant is also available for edge deployment.</p>
+<p>Qwen 3.5, released February 16, 2026, is Alibaba's latest flagship: a 397B total parameter MoE model activating 17B per token, with native multimodal capabilities fusing text, image, and video from pretraining [s22]. It employs a hybrid linear attention and sparse MoE architecture, delivering 8.6–19x faster decoding throughput than Qwen3-Max while scoring 87.8% on MMLU-Pro [s22]. Alibaba claims it outperforms GPT-5.2, Claude Opus 4.5, and Gemini 3 Pro across 80% of evaluated categories at 60% lower cost. The earlier Qwen 3 (235B/22B active, 119 languages) remains widely deployed, and the Qwen3-Coder-Next model (80B total, 3B active) achieved SWE-Bench Pro performance on par with Claude Sonnet 4.5 [s12][s15].</p>
 
 <!-- pid:open-weight:e8f9a0b1 -->
 <h3 id="mistral">Mistral — Mistral 3</h3>
@@ -327,7 +327,7 @@
 <!-- pid:open-weight:a6b7c8d9 -->
 <h3 id="other-open-weight">Other Notable Open-Weight Models</h3>
 <!-- pid:open-weight:e0f1a2b3 -->
-<p>GLM-4.7 has reached 1445 Elo on the Chatbot Arena, outperforming older GPT-4 variants [s7]. GLM-5 ranks among the top four intelligence leaders alongside Claude Opus 4.6, GPT-5.2, and Claude Opus 4.5 [s2]. Moonshot AI's Kimi K2.5 (released January 27, 2026) is an open-source model with GPQA of 0.9, continuing the trend of strong Chinese open-source competitors [s9]. MiniMax M2.5, released February 12, 2026, is a lightweight open-source model from the Chinese developer [s9].</p>
+<p>GLM-5, released February 11, 2026 by Zhipu AI, features 744B total parameters with 44B active per token — more than doubling its predecessor GLM-4.5 [s23]. Released under the MIT license, it was trained entirely on domestically produced Huawei Ascend chips, marking China's push toward self-reliant AI infrastructure. GLM-5 surpassed rival offerings to claim the top spot among open-source models on Artificial Analysis and ranks among the top four intelligence leaders alongside Claude Opus 4.6, GPT-5.2, and Claude Opus 4.5 [s2][s23]. At approximately $0.80/$2.56 per million input/output tokens, it is roughly six times cheaper than proprietary competitors [s23]. Moonshot AI's Kimi K2.5 (January 27, 2026) is an open-source model with GPQA of 0.9 [s9]. MiniMax M2.5, released February 12, 2026, is a lightweight open-source model from the Chinese developer [s9].</p>
 
 <!-- pid:benchmarks:c4d5e6f7 -->
 <h2 id="benchmarks-rankings">Benchmarks &amp; Rankings</h2>
@@ -337,25 +337,32 @@
 <!-- pid:benchmarks:e2f3a4b5 -->
 <h3 id="chatbot-arena">Chatbot Arena (Human Preference)</h3>
 <!-- pid:benchmarks:c6d7e8f9 -->
-<p>Chatbot Arena, now at arena.ai, uses over 6 million crowdsourced human pairwise comparisons to compute Elo ratings [s7]. As of February 2026, the top overall rankings are:</p>
+<p>Chatbot Arena, now at arena.ai, uses over 5.3 million crowdsourced human pairwise comparisons across 306 models to compute Elo ratings [s7]. As of February 2026, the top overall rankings are:</p>
 <!-- pid:benchmarks:a0b1c2d3 -->
 <p><strong>1.</strong> Gemini-3-Pro — 1492 Elo<br/>
 <strong>2.</strong> Grok-4.1-Thinking — 1482 Elo<br/>
-<strong>3.</strong> GPT-5.1-high — 1464 Elo<br/>
-<strong>4.</strong> GLM-4.7 — 1445 Elo</p>
+<strong>3.</strong> Gemini-3-Flash — 1470 Elo<br/>
+<strong>4.</strong> Claude Opus 4.5 (thinking-32k) — 1466 Elo<br/>
+<strong>5.</strong> GPT-5.2-high — 1465 Elo<br/>
+<strong>6.</strong> GPT-5.1-high — 1464 Elo<br/>
+<strong>7.</strong> Grok-4.1 — 1463 Elo<br/>
+<strong>8.</strong> Claude Opus 4.5 — 1462 Elo<br/>
+<strong>9.</strong> ERNIE-5.0 — 1461 Elo<br/>
+<strong>10.</strong> Gemini-2.5-Pro — 1460 Elo</p>
 <!-- pid:benchmarks:e4f5a6b7 -->
 <p>For the coding-specific leaderboard, Claude Opus 4.5 (thinking) leads at 1510 Elo [s7].</p>
 
 <!-- pid:benchmarks:c8d9e0f1 -->
 <h3 id="academic-benchmarks">Academic &amp; Composite Benchmarks</h3>
 <!-- pid:benchmarks:a2b3c4d5 -->
-<p>The Artificial Analysis Intelligence Index v3 (AAII v3) incorporates 10 evaluations: MMLU-Pro, Humanity's Last Exam (HLE), AA-LCR (long-context retrieval), GPQA Diamond, AIME, IFBench, SciCode, LiveCodeBench, TerminalBench Hard, and τ²-Bench Telecom [s10]. Top MMLU-Pro scores as of February 2026:</p>
+<p>The Artificial Analysis Intelligence Index v4 (AAII v4) incorporates 10 evaluations across four equally-weighted categories (Agents, Coding, General, Scientific Reasoning): GDPval-AA, τ²-Bench Telecom, Terminal-Bench Hard, SciCode, AA-LCR, AA-Omniscience, IFBench, Humanity's Last Exam, GPQA Diamond, and CritPT [s10]. Top composite scores as of February 2026:</p>
 <!-- pid:benchmarks:e6f7a8b9 -->
-<p><strong>1.</strong> Gemini 3 Pro Preview (high) — 89.8%<br/>
-<strong>2.</strong> Gemini 3 Pro Preview (low) — 89.5%<br/>
-<strong>3.</strong> Claude Opus 4.5 (Reasoning) — 89.5%</p>
+<p><strong>1.</strong> Claude Opus 4.6 (Adaptive) — 53<br/>
+<strong>2.</strong> GPT-5.2 (xhigh) — 51<br/>
+<strong>3.</strong> Claude Opus 4.5 (Reasoning) — 50<br/>
+<strong>4.</strong> GLM-5 — frontier-tier (exact score pending)</p>
 <!-- pid:benchmarks:c0d1e2f3 -->
-<p>Claude Opus 4.6 (Adaptive) takes the overall #1 on the full AAII v3 composite, leading on GDPval-AA (agentic tasks), TerminalBench (coding/terminal), and CritPT (research-level physics). However, it shows small regressions on AA-LCR long-context retrieval (-3pp) and IFBench instruction following (-5pp) compared to Opus 4.5 [s3].</p>
+<p>Claude Opus 4.6 leads on GDPval-AA (agentic tasks at 1,606 Elo), Terminal-Bench 2.0 (65.4%), Humanity's Last Exam, and BrowseComp. GPT-5.3 Codex surpasses it on Terminal-Bench at 77.3% — the highest agentic coding score recorded [s3][s19]. MMLU-Pro leaders remain Gemini 3 Pro Preview at 89.8%, followed by Qwen 3.5 at 87.8% and Claude Opus 4.5 (Reasoning) at 89.5% [s10][s22].</p>
 
 <!-- pid:pricing:a4b5c6d7 -->
 <h2 id="pricing-comparison">Pricing Comparison</h2>
@@ -367,14 +374,15 @@
 <!-- pid:pricing:a6b7c8d9 -->
 <p><strong>GPT-5.2 Pro</strong> — $21 input / $168 output (8x multiplier)<br/>
 <strong>GPT-5</strong> — ~$10 input / ~$30 output<br/>
-<strong>Claude Opus 4.6</strong> — $5 input / $25 output<br/>
-<strong>Claude Opus 4.5</strong> — $5 input / $25 output<br/>
-<strong>Gemini 3 Pro</strong> — $12 input (10M context tier)</p>
+<strong>Gemini 3 Pro</strong> — $12 input (10M context tier)<br/>
+<strong>Claude Opus 4.6</strong> — $5 input / $25 output (≤200K); $10/$37.50 (>200K)<br/>
+<strong>Claude Opus 4.5</strong> — $5 input / $25 output</p>
 
 <!-- pid:pricing:e0f1a2b3 -->
 <h3 id="pricing-mid-tier">Mid Tier</h3>
 <!-- pid:pricing:c4d5e6f7 -->
-<p><strong>Claude Sonnet 4.5</strong> — $3 input / $15 output<br/>
+<p><strong>Claude Sonnet 5</strong> — $3 input / $15 output<br/>
+<strong>Claude Sonnet 4.5</strong> — $3 input / $15 output<br/>
 <strong>Gemini 2.5 Pro</strong> — $1.25 input / $10 output<br/>
 <strong>GPT-4o</strong> — ~$2.50 input / ~$10 output</p>
 
@@ -401,7 +409,7 @@
 <!-- pid:context:e6f7a8b9 -->
 <p><strong>10M tokens:</strong> Llama 4 Scout, Gemini 3 Pro<br/>
 <strong>2M tokens:</strong> Grok 4.1 Fast<br/>
-<strong>1M tokens:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Claude Opus 4.6 (beta), Llama 4 Maverick, Claude Sonnet 4<br/>
+<strong>1M tokens:</strong> Gemini 2.5 Pro, Gemini 2.5 Flash, Claude Opus 4.6 (beta), Claude Sonnet 5, Llama 4 Maverick, Claude Sonnet 4<br/>
 <strong>400K tokens:</strong> GPT-5 family<br/>
 <strong>256K tokens:</strong> Mistral Large 3<br/>
 <strong>200K tokens:</strong> Claude Opus 4.5<br/>
@@ -420,17 +428,20 @@
 <!-- pid:recent:a6b7c8d9 -->
 <h2 id="recent-releases">Recent Releases</h2>
 <!-- pid:recent:e0f1a2b3 -->
-<p>The pace of releases in early 2026 has been relentless, with major model drops occurring weekly. Key releases in January–February 2026:</p>
+<p>The pace of releases in early 2026 has been relentless, with major model drops occurring multiple times per week. Key releases in January–February 2026:</p>
 <!-- pid:recent:c4d5e6f7 -->
-<p><strong>February 12</strong> — MiniMax M2.5: lightweight open-source model from Chinese AI developer [s9].<br/>
-<strong>February 7</strong> — Claude Opus 4.6: Anthropic's new flagship with adaptive thinking, 1M context (beta), #1 on AAII v3 composite [s3].<br/>
-<strong>February 5</strong> — GPT-5.3 Codex: OpenAI's latest coding-optimized variant [s9].<br/>
+<p><strong>February 16</strong> — Qwen 3.5: Alibaba's 397B MoE native multimodal model, 87.8% MMLU-Pro, 8–19x faster than predecessors [s22].<br/>
+<strong>February 12</strong> — MiniMax M2.5: lightweight open-source model from Chinese AI developer [s9].<br/>
+<strong>February 11</strong> — GLM-5: Zhipu AI's 744B open-source model under MIT license, trained on Huawei Ascend chips [s23].<br/>
+<strong>February 5</strong> — Claude Opus 4.6: Anthropic's new flagship with adaptive thinking, 1M context (beta), #1 on AAII v4 composite [s3].<br/>
+<strong>February 5</strong> — GPT-5.3 Codex: OpenAI's agentic coding model, Terminal-Bench 77.3%, 25% faster, first model to help create itself [s19].<br/>
 <strong>February 5</strong> — LongCat-Flash-Lite: fast open-source model from Meituan (GPQA: 0.7) [s9].<br/>
+<strong>February 3</strong> — Claude Sonnet 5 ("Fennec"): 82.1% SWE-Bench record at $3/$15 per million tokens [s18].<br/>
 <strong>January 27</strong> — Kimi K2.5: open-source model from Moonshot AI with GPQA of 0.9 [s9].<br/>
 <strong>January 14</strong> — GPT-5.2 Codex: OpenAI's coding variant [s9].<br/>
 <strong>January 14</strong> — LongCat-Flash-Thinking-2601: fast reasoning model from Meituan (GPQA: 0.8) [s9].</p>
 <!-- pid:recent:a8b9c0d1 -->
-<p>Industry-wide, two dominant themes emerge: first, the proliferation of coding-specialized variants (GPT-5.x Codex, Qwen3-Coder-Next, Claude Code), reflecting the enormous commercial demand for AI-assisted software engineering; second, the continued strength of Chinese AI labs (DeepSeek, Qwen, Moonshot, Meituan, MiniMax), which are releasing competitive open-source models at a rapid clip [s6][s12].</p>
+<p>Industry-wide, three dominant themes define early 2026: first, the proliferation of coding-specialized variants (GPT-5.3 Codex, Qwen3-Coder-Next, Claude Code, Claude Sonnet 5), reflecting enormous commercial demand for AI-assisted software engineering; second, the continued surge of Chinese AI labs (DeepSeek, Qwen, Moonshot, Zhipu, Meituan, MiniMax), releasing competitive open-source models at a rapid clip under permissive licenses; and third, the convergence toward agentic autonomy, with models evaluated not on isolated benchmarks but on their ability to plan, decompose, and execute multi-step real-world tasks [s6][s12][s19].</p>
 
 <!-- pid:references:c6d7e8f9 -->
 <h2 id="references">References</h2>
@@ -451,6 +462,13 @@
 <li><a href="https://artificialanalysis.ai/models/comparisons/deepseek-v3-2-vs-llama-4-maverick">DeepSeek V3.2 vs Llama 4 Maverick: Model Comparison</a> — Artificial Analysis, 2026</li>
 <li><a href="https://qwenlm.github.io/blog/qwen3/">Qwen3: Think Deeper, Act Faster</a> — Qwen Team, 2025</li>
 <li><a href="https://venturebeat.com/ai/mistral-launches-mistral-3-a-family-of-open-models-designed-to-run-on">Mistral launches Mistral 3</a> — VentureBeat, 2025</li>
+<li><a href="https://claude5.com/news/claude-opus-4-6-review-benchmarks-features-2026">Claude Opus 4.6 Deep Dive: Benchmarks, Agent Teams, and the Writing Controversy</a> — Claude 5 Hub, Feb 2026</li>
+<li><a href="https://bytebot.io/articles/claude-sonnet-5-release">Claude Sonnet 5 + Opus 4.6 Released: Benchmarks, Pricing, Agent Teams</a> — ByteBot, Feb 2026</li>
+<li><a href="https://openai.com/index/introducing-gpt-5-3-codex/">Introducing GPT-5.3-Codex</a> — OpenAI, Feb 2026</li>
+<li><a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/3-pro">Gemini 3 Pro — Generative AI on Vertex AI</a> — Google Cloud, Feb 2026</li>
+<li><a href="https://www.nextbigfuture.com/2026/02/xai-grok-4-20-releasing-next-week.html">XAI Grok 4.20 Releasing Next Week</a> — NextBigFuture, Feb 2026</li>
+<li><a href="https://techstartups.com/2026/02/16/alibaba-launches-qwen-3-5-says-new-agentic-ai-model-outperforms-gpt-5-2-claude-and-gemini/">Alibaba Launches Qwen 3.5 AI Model</a> — TechStartups, Feb 2026</li>
+<li><a href="https://venturebeat.com/technology/z-ais-open-source-glm-5-achieves-record-low-hallucination-rate-and-leverages">GLM-5 achieves record low hallucination rate</a> — VentureBeat, Feb 2026</li>
 </ol>
 </article>
 <footer id="run-meta"></footer>
@@ -460,10 +478,10 @@
 <script id="oo-manifest" type="application/json">
 {
   "title": "The LLM Landscape: Models, Benchmarks & Pricing",
-  "freshness": "weekly",
-  "version": 1,
-  "as_of": "2026-02-16",
-  "changelog": ["v1: Initial comprehensive research — frontier models, open-weight models, benchmarks, pricing, context windows, and recent releases as of Feb 2026"]
+  "update_every_days": 7,
+  "version": 2,
+  "as_of": "2026-02-17",
+  "changelog": ["v1: Initial comprehensive research — frontier models, open-weight models, benchmarks, pricing, context windows, and recent releases as of Feb 2026", "v2: Added Claude Sonnet 5 (Feb 3), corrected Opus 4.6 date to Feb 5, added GLM-5 (Feb 11), Qwen 3.5 (Feb 16), GPT-5.3 Codex benchmarks, expanded Chatbot Arena to top 10, updated AAII to v4, added tiered Opus 4.6 pricing, Grok 4.20 preview"]
 }
 </script>
 
@@ -588,11 +606,12 @@
       "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
       "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
-      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
-      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
-      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+      "6. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "7. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "8. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "9. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "10. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "11. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
   "identity": {
@@ -626,7 +645,7 @@
     }
   },
   "budget": {
-    "max_cost_usd": 2.00
+    "max_cost_usd": 5.00
   },
   "images": {
     "allow": true,
@@ -659,40 +678,56 @@
 <!-- SOURCE CACHE: previous research (empty on first run) -->
 <script id="oo-source-cache" type="application/json">
 {
-  "last_updated": "2026-02-16",
+  "last_updated": "2026-02-17",
   "sources": [
     {"id": "s1", "url": "https://azumo.com/artificial-intelligence/ai-insights/top-10-llms-0625", "title": "10 Best LLMs of February 2026", "tier": "industry", "accessed": "2026-02-16"},
-    {"id": "s2", "url": "https://artificialanalysis.ai/leaderboards/models", "title": "LLM Leaderboard — 100+ AI models", "tier": "primary", "accessed": "2026-02-16"},
-    {"id": "s3", "url": "https://artificialanalysis.ai/articles/opus-4.6-everything-you-need-to-know", "title": "Opus 4.6 — Everything you need to know", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s2", "url": "https://artificialanalysis.ai/leaderboards/models", "title": "LLM Leaderboard — 100+ AI models", "tier": "primary", "accessed": "2026-02-17"},
+    {"id": "s3", "url": "https://artificialanalysis.ai/articles/opus-4.6-everything-you-need-to-know", "title": "Opus 4.6 — Everything you need to know", "tier": "primary", "accessed": "2026-02-17"},
     {"id": "s4", "url": "https://largo.dev/articles/frontier-llm-architectures-2026/", "title": "2026 Frontier LLM Architectures Compared", "tier": "technical", "accessed": "2026-02-16"},
     {"id": "s5", "url": "https://www.elvex.com/blog/context-length-comparison-ai-models-2026", "title": "Context Length Comparison: AI Models 2026", "tier": "industry", "accessed": "2026-02-16"},
     {"id": "s6", "url": "https://llm-stats.com/ai-trends", "title": "AI Trends 2026 — LLM Statistics", "tier": "aggregator", "accessed": "2026-02-16"},
-    {"id": "s7", "url": "https://aidevdayindia.org/blogs/lmsys-chatbot-arena-current-rankings/lmsys-chatbot-arena-leaderboard-current-top-models.html", "title": "Chatbot Arena Top Models Feb 2026", "tier": "primary", "accessed": "2026-02-16"},
+    {"id": "s7", "url": "https://aidevdayindia.org/blogs/lmsys-chatbot-arena-current-rankings/lmsys-chatbot-arena-leaderboard-current-top-models.html", "title": "Chatbot Arena Top Models Feb 2026", "tier": "primary", "accessed": "2026-02-17"},
     {"id": "s8", "url": "https://www.cloudidr.com/blog/llm-pricing-comparison-2026", "title": "Complete LLM Pricing Comparison 2026", "tier": "aggregator", "accessed": "2026-02-16"},
-    {"id": "s9", "url": "https://llm-stats.com/llm-updates", "title": "AI Updates Today Feb 2026", "tier": "aggregator", "accessed": "2026-02-16"},
-    {"id": "s10", "url": "https://llm-stats.com/benchmarks", "title": "LLM Benchmarks 2026 — Complete Evaluation Suite", "tier": "aggregator", "accessed": "2026-02-16"},
+    {"id": "s9", "url": "https://llm-stats.com/llm-updates", "title": "AI Updates Today Feb 2026", "tier": "aggregator", "accessed": "2026-02-17"},
+    {"id": "s10", "url": "https://llm-stats.com/benchmarks", "title": "LLM Benchmarks 2026 — Complete Evaluation Suite", "tier": "aggregator", "accessed": "2026-02-17"},
     {"id": "s11", "url": "https://o-mega.ai/articles/top-10-open-source-llms-the-deepseek-revolution-2026", "title": "Top 10 Open Source LLMs 2026", "tier": "industry", "accessed": "2026-02-16"},
     {"id": "s12", "url": "https://contabo.com/blog/open-source-llms/", "title": "Best Open Source LLMs 2026 Guide", "tier": "industry", "accessed": "2026-02-16"},
     {"id": "s13", "url": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/", "title": "The Llama 4 herd — Meta AI", "tier": "official", "accessed": "2026-02-16"},
     {"id": "s14", "url": "https://artificialanalysis.ai/models/comparisons/deepseek-v3-2-vs-llama-4-maverick", "title": "DeepSeek V3.2 vs Llama 4 Maverick", "tier": "primary", "accessed": "2026-02-16"},
     {"id": "s15", "url": "https://qwenlm.github.io/blog/qwen3/", "title": "Qwen3: Think Deeper, Act Faster", "tier": "official", "accessed": "2026-02-16"},
-    {"id": "s16", "url": "https://venturebeat.com/ai/mistral-launches-mistral-3-a-family-of-open-models-designed-to-run-on", "title": "Mistral launches Mistral 3", "tier": "news", "accessed": "2026-02-16"}
+    {"id": "s16", "url": "https://venturebeat.com/ai/mistral-launches-mistral-3-a-family-of-open-models-designed-to-run-on", "title": "Mistral launches Mistral 3", "tier": "news", "accessed": "2026-02-16"},
+    {"id": "s17", "url": "https://claude5.com/news/claude-opus-4-6-review-benchmarks-features-2026", "title": "Claude Opus 4.6 Deep Dive: Benchmarks", "tier": "industry", "accessed": "2026-02-17"},
+    {"id": "s18", "url": "https://bytebot.io/articles/claude-sonnet-5-release", "title": "Claude Sonnet 5 + Opus 4.6 Released", "tier": "industry", "accessed": "2026-02-17"},
+    {"id": "s19", "url": "https://openai.com/index/introducing-gpt-5-3-codex/", "title": "Introducing GPT-5.3-Codex — OpenAI", "tier": "official", "accessed": "2026-02-17"},
+    {"id": "s20", "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/3-pro", "title": "Gemini 3 Pro — Vertex AI", "tier": "official", "accessed": "2026-02-17"},
+    {"id": "s21", "url": "https://www.nextbigfuture.com/2026/02/xai-grok-4-20-releasing-next-week.html", "title": "XAI Grok 4.20 Releasing Next Week", "tier": "news", "accessed": "2026-02-17"},
+    {"id": "s22", "url": "https://techstartups.com/2026/02/16/alibaba-launches-qwen-3-5-says-new-agentic-ai-model-outperforms-gpt-5-2-claude-and-gemini/", "title": "Alibaba Launches Qwen 3.5", "tier": "news", "accessed": "2026-02-17"},
+    {"id": "s23", "url": "https://venturebeat.com/technology/z-ais-open-source-glm-5-achieves-record-low-hallucination-rate-and-leverages", "title": "GLM-5 achieves record low hallucination rate", "tier": "news", "accessed": "2026-02-17"}
   ],
   "facts": [
     "Gemini 3 Pro #1 on Chatbot Arena at 1492 Elo (Feb 2026)",
-    "Claude Opus 4.6 released Feb 7 2026, #1 on AAII v3 composite",
-    "Claude Opus 4.6 pricing: $5/$25 per 1M input/output tokens, 1M context (beta)",
+    "Grok-4.1-Thinking #2 on Arena at 1482 Elo",
+    "Gemini 3 Flash #3 on Arena at 1470 Elo",
+    "Claude Opus 4.5 (thinking-32k) #4 at 1466 Elo",
+    "GPT-5.2-high #5 at 1465 Elo",
+    "ERNIE-5.0 #9 at 1461 Elo (Baidu)",
+    "Claude Opus 4.6 released Feb 5 2026, #1 on AAII v4 composite (score 53)",
+    "Claude Opus 4.6 pricing: $5/$25 (≤200K), $10/$37.50 (>200K), 1M context (beta), 128K max output",
+    "Claude Opus 4.6 ARC-AGI-2: 68.8% (up from 37.6%), MRCR v2: 76%, GDPval-AA: 1606 Elo, Terminal-Bench: 65.4%",
+    "Claude Sonnet 5 (Fennec) released Feb 3 2026, SWE-bench 82.1%, $3/$15, 1M context",
+    "GPT-5.3 Codex released Feb 5 2026, Terminal-Bench 77.3%, SWE-bench Pro 56.8%, OSWorld 64.7%",
     "GPT-5.2 Pro pricing: $21/$168 per 1M input/output tokens",
     "Gemini 2.5 Pro pricing: $1.25/$10 per 1M input/output tokens",
     "DeepSeek V3.2: 685B total / 37B active, $0.14-0.25/$0.28-0.38 per 1M tokens",
     "Llama 4 Scout: 10M context window, 109B total / 17B active",
     "Llama 4 Maverick: 400B total / 17B active, 1M context",
-    "Qwen3 flagship: 235B total / 22B active, 36T training tokens, 119 languages",
+    "GLM-5 released Feb 11 2026: 744B total / 44B active, MIT license, Huawei Ascend, ~$0.80/$2.56 per 1M tokens",
+    "Qwen 3.5 released Feb 16 2026: 397B total / 17B active, native multimodal, MMLU-Pro 87.8%, 8-19x faster",
     "Mistral Large 3: 675B total / 41B active, 256K context, Apache 2.0",
-    "MMLU-Pro leader: Gemini 3 Pro Preview at 89.8%",
-    "Grok-4.1-Thinking #2 on Arena at 1482 Elo",
     "Claude Opus 4.5 (thinking) leads coding Arena at 1510 Elo",
-    "Speed leaders: Gemini 2.5 Flash-Lite 499 t/s, Granite 3.3 8B 472 t/s"
+    "Speed leaders: Gemini 2.5 Flash-Lite 499 t/s, Granite 3.3 8B 472 t/s",
+    "Grok 4.20 announced by Musk on Feb 15 for next week release",
+    "AAII v4 top: Opus 4.6 (53), GPT-5.2 xhigh (51), Opus 4.5 (50), GLM-5"
   ]
 }
 </script>
@@ -705,6 +740,11 @@
       "version": 1,
       "timestamp": "2026-02-16T00:00:00Z",
       "summary": "Initial population: researched and wrote all 7 required sections covering frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3 Pro, Grok 4.1), open-weight models (Llama 4, DeepSeek V3.2, Qwen 3, Mistral 3), Chatbot Arena Elo rankings, MMLU-Pro scores, AAII v3 composite results, comprehensive pricing tiers, context window comparison, speed benchmarks, and Jan-Feb 2026 release timeline. 16 sources cited."
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-02-17T00:00:00Z",
+      "summary": "Major update: Added Claude Sonnet 5 (Fennec, Feb 3, 82.1% SWE-bench record). Corrected Opus 4.6 release date to Feb 5. Added detailed Opus 4.6 benchmarks (ARC-AGI-2 68.8%, MRCR v2 76%, GDPval-AA 1606 Elo) and tiered pricing. Added GPT-5.3 Codex details (Terminal-Bench 77.3%, first self-creating model). Added GLM-5 (Feb 11, 744B, MIT license, Huawei Ascend). Added Qwen 3.5 (Feb 16, 397B, native multimodal, MMLU-Pro 87.8%). Added Grok 4.20 preview announcement. Expanded Chatbot Arena to full top 10 (added Gemini 3 Flash #3, ERNIE-5.0 #9). Updated AAII to v4 with composite scores. Updated pricing tiers with Opus 4.6 extended context pricing and Sonnet 5. 7 new sources added (s17-s23), total 23 sources."
     }
   ]
 }
@@ -751,16 +791,12 @@ BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head
 BUDGET="${BUDGET:-0.50}"
 
 # --- Freshness gate: skip update if document is still fresh ---
-FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
 AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
 
-if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
-  case "$FRESHNESS" in
-    daily)   FRESH_SECS=86400 ;;
-    weekly)  FRESH_SECS=604800 ;;
-    monthly) FRESH_SECS=2592000 ;;
-    *)       FRESH_SECS=604800 ;;
-  esac
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
 
   NOW_EPOCH=$(date +%s)
   AS_OF_EPOCH=""
@@ -773,7 +809,7 @@ if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
   if [[ -n "$AS_OF_EPOCH" ]]; then
     AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
     if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
-      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
       echo "o-o: Use --force to update anyway."
       exit 0
     fi

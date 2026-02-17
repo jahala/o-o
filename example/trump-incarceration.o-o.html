@@ -1,0 +1,501 @@
+#!/usr/bin/env bash
+# o-o Living Document — self-updating via LLM agent
+# To update: bash trump-incarceration.o-o.html [--agent claude] [--model sonnet]
+# To read:   open trump-incarceration.o-o.html in any browser
+: << 'OO_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Trump Incarceration</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+:root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
+h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
+.wrap { max-width:900px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+#doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
+.meta { color:var(--muted); font-size:14px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:8px 10px; display:inline-block; margin-top:6px; }
+.meta .version-badge { display:inline-block; margin-left:6px; padding:2px 6px; border-radius:999px; border:1px solid var(--border); color:var(--heading); background:#fff; font-weight:600; cursor:pointer; }
+.meta .version-badge:hover { background:var(--accent-weak); border-color:var(--accent); }
+.contract-panel { display:none; margin-top:12px; padding:16px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--text); line-height:1.5; }
+.contract-panel.open { display:block; }
+.contract-panel dt { font-weight:600; color:var(--heading); margin-top:10px; }
+.contract-panel dt:first-child { margin-top:0; }
+.contract-panel dd { margin:2px 0 0 0; color:var(--muted); }
+.contract-panel .tag { display:inline-block; padding:1px 6px; margin:2px 3px 2px 0; background:#fff; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+.note { margin-top:12px; color:var(--muted); font-size:14px; }
+nav.toc { position:fixed; left:calc((100vw - 900px) / 4 - 100px); top:16px; width:220px; max-height:calc(100vh - 32px); overflow:auto; z-index:10; background:#ffffff; border:1px solid var(--border); padding:10px 12px; border-radius:8px; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+nav.toc strong { font-weight:700; }
+nav.toc a { display:block; margin:6px 0; color:var(--text); text-decoration:none; padding-left:10px; position:relative; }
+nav.toc a.toc-h3 { padding-left:22px; font-size:12px; color:var(--muted); margin:3px 0; }
+nav.toc a:hover { text-decoration:underline; }
+nav.toc a.active { font-weight:700; text-decoration:none; }
+nav.toc a::before { content:''; position:absolute; left:-4px; top:0; color:var(--muted); }
+nav.toc a.active::before { content:'\2192'; }
+#article h2 { margin-top:28px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); color:var(--heading); letter-spacing:-0.01em; }
+#article h3 { margin-top:20px; margin-bottom:6px; color:var(--heading); }
+#article p { margin:10px 0 0; }
+#references, h2#references { scroll-margin-top:80px; }
+#article ol { margin:10px 0 0 22px; }
+#article ol li { margin:6px 0; }
+#article table { width:100%; border-collapse:collapse; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin:16px 0; color:var(--text); }
+#article th, #article td { padding:8px 6px; text-align:left; border-bottom:1px solid var(--border); }
+#article th { font-weight:600; color:var(--heading); border-bottom-width:2px; }
+#article tr:hover td { background:var(--accent-weak); }
+#article .table-wrap { overflow-x:auto; margin:16px 0; }
+#article a { color:var(--accent); text-decoration:none; }
+#article a:hover { text-decoration:underline; }
+#article a.cite { font-size:12px; vertical-align:super; line-height:0; }
+#article figure { margin:16px 0; padding:0; }
+#article figure img { display:block; max-width:100%; height:auto; border-radius:4px; }
+#article figcaption { margin-top:6px; font-size:13px; color:var(--muted); line-height:1.4; }
+#article figcaption .img-src { font-size:12px; }
+#article figcaption .img-src a { color:var(--muted); }
+#article figure.fig-full img { width:100%; }
+#article figure.fig-center { max-width:70%; margin:20px auto; }
+#article figure.fig-right { float:right; max-width:28%; margin:4px 0 12px 20px; }
+#article figure.fig-left { float:left; max-width:28%; margin:4px 20px 12px 0; }
+#article h2, #article h3 { clear:both; }
+.stub-notice { margin:40px 0; padding:24px; background:var(--accent-weak); border:1px solid var(--accent); border-radius:8px; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+.stub-notice code { background:#fff; padding:2px 8px; border-radius:4px; font-size:15px; }
+@media (max-width: 1200px) {
+  .wrap { padding:16px 14px 48px; }
+  nav.toc { position:sticky; top:0; left:auto; width:100%; max-height:none; margin:0 0 12px; padding:8px 10px; box-shadow:none; border:0; background:#ffffff; overflow-x:auto; overflow-y:hidden; white-space:nowrap; z-index:20; }
+  nav.toc a { display:inline-block; margin:0 12px 0 0; white-space:nowrap; padding-left:0; }
+  nav.toc a::before { position:static; margin-right:6px; left:auto; top:auto; }
+}
+@media (max-width: 640px) {
+  .wrap { padding:16px 14px 48px; }
+  #doc-title { font-size:24px; }
+  nav.toc { font-size:13px; padding:8px 10px; }
+  #article figure.fig-left, #article figure.fig-right { float:none; max-width:100%; margin:16px 0; }
+  #article figure.fig-center { max-width:100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">Trump Incarceration</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash trump-incarceration.o-o.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+
+<h2 id="status">Status</h2>
+<!-- pid:status:a1b2c3d4 -->
+<p><strong>Donald Trump has not been incarcerated.</strong> As of February 2026, no criminal case against Trump has resulted in jail time. Trump was convicted of 34 felony counts in New York in May 2024 but received an unconditional discharge — no prison, no fines, no probation [s1]. All other criminal cases have been dismissed or dropped. The only active legal proceeding is Trump's appeal of his New York conviction, which could take years to resolve [s2].</p>
+
+<h2 id="active-cases">Active Cases</h2>
+
+<h3 id="ny-hush-money">New York Hush Money Case — Conviction Under Appeal</h3>
+<!-- pid:active-cases:b2c3d4e5 -->
+<p>On May 30, 2024, a Manhattan jury found Trump guilty of 34 felony counts of falsifying business records related to a $130,000 payment to adult film star Stormy Daniels during the 2016 presidential campaign [s1]. On January 10, 2025, Judge Juan Merchan sentenced Trump to an unconditional discharge, calling it the "only lawful sentence" to avoid "encroaching upon the highest office in the land" [s3]. The conviction stands on Trump's record, but carries no penalties.</p>
+
+<!-- pid:active-cases:c3d4e5f6 -->
+<p>Trump is appealing the conviction through multiple avenues:</p>
+
+<!-- pid:active-cases:d4e5f6a7 -->
+<p><strong>State appeal:</strong> Trump's attorneys filed arguments in New York's Appellate Division (First Department) claiming the trial was "fatally marred" by faulty evidence — including testimony related to official presidential acts that they argue is barred by the Supreme Court's 2024 immunity decision — and that Judge Merchan should have recused himself [s2]. No ruling has been issued yet.</p>
+
+<!-- pid:active-cases:e5f6a7b8 -->
+<p><strong>Federal transfer bid:</strong> On February 4, 2026, U.S. District Judge Alvin Hellerstein heard nearly three hours of arguments on Trump's request to move the case from state to federal court, where he could seek dismissal on presidential immunity grounds. The 2nd U.S. Circuit Court of Appeals had directed Hellerstein to reconsider the matter after previously denying it [s4][s5]. Hellerstein appeared deeply skeptical, telling Trump lawyer Jeffrey Wall: "You sought two bites at the apple." He noted that Trump's team waited approximately 59 days after the Supreme Court's immunity ruling to seek federal removal — well past the customary 30-day window — having first pursued the issue in state court before Judge Merchan [s10]. Manhattan prosecutor Steven Wu argued the delay was a deliberate strategic choice. Hellerstein reserved his decision and has not yet ruled [s4].</p>
+
+<!-- pid:active-cases:e5f6a7b9 -->
+<p><strong>DOJ intervention:</strong> The U.S. Department of Justice — now led in part by Deputy Attorney General Todd Blanche, who served as Trump's defense attorney during the hush money trial — filed a proposed amicus brief supporting Trump's position in the state appeal. The brief cites the Supreme Court's 2024 presidential immunity decision, arguing that trial evidence related to official presidential acts should not have been admitted [s2][s11].</p>
+
+<h3 id="dismissed-cases">Dismissed Cases</h3>
+
+<div class="table-wrap">
+<table>
+<tr><th>Case</th><th>Court</th><th>Charges</th><th>Outcome</th></tr>
+<tr><td>Federal election interference</td><td>U.S. District Court, D.C.</td><td>Conspiracy to overturn 2020 election (4 counts)</td><td>Dismissed Nov. 25, 2024, per DOJ policy against prosecuting sitting presidents [s6]</td></tr>
+<tr><td>Federal classified documents</td><td>U.S. District Court, S.D. Fla.</td><td>Mishandling classified documents (40 counts)</td><td>Dismissed July 15, 2024, by Judge Cannon; appeal dropped after election [s7]</td></tr>
+<tr><td>Georgia election interference</td><td>Fulton County Superior Court</td><td>RICO and conspiracy (13 counts)</td><td>Dropped Nov. 26, 2025, by special prosecutor Pete Skandalakis [s8]</td></tr>
+</table>
+</div>
+
+<!-- pid:active-cases:f6a7b8c9 -->
+<p>Skandalakis concluded the Georgia case belonged in federal court, writing: "The criminal conduct alleged in the Atlanta Judicial Circuit's prosecution was conceived in Washington, D.C., not the State of Georgia." He also questioned the strength of the racketeering charge [s8]. Jack Smith testified before the House Judiciary Committee in January 2026 about his handling of the federal investigations [s9].</p>
+
+<h2 id="path-to-incarceration">Path to Incarceration</h2>
+<!-- pid:path-to-incarceration:a7b8c9d0 -->
+<p>There is currently no realistic near-term path to Trump's incarceration. The only remaining conviction (New York) already resulted in an unconditional discharge with no jail time. Even if the conviction is upheld on appeal, resentencing to incarceration is extremely unlikely given the sentence already imposed [s3].</p>
+
+<!-- pid:path-to-incarceration:b8c9d0e1 -->
+<p>For incarceration to become possible, one of these scenarios would need to occur:</p>
+
+<!-- pid:path-to-incarceration:c9d0e1f2 -->
+<p><strong>New criminal charges:</strong> A new indictment — federal or state — would have to be brought while Trump is no longer protected by DOJ policy against prosecuting a sitting president. Current DOJ leadership has shown no indication of pursuing this. No state prosecution is pending or anticipated.</p>
+
+<!-- pid:path-to-incarceration:d0e1f2a3 -->
+<p><strong>Post-presidency prosecution:</strong> The federal election interference case was dismissed "without prejudice," meaning charges could theoretically be refiled after Trump leaves office. However, political and institutional appetite for such a move is uncertain at best, and statutes of limitations may become a factor.</p>
+
+<!-- pid:path-to-incarceration:e1f2a3b4 -->
+<p><strong>Conclusion:</strong> As of February 2026, all criminal cases except the New York hush money appeal have been resolved without incarceration. Trump remains a convicted felon on paper but faces no imprisonment and no active criminal proceedings beyond the appeal of his existing conviction.</p>
+
+<h2 id="references">References</h2>
+<ol>
+<li><a href="https://www.nbcnews.com/politics/donald-trump/trump-sentencing-judge-merchan-hush-money-what-expect-rcna186202">Trump sentenced to penalty-free 'unconditional discharge' in hush money case</a> — NBC News, Jan. 2025</li>
+<li><a href="https://abcnews.go.com/US/trump-formally-appeals-new-york-hush-money-conviction/story?id=126933173">Trump formally appeals his New York hush money conviction</a> — ABC News, 2025</li>
+<li><a href="https://www.pbs.org/newshour/politics/judge-sentences-donald-trump-in-hush-money-case-but-declines-to-impose-any-punishment">Judge sentences Trump in hush money case but declines to impose any punishment</a> — PBS News, Jan. 2025</li>
+<li><a href="https://spectrumlocalnews.com/nys/central-ny/politics/2026/02/04/trump-attempts-new-bid-to-nix-his-hush-money-conviction">Judge appears skeptical of Trump's latest bid to nix his hush money conviction</a> — Spectrum News, Feb. 2026</li>
+<li><a href="https://www.wsjm.com/2026/02/04/judge-to-consider-moving-trumps-new-york-hush-money-conviction-to-federal-court">Judge to consider moving Trump's New York hush money conviction to federal court</a> — WSJM, Feb. 2026</li>
+<li><a href="https://en.wikipedia.org/wiki/Federal_prosecution_of_Donald_Trump_(election_obstruction_case)">Federal prosecution of Donald Trump (election obstruction case)</a> — Wikipedia</li>
+<li><a href="https://en.wikipedia.org/wiki/Indictments_against_Donald_Trump">Indictments against Donald Trump</a> — Wikipedia</li>
+<li><a href="https://www.npr.org/2025/11/26/nx-s1-5611431/georgia-trump-election-case-dismissed">The Georgia election interference case against Trump and others has been dropped</a> — NPR, Nov. 2025</li>
+<li><a href="https://www.npr.org/2026/01/22/nx-s1-5683973/jack-smith-house-trump-investigations">Jack Smith testifies in House over Trump investigations</a> — NPR, Jan. 2026</li>
+<li><a href="https://edition.cnn.com/2026/02/04/politics/judge-skeptical-trump-trying-to-move-hush-money-appeal-to-federal-court">Judge to Trump lawyers: 'You sought two bites at the apple'</a> — CNN, Feb. 2026</li>
+<li><a href="https://thehill.com/regulation/court-battles/5216270-doj-trump-hush-money-case/">Justice Department goes to bat for Trump in hush money case</a> — The Hill, 2025</li>
+</ol>
+
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="oo-manifest" type="application/json">
+{
+  "title": "Trump Incarceration",
+  "update_every_days": 7,
+  "version": 2,
+  "as_of": "2026-02-17",
+  "changelog": []
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d=document, data=JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent=data.title||'Living Article';
+  d.getElementById('doc-asof').textContent=data.as_of||'\u2014';
+  d.getElementById('doc-version').textContent=data.version||'0';
+  var art=d.getElementById('article');
+  if(art){
+    try{
+      var w=document.createTreeWalker(art,NodeFilter.SHOW_COMMENT), nodes=[];
+      while(w.nextNode())nodes.push(w.currentNode);
+      nodes.forEach(function(n){
+        var m=(n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if(m){ var t=n.nextElementSibling; if(t)t.setAttribute('data-pid',m[1]); n.parentNode.removeChild(n); }
+      });
+    }catch(e){}
+  }
+  var toc=d.getElementById('toc'), hh=d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML='<strong>Contents</strong><br>'+Array.prototype.map.call(hh,function(h){
+    var cls=h.tagName==='H3'?' class="toc-h3"':'';
+    return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+  }).join('');
+  var refSection=d.getElementById('references');
+  if(refSection){
+    var ol=refSection.nextElementSibling;
+    while(ol&&ol.tagName!=='OL')ol=ol.nextElementSibling;
+    if(ol){ var items=ol.querySelectorAll('li'); items.forEach(function(li,i){li.id='s'+(i+1);}); }
+    var paras=art.querySelectorAll('p');
+    paras.forEach(function(p){ p.innerHTML=p.innerHTML.replace(/\[s(\d+)\]/g,function(match,num){ return '<a href="#s'+num+'" class="cite">[s'+num+']</a>'; }); });
+  }
+  var links=Array.prototype.slice.call(toc.querySelectorAll('a')), map={};
+  links.forEach(function(a){map[a.getAttribute('href')]=a;});
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map['#'+e.target.id]; if(a)a.classList.add('active'); }
+    });
+  },{rootMargin:'0px 0px -70% 0px'});
+  d.querySelectorAll('#article h2').forEach(function(h){obs.observe(h);});
+  if(location.hash&&map[location.hash])map[location.hash].classList.add('active');
+  else if(links[0])links[0].classList.add('active');
+  var badge=d.querySelector('.version-badge'), panel=d.getElementById('contract-panel');
+  if(badge&&panel){
+    badge.addEventListener('click',function(){
+      if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
+      var el=d.getElementById('oo-contract');
+      if(!el){ panel.innerHTML='<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try{
+        var c=JSON.parse(el.textContent), id=c.identity||{}, r=c.research||{}, b=c.budget||{}, html='<dl>';
+        if(id.subject)html+='<dt>Subject</dt><dd>'+id.subject+'</dd>';
+        if(id.scope)html+='<dt>Scope</dt><dd>'+id.scope+'</dd>';
+        if(id.audience)html+='<dt>Audience</dt><dd>'+id.audience+'</dd>';
+        if(id.tone)html+='<dt>Tone</dt><dd>'+id.tone+'</dd>';
+        if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
+        html+='</dl>';
+        panel.innerHTML=html;
+      }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<!-- UPDATE CONTRACT: complete instructions for the research agent -->
+<script id="oo-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a o-o research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "sentinel": "This is a SENTINEL document. The core event (Trump being incarcerated / jailed) has NOT yet occurred as of the document creation. Your job is to track developments TOWARD this event. Do NOT write a generic background explainer or pad the article with filler. If the event has not occurred, the article should be concise: state clearly that it has not happened yet, summarize only the active legal proceedings and realistic paths to incarceration, and note what would need to change. When the event DOES occur, provide comprehensive breaking coverage.",
+    "procedure": [
+      "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
+      "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "5. SENTINEL CHECK: Search for whether Trump has actually been incarcerated. If NO — keep the article concise and factual. State upfront that incarceration has not occurred. List only active cases, upcoming court dates, and realistic legal paths. Do NOT write lengthy background sections. If YES — this is now a major event. Provide comprehensive coverage: when, where, circumstances, reactions, legal basis, what happens next.",
+      "6. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
+      "7. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "8. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "9. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "10. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "11. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "12. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+    ]
+  },
+  "identity": {
+    "subject": "Trump Incarceration",
+    "scope": "Track all criminal cases, sentencing, appeals, and any path to the actual incarceration of Donald Trump. This is a sentinel document — the core event has not yet occurred. Until it does, provide only a concise status of active legal proceedings. When incarceration occurs, provide comprehensive coverage.",
+    "audience": "General readers",
+    "tone": "Factual, concise, no editorializing"
+  },
+  "research": {
+    "intents": [
+      "Trump criminal cases status 2026",
+      "Trump sentencing jail prison 2026",
+      "Trump incarceration appeals legal proceedings"
+    ],
+    "required_sections": [
+      "Status",
+      "Active Cases",
+      "Path to Incarceration",
+      "References"
+    ],
+    "source_policy": {
+      "prefer_domains": [],
+      "deny_domains": ["reddit.com", "quora.com"]
+    }
+  },
+  "budget": {
+    "max_cost_usd": 5.00
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 8,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["official pages", "wikimedia commons", "press kits"],
+    "layout_guidance": "fig-right for portraits/headshots, fig-full for diagrams/charts/group photos, fig-center for standalone photos, fig-left for logos/icons",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="oo-source-cache" type="application/json">
+{
+  "last_updated": "2026-02-17",
+  "sources": [
+    {"id": "s1", "url": "https://www.nbcnews.com/politics/donald-trump/trump-sentencing-judge-merchan-hush-money-what-expect-rcna186202", "title": "Trump sentenced to unconditional discharge — NBC News", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s2", "url": "https://abcnews.go.com/US/trump-formally-appeals-new-york-hush-money-conviction/story?id=126933173", "title": "Trump formally appeals hush money conviction — ABC News", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s3", "url": "https://www.pbs.org/newshour/politics/judge-sentences-donald-trump-in-hush-money-case-but-declines-to-impose-any-punishment", "title": "Judge sentences Trump, declines punishment — PBS News", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s4", "url": "https://spectrumlocalnews.com/nys/central-ny/politics/2026/02/04/trump-attempts-new-bid-to-nix-his-hush-money-conviction", "title": "Judge skeptical of Trump bid to nix conviction — Spectrum News", "tier": "regional_outlet", "accessed": "2026-02-17"},
+    {"id": "s5", "url": "https://www.wsjm.com/2026/02/04/judge-to-consider-moving-trumps-new-york-hush-money-conviction-to-federal-court", "title": "Judge to consider moving conviction to federal court — WSJM", "tier": "regional_outlet", "accessed": "2026-02-17"},
+    {"id": "s6", "url": "https://en.wikipedia.org/wiki/Federal_prosecution_of_Donald_Trump_(election_obstruction_case)", "title": "Federal prosecution of Trump (election obstruction) — Wikipedia", "tier": "reference", "accessed": "2026-02-17"},
+    {"id": "s7", "url": "https://en.wikipedia.org/wiki/Indictments_against_Donald_Trump", "title": "Indictments against Donald Trump — Wikipedia", "tier": "reference", "accessed": "2026-02-17"},
+    {"id": "s8", "url": "https://www.npr.org/2025/11/26/nx-s1-5611431/georgia-trump-election-case-dismissed", "title": "Georgia election case dropped — NPR", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s9", "url": "https://www.npr.org/2026/01/22/nx-s1-5683973/jack-smith-house-trump-investigations", "title": "Jack Smith testifies before House — NPR", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s10", "url": "https://edition.cnn.com/2026/02/04/politics/judge-skeptical-trump-trying-to-move-hush-money-appeal-to-federal-court", "title": "Judge to Trump lawyers: 'You sought two bites at the apple' — CNN", "tier": "major_outlet", "accessed": "2026-02-17"},
+    {"id": "s11", "url": "https://thehill.com/regulation/court-battles/5216270-doj-trump-hush-money-case/", "title": "Justice Department goes to bat for Trump in hush money case — The Hill", "tier": "major_outlet", "accessed": "2026-02-17"}
+  ],
+  "facts": [
+    "Trump convicted May 30, 2024 on 34 felony counts (falsifying business records) in Manhattan",
+    "Sentenced to unconditional discharge Jan 10, 2025 by Judge Merchan — no jail, fines, or probation",
+    "Federal election interference case dismissed Nov 25, 2024 per DOJ policy on sitting presidents",
+    "Federal classified documents case dismissed July 15, 2024 by Judge Cannon; appeal dropped post-election",
+    "Georgia election case dropped Nov 26, 2025 by special prosecutor Pete Skandalakis",
+    "Trump appealing NY conviction in state court and seeking federal transfer on immunity grounds",
+    "Feb 4, 2026: Judge Hellerstein heard ~3hrs of arguments on federal transfer; appeared deeply skeptical, told Trump lawyers 'you sought two bites at the apple'; reserved decision",
+    "Trump's team waited ~59 days after SCOTUS immunity ruling to seek federal removal, past the customary 30-day window",
+    "DOJ filed amicus brief supporting Trump's position, citing presidential immunity; DAG Todd Blanche was Trump's former defense attorney",
+    "Jack Smith testified before House Judiciary Committee Jan 22, 2026",
+    "No ruling yet from NY Appellate Division First Department on merits of state appeal",
+    "Hellerstein has not yet issued ruling on federal transfer bid as of Feb 17, 2026",
+    "As of Feb 2026, Trump has not been incarcerated and faces no realistic near-term path to incarceration"
+  ]
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="oo-changelog" type="application/json">
+{
+  "entries": [
+    {
+      "version": 1,
+      "timestamp": "2026-02-17",
+      "summary": "Initial population. Sentinel status: Trump has NOT been incarcerated. Documented all four criminal cases (NY conviction with unconditional discharge, two federal cases dismissed, Georgia case dropped). Covered active NY appeal and federal transfer bid as of Feb 2026. 9 sources cited."
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-02-17",
+      "summary": "Expanded Feb 4 Hellerstein hearing coverage with detailed arguments (Wall, Wu), 'two bites at the apple' quote, 59-day delay issue. Added DOJ amicus brief section noting Todd Blanche conflict (former defense attorney now DAG). Added 2 new sources (CNN, The Hill). Sentinel status unchanged: Trump has NOT been incarcerated."
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
+OO_HTML
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+FORCE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Freshness gate: skip update if document is still fresh ---
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a o-o research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="oo-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the oo-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
+- Verify it is an image: file /tmp/oo_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
+  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/oo_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/oo_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
+    exit 1
+    ;;
+esac
+
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0

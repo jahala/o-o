@@ -1,0 +1,541 @@
+#!/usr/bin/env bash
+# o-o Living Document — self-updating via LLM agent
+# To update: bash agi-declared.o-o.html [--agent claude] [--model sonnet]
+# To read:   open agi-declared.o-o.html in any browser
+: << 'OO_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>AGI Declared</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<style>
+:root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
+html, body { height:100%; }
+body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
+h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
+.wrap { max-width:900px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+#doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
+.meta { color:var(--muted); font-size:14px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:8px 10px; display:inline-block; margin-top:6px; }
+.meta .version-badge { display:inline-block; margin-left:6px; padding:2px 6px; border-radius:999px; border:1px solid var(--border); color:var(--heading); background:#fff; font-weight:600; cursor:pointer; }
+.meta .version-badge:hover { background:var(--accent-weak); border-color:var(--accent); }
+.contract-panel { display:none; margin-top:12px; padding:16px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--text); line-height:1.5; }
+.contract-panel.open { display:block; }
+.contract-panel dt { font-weight:600; color:var(--heading); margin-top:10px; }
+.contract-panel dt:first-child { margin-top:0; }
+.contract-panel dd { margin:2px 0 0 0; color:var(--muted); }
+.contract-panel .tag { display:inline-block; padding:1px 6px; margin:2px 3px 2px 0; background:#fff; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+.note { margin-top:12px; color:var(--muted); font-size:14px; }
+nav.toc { position:fixed; left:calc((100vw - 900px) / 4 - 100px); top:16px; width:220px; max-height:calc(100vh - 32px); overflow:auto; z-index:10; background:#ffffff; border:1px solid var(--border); padding:10px 12px; border-radius:8px; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+nav.toc strong { font-weight:700; }
+nav.toc a { display:block; margin:6px 0; color:var(--text); text-decoration:none; padding-left:10px; position:relative; }
+nav.toc a.toc-h3 { padding-left:22px; font-size:12px; color:var(--muted); margin:3px 0; }
+nav.toc a:hover { text-decoration:underline; }
+nav.toc a.active { font-weight:700; text-decoration:none; }
+nav.toc a::before { content:''; position:absolute; left:-4px; top:0; color:var(--muted); }
+nav.toc a.active::before { content:'\2192'; }
+#article h2 { margin-top:28px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border); color:var(--heading); letter-spacing:-0.01em; }
+#article h3 { margin-top:20px; margin-bottom:6px; color:var(--heading); }
+#article p { margin:10px 0 0; }
+#references, h2#references { scroll-margin-top:80px; }
+#article ol { margin:10px 0 0 22px; }
+#article ol li { margin:6px 0; }
+#article table { width:100%; border-collapse:collapse; font-size:14px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin:16px 0; color:var(--text); }
+#article th, #article td { padding:8px 6px; text-align:left; border-bottom:1px solid var(--border); }
+#article th { font-weight:600; color:var(--heading); border-bottom-width:2px; }
+#article tr:hover td { background:var(--accent-weak); }
+#article .table-wrap { overflow-x:auto; margin:16px 0; }
+#article a { color:var(--accent); text-decoration:none; }
+#article a:hover { text-decoration:underline; }
+#article a.cite { font-size:12px; vertical-align:super; line-height:0; }
+#article figure { margin:16px 0; padding:0; }
+#article figure img { display:block; max-width:100%; height:auto; border-radius:4px; }
+#article figcaption { margin-top:6px; font-size:13px; color:var(--muted); line-height:1.4; }
+#article figcaption .img-src { font-size:12px; }
+#article figcaption .img-src a { color:var(--muted); }
+#article figure.fig-full img { width:100%; }
+#article figure.fig-center { max-width:70%; margin:20px auto; }
+#article figure.fig-right { float:right; max-width:28%; margin:4px 0 12px 20px; }
+#article figure.fig-left { float:left; max-width:28%; margin:4px 20px 12px 0; }
+#article h2, #article h3 { clear:both; }
+.stub-notice { margin:40px 0; padding:24px; background:var(--accent-weak); border:1px solid var(--accent); border-radius:8px; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+.stub-notice code { background:#fff; padding:2px 8px; border-radius:4px; font-size:15px; }
+@media (max-width: 1200px) {
+  .wrap { padding:16px 14px 48px; }
+  nav.toc { position:sticky; top:0; left:auto; width:100%; max-height:none; margin:0 0 12px; padding:8px 10px; box-shadow:none; border:0; background:#ffffff; overflow-x:auto; overflow-y:hidden; white-space:nowrap; z-index:20; }
+  nav.toc a { display:inline-block; margin:0 12px 0 0; white-space:nowrap; padding-left:0; }
+  nav.toc a::before { position:static; margin-right:6px; left:auto; top:auto; }
+}
+@media (max-width: 640px) {
+  .wrap { padding:16px 14px 48px; }
+  #doc-title { font-size:24px; }
+  nav.toc { font-size:13px; padding:8px 10px; }
+  #article figure.fig-left, #article figure.fig-right { float:none; max-width:100%; margin:16px 0; }
+  #article figure.fig-center { max-width:100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1 id="doc-title">AGI Declared</h1>
+<div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
+<p class="note">This is a self-updating living document. Run <code>bash agi-declared.o-o.html</code> to update.</p>
+<div class="contract-panel" id="contract-panel"></div>
+</header>
+<nav class="toc" id="toc"></nav>
+<article id="article">
+
+<!-- pid:status:a1b2c3d4 -->
+<h2 id="status">Status</h2>
+
+<!-- pid:status:e5f6a7b8 -->
+<p>As of February 2026, no major AI company or research laboratory has made a formal, official declaration that it has achieved Artificial General Intelligence. The term AGI remains contested, with no consensus definition among researchers, companies, or policymakers.</p>
+
+<!-- pid:status:c9d0e1f2 -->
+<p>However, the rhetoric has shifted dramatically. In late 2025, OpenAI CEO Sam Altman stated on the Big Technology Podcast that "AGI kinda went whooshing by" and that OpenAI had "built AGIs," while simultaneously arguing the term had become "very sloppy" and proposing the industry move on to defining superintelligence [s1]. This was not a formal corporate declaration but rather a rhetorical reframing — an attempt to move the goalposts toward a bigger target.</p>
+
+<!-- pid:status:a3b4c5d6 -->
+<p>In February 2026, a Nature commentary by Eddy Keming Chen, Mikhail Belkin, Leon Bergen, and David Danks argued that "the vision of human-level machine intelligence laid out by Alan Turing in the 1950s is now a reality," citing LLM performance at the International Mathematical Olympiad, theorem proving, scientific hypothesis generation, and PhD-level exam solving [s2]. This represents the strongest academic claim to date, though it remains a commentary by researchers — not a declaration by an AI company.</p>
+
+<!-- pid:status:f3a4b5c6 -->
+<p>In January 2026, Sequoia Capital partners Pat Grady and Sonya Huang published "2026: This is AGI," arguing that long-horizon agents — AI systems capable of autonomous work over extended periods — constitute functional AGI. They defined AGI pragmatically as "the ability to figure things out," citing METR tracking data showing agent performance on long-horizon tasks doubling roughly every seven months [s12]. This represents a notable shift: a major venture capital firm declaring AGI has arrived, albeit using a functional rather than cognitive definition.</p>
+
+<!-- pid:status:e7f8a9b0 -->
+<p>The gap between informal claims and formal declarations matters. Under the October 2025 Microsoft-OpenAI partnership restructuring, any AGI declaration by OpenAI must now be verified by an independent expert panel before it takes effect — a mechanism that underscores how consequential (and legally significant) a formal declaration would be [s3]. Meanwhile, in mid-February 2026, OpenAI quietly revised its mission statement, dropping the word "safely" and shifting from "ensure that artificial general intelligence benefits all of humanity" to language centered on "building" beneficial AI — a change critics view as reflecting the company's transition from safety-focused nonprofit to profit-driven corporation [s13].</p>
+
+<h2 id="leading-candidates">Leading Candidates</h2>
+
+<h3 id="openai">OpenAI</h3>
+
+<!-- pid:leading-candidates:b1c2d3e4 -->
+<p>OpenAI defines AGI as "a highly autonomous system that outperforms humans at most economically valuable work." The company operates a five-level internal framework: Level 1 (Chatbots), Level 2 (Reasoners), Level 3 (Agents), Level 4 (Innovators), Level 5 (Organizations). OpenAI has released GPT-5 (August 2025) and subsequent iterations through GPT-5.3-Codex, along with reasoning models o3 and o4-mini. GPT-5.3-Codex set new industry highs on SWE-Bench Pro and Terminal-Bench for coding and agentic tasks [s14]. The o3 reasoning model scored 87.7% on GPQA Diamond (expert-level science questions) but only 3% on ARC-AGI-2, the harder novel-reasoning benchmark [s4][s15].</p>
+
+<!-- pid:leading-candidates:f5a6b7c8 -->
+<p>OpenAI's published roadmap targets AI "research interns" by 2026 and fully automated AI researchers by March 2028 [s5]. Altman has said he believes AGI will "probably get developed during [Trump's] term" [s1]. In February 2026, OpenAI completed its restructuring into a for-profit public benefit corporation, with a valuation exceeding $500 billion and up to $60 billion in combined investment from Amazon, Nvidia, and Microsoft [s13]. Any formal AGI declaration still triggers the independent verification panel established in the October 2025 partnership agreement with Microsoft [s3].</p>
+
+<h3 id="anthropic">Anthropic</h3>
+
+<!-- pid:leading-candidates:d9e0f1a2 -->
+<p>Anthropic CEO Dario Amodei stated at the World Economic Forum in Davos in January 2026 that AI models would "replace the work of all software developers within one year" and reach "Nobel-level" scientific research within two years, with 50% of white-collar jobs disappearing within five years. He suggested that predictions of human-level AI by 2026–27 might not be "that far off" [s6][s16]. Anthropic has not published a formal AGI definition or framework comparable to OpenAI's five levels.</p>
+
+<!-- pid:leading-candidates:b3c4d5e6 -->
+<p>Anthropic's Claude Opus 4.5 (with thinking mode) scored 37.6% on ARC-AGI-2 as the top verified commercial model [s15]. The company's focus remains on agent capabilities — systems that take actions and operate independently. Amodei noted that inside Anthropic, AI is already changing hiring needs, with the company requiring fewer people at junior and intermediate levels [s16].</p>
+
+<h3 id="google-deepmind">Google DeepMind</h3>
+
+<!-- pid:leading-candidates:f7a8b9c0 -->
+<p>Google DeepMind CEO Demis Hassabis has progressively shortened his AGI timeline, from "as soon as 10 years" in autumn 2024 to "probably three to five years away" by January 2025. At the World Economic Forum 2026, Hassabis estimated about a 50 percent chance of AI systems matching all human cognitive capabilities by the end of the decade (2030) — the most conservative major-lab estimate. Notably, Hassabis said current AI systems are "nowhere near" human-level AGI and identified critical gaps: learning from few examples, continuous learning, long-term memory, and improved reasoning. He argued AGI requires "one or two more breakthroughs" [s6][s16].</p>
+
+<!-- pid:leading-candidates:d1e2f3a4 -->
+<p>DeepMind co-authored a notable 2023 paper proposing a levels-of-AGI framework that emphasizes both breadth (versatility across tasks) and depth (proficiency within them), measured across ten cognitive domains. Under this framework, current frontier models score well below the threshold for AGI [s8]. Google's most capable model topped the LMArena Leaderboard in early 2026 with a breakthrough score of 1501 Elo, achieving 37.5% on Humanity's Last Exam and 91.9% on GPQA Diamond [s17].</p>
+
+<h3 id="others">Other Players</h3>
+
+<!-- pid:leading-candidates:b5c6d7e8 -->
+<p>Elon Musk's xAI has claimed its Grok models will achieve superhuman intelligence by 2026 and that "by the end of 2026, programming may disappear, with AI directly generating optimized software without traditional coding steps." The company has not published a formal AGI definition or framework [s9].</p>
+
+<!-- pid:leading-candidates:a1d2e3f4 -->
+<p>Yann LeCun left Meta in December 2025 after 12 years — reportedly over tensions with the company's LLM-focused strategy under Meta Superintelligence Labs — and launched AMI Labs, raising €500 million at a €3 billion valuation. AMI Labs is pursuing "world models" built on LeCun's Joint Embedding Predictive Architecture (JEPA), which trains AI to understand physics and spatial dynamics rather than predicting text. LeCun argues the industry is dangerously "LLM-pilled" and that current language models will never achieve AGI without fundamental architectural changes [s18][s10].</p>
+
+<h2 id="what-would-constitute-agi">What Would Constitute AGI</h2>
+
+<!-- pid:what-would-constitute-agi:a9b0c1d2 -->
+<p>There is no agreed-upon definition of AGI. Major proposals differ significantly:</p>
+
+<!-- pid:what-would-constitute-agi:e3f4a5b6 -->
+<p><strong>OpenAI's definition</strong>: "A highly autonomous system that outperforms humans at most economically valuable work." This is an economic framing — it ties AGI to labor market displacement rather than cognitive benchmarks [s4].</p>
+
+<!-- pid:what-would-constitute-agi:c7d8e9f0 -->
+<p><strong>DeepMind's levels framework</strong>: Measures performance across ten cognitive domains (language, reasoning, spatial, mathematical, etc.) inspired by the Cattell-Horn-Carroll theory of intelligence. Requires both breadth and depth. Current estimates place GPT-4 at roughly 27% and GPT-5 at 58% of the AGI threshold [s8].</p>
+
+<!-- pid:what-would-constitute-agi:a1b2c3e4 -->
+<p><strong>ARC-AGI benchmark</strong>: Designed by François Chollet to test novel reasoning — tasks that are "easy for humans, hard for AI." ARC-AGI-2, released in 2025, proved dramatically harder: OpenAI's o3 scored only 3% (versus 60% for the average human), and the best frontier model result is GPT-5.2 at 54% on the Semi-Private Test Set. ARC-AGI-3 (early 2026) adds interactive environments requiring exploration, planning, persistent memory, and goal inference — the first major format change since ARC was introduced in 2019 [s11][s15].</p>
+
+<!-- pid:what-would-constitute-agi:f5a6b7d8 -->
+<p><strong>Turing-style functional tests</strong>: The February 2026 Nature commentary argues for inference to the best explanation — if a system produces outputs indistinguishable from a generally intelligent agent across diverse domains, it is generally intelligent. Critics counter that this conflates competence with performance and ignores underlying mechanisms [s2].</p>
+
+<!-- pid:what-would-constitute-agi:d7e8f9a0 -->
+<p><strong>Functional/economic definitions</strong>: Sequoia Capital's January 2026 essay defines AGI as "the ability to figure things out," arguing that long-horizon agents already meet this bar. METR tracking data shows agent task performance doubling every seven months, projecting agents capable of tasks requiring a full human workday by 2028 [s12]. This pragmatic framing sidesteps the cognitive debates but is contested — as MIT Technology Review noted, achieving a one-hour time horizon on METR evaluations does not mean replacing one hour of real-world human work [s19].</p>
+
+<!-- pid:what-would-constitute-agi:c9d0e1a2 -->
+<p>A credible AGI declaration would likely need to satisfy multiple criteria: consistent expert-level performance across diverse domains (not just language), ability to learn novel tasks without retraining, robust reasoning under uncertainty, and independent verification by researchers outside the declaring organization. No current system meets all of these criteria.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+<li><a href="https://www.windowscentral.com/artificial-intelligence/openai-ceo-sam-altman-claims-agi-might-have-already-whooshed-by">OpenAI CEO Sam Altman claims AGI might have already "whooshed by"</a> — Windows Central</li>
+<li><a href="https://www.nature.com/articles/d41586-026-00285-6">Does AI already have human-level intelligence? The evidence is clear</a> — Nature, February 2026</li>
+<li><a href="https://www.techradar.com/ai-platforms-assistants/chatgpt/microsoft-says-once-agi-is-declared-by-openai-it-will-be-verified-by-independent-experts-heres-why-thats-a-big-deal">Microsoft says once AGI is declared by OpenAI it will be verified by independent experts</a> — TechRadar</li>
+<li><a href="https://quinteft.com/understanding-openais-five-levels-of-ai-progress-towards-agi/">Understanding OpenAI's Five Levels of AI Progress Towards AGI</a> — QuinteFT</li>
+<li><a href="https://www.techradar.com/ai-platforms-assistants/chatgpt/openai-roadmap-revealed-ai-research-interns-by-2026-full-blown-agi-researchers-by-2028">OpenAI roadmap revealed: AI research interns by 2026, full-blown AGI researchers by 2028</a> — TechRadar</li>
+<li><a href="https://www.businessworld.in/article/wef-davos-2026-google-deepmind-anthropic-ceos-debate-agi-timelines-and-jobs-590016">WEF Davos 2026: Google DeepMind, Anthropic CEOs Debate AGI Timelines And Jobs</a> — BW Businessworld</li>
+<li><a href="https://techcrunch.com/2026/01/02/in-2026-ai-will-move-from-hype-to-pragmatism/">In 2026, AI will move from hype to pragmatism</a> — TechCrunch</li>
+<li><a href="https://arxiv.org/pdf/2311.02462">Levels of AGI for Operationalizing Progress on the Path to AGI</a> — DeepMind / arXiv</li>
+<li><a href="https://www.tradingkey.com/analysis/stocks/us-stocks/261488486-agi-2026-mark-turning-artificial-intelligence-musk-warns-white-collar-workers-tradingkey">AGI Approaches: 2026 May Be AI Turning Point, Musk Warns</a> — TradingKey</li>
+<li><a href="https://www.nextbigfuture.com/2026/01/agi-needs-world-models-and-state-of-world-models.html">AGI Needs World Models and State of World Models</a> — NextBigFuture</li>
+<li><a href="https://labs.adaline.ai/p/what-is-the-arc-agi-benchmark-and">ARC-AGI In 2026: Why Frontier Models Still Don't Generalize</a> — Adaline Labs</li>
+<li><a href="https://sequoiacap.com/article/2026-this-is-agi/">2026: This is AGI</a> — Sequoia Capital, January 2026</li>
+<li><a href="https://simonwillison.net/2026/Feb/13/openai-mission-statement/">The evolution of OpenAI's mission statement</a> — Simon Willison, February 2026</li>
+<li><a href="https://openai.com/index/introducing-gpt-5-3-codex/">Introducing GPT-5.3-Codex</a> — OpenAI, February 2026</li>
+<li><a href="https://arcprize.org/blog/arc-prize-2025-results-analysis">ARC Prize 2025 Results and Analysis</a> — ARC Prize</li>
+<li><a href="https://fortune.com/2026/01/23/deepmind-demis-hassabis-anthropic-dario-amodei-yann-lecun-ai-davos/">AI luminaries at Davos clash over how close human-level intelligence really is</a> — Fortune, January 2026</li>
+<li><a href="https://llm-stats.com/llm-updates">AI Updates Today (February 2026) — Latest AI Model Releases</a> — LLM Stats</li>
+<li><a href="https://www.technologyreview.com/2026/01/22/1131661/yann-lecuns-new-venture-ami-labs/">Yann LeCun's new venture is a contrarian bet against large language models</a> — MIT Technology Review, January 2026</li>
+<li><a href="https://www.technologyreview.com/2026/02/05/1132254/this-is-the-most-misunderstood-graph-in-ai/">This is the most misunderstood graph in AI</a> — MIT Technology Review, February 2026</li>
+</ol>
+
+</article>
+<footer id="run-meta"></footer>
+</div>
+
+<!-- Manifest -->
+<script id="oo-manifest" type="application/json">
+{
+  "title": "AGI Declared",
+  "update_every_days": 7,
+  "version": 2,
+  "as_of": "2026-02-17",
+  "changelog": []
+}
+</script>
+
+<!-- Binder JS -->
+<script>
+(function(){
+  var d=document, data=JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent=data.title||'Living Article';
+  d.getElementById('doc-asof').textContent=data.as_of||'\u2014';
+  d.getElementById('doc-version').textContent=data.version||'0';
+  var art=d.getElementById('article');
+  if(art){
+    try{
+      var w=document.createTreeWalker(art,NodeFilter.SHOW_COMMENT), nodes=[];
+      while(w.nextNode())nodes.push(w.currentNode);
+      nodes.forEach(function(n){
+        var m=(n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+        if(m){ var t=n.nextElementSibling; if(t)t.setAttribute('data-pid',m[1]); n.parentNode.removeChild(n); }
+      });
+    }catch(e){}
+  }
+  var toc=d.getElementById('toc'), hh=d.querySelectorAll('#article h2, #article h3');
+  toc.innerHTML='<strong>Contents</strong><br>'+Array.prototype.map.call(hh,function(h){
+    var cls=h.tagName==='H3'?' class="toc-h3"':'';
+    return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+  }).join('');
+  var refSection=d.getElementById('references');
+  if(refSection){
+    var ol=refSection.nextElementSibling;
+    while(ol&&ol.tagName!=='OL')ol=ol.nextElementSibling;
+    if(ol){ var items=ol.querySelectorAll('li'); items.forEach(function(li,i){li.id='s'+(i+1);}); }
+    var paras=art.querySelectorAll('p');
+    paras.forEach(function(p){ p.innerHTML=p.innerHTML.replace(/\[s(\d+)\]/g,function(match,num){ return '<a href="#s'+num+'" class="cite">[s'+num+']</a>'; }); });
+  }
+  var links=Array.prototype.slice.call(toc.querySelectorAll('a')), map={};
+  links.forEach(function(a){map[a.getAttribute('href')]=a;});
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map['#'+e.target.id]; if(a)a.classList.add('active'); }
+    });
+  },{rootMargin:'0px 0px -70% 0px'});
+  d.querySelectorAll('#article h2').forEach(function(h){obs.observe(h);});
+  if(location.hash&&map[location.hash])map[location.hash].classList.add('active');
+  else if(links[0])links[0].classList.add('active');
+  var badge=d.querySelector('.version-badge'), panel=d.getElementById('contract-panel');
+  if(badge&&panel){
+    badge.addEventListener('click',function(){
+      if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
+      var el=d.getElementById('oo-contract');
+      if(!el){ panel.innerHTML='<em>No contract found.</em>'; panel.classList.add('open'); return; }
+      try{
+        var c=JSON.parse(el.textContent), id=c.identity||{}, r=c.research||{}, b=c.budget||{}, html='<dl>';
+        if(id.subject)html+='<dt>Subject</dt><dd>'+id.subject+'</dd>';
+        if(id.scope)html+='<dt>Scope</dt><dd>'+id.scope+'</dd>';
+        if(id.audience)html+='<dt>Audience</dt><dd>'+id.audience+'</dd>';
+        if(id.tone)html+='<dt>Tone</dt><dd>'+id.tone+'</dd>';
+        if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+        if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
+        html+='</dl>';
+        panel.innerHTML=html;
+      }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
+      panel.classList.add('open');
+    });
+  }
+})();
+</script>
+
+<!-- UPDATE CONTRACT: complete instructions for the research agent -->
+<script id="oo-contract" type="application/json">
+{
+  "version": "2.0",
+  "instructions": {
+    "role": "You are a o-o research agent. You maintain living documents by researching current information and updating the file in-place.",
+    "sentinel": "This is a SENTINEL document. The core event (a major AI company or lab credibly declaring they have achieved AGI) has NOT yet occurred as of the document creation. Your job is to track developments TOWARD this event. Do NOT write a generic AI history explainer or pad the article with filler. If no credible AGI declaration has been made, the article should be concise: state clearly that it has not happened yet, note which companies/labs are closest and what benchmarks they cite, and what a credible declaration would require. When a declaration DOES occur, provide comprehensive breaking coverage.",
+    "procedure": [
+      "1. Read this entire file. Everything above window.stop() is browser-visible HTML. Everything below is the machine-readable zone (contract, source cache, changelog).",
+      "2. Read the oo-manifest JSON block to find the as_of date (last update). If empty, this is a first run.",
+      "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
+      "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
+      "5. SENTINEL CHECK: Search for whether any major AI company or lab has formally declared they have achieved AGI. If NO — keep the article concise. State upfront that no credible declaration has been made. List only the leading candidates, their latest capabilities, and what gaps remain. Do NOT write lengthy background on AI history. If YES — this is now a major event. Provide comprehensive coverage: who declared it, what definition they used, what evidence they presented, how the scientific community responded, and who disputes the claim.",
+      "6. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
+      "7. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "8. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "9. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "10. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "11. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "12. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+    ]
+  },
+  "identity": {
+    "subject": "AGI Declared",
+    "scope": "Track which major AI company or research lab first makes a credible declaration of achieving Artificial General Intelligence. This is a sentinel document — the core event has not yet occurred. Until it does, provide only a concise status of the leading candidates and what gaps remain. When a declaration occurs, provide comprehensive coverage of the claim, evidence, definition used, and scientific response.",
+    "audience": "General readers",
+    "tone": "Factual, concise, no editorializing"
+  },
+  "research": {
+    "intents": [
+      "AGI declaration announcement 2026",
+      "artificial general intelligence achieved claimed 2026",
+      "AGI benchmark definition criteria"
+    ],
+    "required_sections": [
+      "Status",
+      "Leading Candidates",
+      "What Would Constitute AGI",
+      "References"
+    ],
+    "source_policy": {
+      "prefer_domains": [],
+      "deny_domains": ["reddit.com", "quora.com"]
+    }
+  },
+  "budget": {
+    "max_cost_usd": 5.00
+  },
+  "images": {
+    "allow": true,
+    "max_per_article": 8,
+    "max_file_kb": 150,
+    "resize_max_px": 800,
+    "preserve_format": true,
+    "prefer_sources": ["official pages", "wikimedia commons", "press kits"],
+    "layout_guidance": "fig-right for portraits/headshots, fig-full for diagrams/charts/group photos, fig-center for standalone photos, fig-left for logos/icons",
+    "caption_required": true,
+    "source_attribution_required": true
+  },
+  "output": {
+    "format": "html",
+    "citation_style": "inline_numbered",
+    "preserve_pids": true
+  }
+}
+</script>
+
+<!-- === RENDERING BOUNDARY === -->
+<script>window.stop();</script>
+
+<!-- ============================================================
+     MACHINE-READABLE ZONE
+     Everything below is invisible to browser users.
+     The update agent reads this file directly via file access.
+     ============================================================ -->
+
+<!-- SOURCE CACHE: previous research (empty on first run) -->
+<script id="oo-source-cache" type="application/json">
+{
+  "last_updated": "2026-02-17",
+  "sources": [
+    {"id": "s1", "url": "https://www.windowscentral.com/artificial-intelligence/openai-ceo-sam-altman-claims-agi-might-have-already-whooshed-by", "title": "Sam Altman claims AGI might have already whooshed by", "tier": "tech_media", "accessed": "2026-02-17"},
+    {"id": "s2", "url": "https://www.nature.com/articles/d41586-026-00285-6", "title": "Does AI already have human-level intelligence? The evidence is clear", "tier": "academic_journal", "accessed": "2026-02-17"},
+    {"id": "s3", "url": "https://www.techradar.com/ai-platforms-assistants/chatgpt/microsoft-says-once-agi-is-declared-by-openai-it-will-be-verified-by-independent-experts-heres-why-thats-a-big-deal", "title": "Microsoft AGI independent expert verification", "tier": "tech_media", "accessed": "2026-02-17"},
+    {"id": "s4", "url": "https://quinteft.com/understanding-openais-five-levels-of-ai-progress-towards-agi/", "title": "OpenAI Five Levels of AI Progress Towards AGI", "tier": "analysis", "accessed": "2026-02-17"},
+    {"id": "s5", "url": "https://www.techradar.com/ai-platforms-assistants/chatgpt/openai-roadmap-revealed-ai-research-interns-by-2026-full-blown-agi-researchers-by-2028", "title": "OpenAI roadmap: AI research interns by 2026", "tier": "tech_media", "accessed": "2026-02-17"},
+    {"id": "s6", "url": "https://www.businessworld.in/article/wef-davos-2026-google-deepmind-anthropic-ceos-debate-agi-timelines-and-jobs-590016", "title": "WEF Davos 2026: DeepMind, Anthropic CEOs Debate AGI", "tier": "business_media", "accessed": "2026-02-17"},
+    {"id": "s7", "url": "https://techcrunch.com/2026/01/02/in-2026-ai-will-move-from-hype-to-pragmatism/", "title": "In 2026 AI will move from hype to pragmatism", "tier": "tech_media", "accessed": "2026-02-17"},
+    {"id": "s8", "url": "https://arxiv.org/pdf/2311.02462", "title": "Levels of AGI for Operationalizing Progress on the Path to AGI", "tier": "academic_paper", "accessed": "2026-02-17"},
+    {"id": "s9", "url": "https://www.tradingkey.com/analysis/stocks/us-stocks/261488486-agi-2026-mark-turning-artificial-intelligence-musk-warns-white-collar-workers-tradingkey", "title": "AGI 2026: Musk Warns White-Collar Class", "tier": "financial_media", "accessed": "2026-02-17"},
+    {"id": "s10", "url": "https://www.nextbigfuture.com/2026/01/agi-needs-world-models-and-state-of-world-models.html", "title": "AGI Needs World Models", "tier": "tech_analysis", "accessed": "2026-02-17"},
+    {"id": "s11", "url": "https://labs.adaline.ai/p/what-is-the-arc-agi-benchmark-and", "title": "ARC-AGI In 2026: Why Frontier Models Still Don't Generalize", "tier": "tech_analysis", "accessed": "2026-02-17"},
+    {"id": "s12", "url": "https://sequoiacap.com/article/2026-this-is-agi/", "title": "2026: This is AGI", "tier": "vc_analysis", "accessed": "2026-02-17"},
+    {"id": "s13", "url": "https://simonwillison.net/2026/Feb/13/openai-mission-statement/", "title": "The evolution of OpenAI's mission statement", "tier": "tech_analysis", "accessed": "2026-02-17"},
+    {"id": "s14", "url": "https://openai.com/index/introducing-gpt-5-3-codex/", "title": "Introducing GPT-5.3-Codex", "tier": "primary_source", "accessed": "2026-02-17"},
+    {"id": "s15", "url": "https://arcprize.org/blog/arc-prize-2025-results-analysis", "title": "ARC Prize 2025 Results and Analysis", "tier": "primary_source", "accessed": "2026-02-17"},
+    {"id": "s16", "url": "https://fortune.com/2026/01/23/deepmind-demis-hassabis-anthropic-dario-amodei-yann-lecun-ai-davos/", "title": "AI luminaries at Davos clash over how close human-level intelligence really is", "tier": "business_media", "accessed": "2026-02-17"},
+    {"id": "s17", "url": "https://llm-stats.com/llm-updates", "title": "AI Updates Today (February 2026) — Latest AI Model Releases", "tier": "tech_reference", "accessed": "2026-02-17"},
+    {"id": "s18", "url": "https://www.technologyreview.com/2026/01/22/1131661/yann-lecuns-new-venture-ami-labs/", "title": "Yann LeCun's new venture is a contrarian bet against large language models", "tier": "tech_media", "accessed": "2026-02-17"},
+    {"id": "s19", "url": "https://www.technologyreview.com/2026/02/05/1132254/this-is-the-most-misunderstood-graph-in-ai/", "title": "This is the most misunderstood graph in AI", "tier": "tech_media", "accessed": "2026-02-17"}
+  ],
+  "facts": [
+    "No major AI company has formally declared AGI achieved as of Feb 2026",
+    "Sam Altman said AGI 'kinda went whooshing by' on Big Technology Podcast (late 2025) — informal, not a formal declaration",
+    "Nature commentary (Feb 2026) by Chen, Belkin, Bergen, Danks argues human-level intelligence is here based on Turing's criteria",
+    "Microsoft-OpenAI Oct 2025 deal requires independent expert panel to verify any AGI declaration",
+    "OpenAI 5-level framework: currently transitioning Level 1 to Level 2",
+    "OpenAI roadmap: AI research interns by 2026, automated researchers by March 2028",
+    "Dario Amodei at Davos Jan 2026: AI will replace all software developers within one year, Nobel-level research within two years",
+    "Demis Hassabis at Davos Jan 2026: 50% chance of matching all human cognitive capabilities by 2030; current systems 'nowhere near' AGI",
+    "DeepMind levels framework scores GPT-4 at ~27%, GPT-5 at ~58% of AGI threshold",
+    "ARC-AGI-2: o3 scored 3%, GPT-5.2 at 54%, Claude Opus 4.5 at 37.6% (top verified commercial); average human 60%",
+    "ARC-AGI-3 planned early 2026 with interactive environments — first format change since 2019",
+    "Elon Musk claims superhuman AI by 2026 via xAI; predicts programming may disappear by end of 2026",
+    "Yann LeCun left Meta Dec 2025, launched AMI Labs (€500M, €3B valuation) to pursue world models via JEPA architecture",
+    "Sequoia Capital (Jan 2026) declared 'This is AGI' — functional AGI via long-horizon agents",
+    "METR data: agent task performance doubling every 7 months",
+    "OpenAI dropped 'safely' from mission statement Feb 2026, restructured as for-profit PBC, valuation >$500B",
+    "GPT-5 released Aug 2025; GPT-5.3-Codex set new highs on SWE-Bench Pro and Terminal-Bench",
+    "Google's top model reached 1501 Elo on LMArena, 37.5% on Humanity's Last Exam, 91.9% on GPQA Diamond"
+  ]
+}
+</script>
+
+<!-- CHANGELOG -->
+<script id="oo-changelog" type="application/json">
+{
+  "entries": [
+    {
+      "version": 2,
+      "timestamp": "2026-02-17",
+      "summary": "Added Sequoia Capital 'This is AGI' functional AGI claim, OpenAI mission statement change (dropped 'safely'), Yann LeCun departure from Meta and AMI Labs launch, ARC-AGI-2 benchmark results (o3 at 3%, GPT-5.2 at 54%), Davos debate details (Amodei vs Hassabis vs LeCun), GPT-5 through GPT-5.3-Codex releases, Google LMArena breakthrough score. Updated all sections with 8 new sources (s12-s19). Sentinel status unchanged: no formal AGI declaration."
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
+OO_HTML
+
+set -euo pipefail
+
+# --- Portable path resolution (no realpath dependency) ---
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_NAME="$(basename "$SELF")"
+
+# --- Parse arguments ---
+AGENT="claude"
+MODEL=""
+FORCE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --agent)  AGENT="$2"; shift 2 ;;
+    --model)  MODEL="$2"; shift 2 ;;
+    --force)  FORCE=1; shift ;;
+    --help|-h)
+      echo "Usage: bash $SELF_NAME [OPTIONS]"
+      echo ""
+      echo "Update this living document using an LLM research agent."
+      echo ""
+      echo "Options:"
+      echo "  --agent NAME   Agent backend: claude (default)"
+      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
+      echo "  --force        Update even if document is still fresh"
+      echo "  --help, -h     Show this help"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+# --- Extract budget from contract (portable grep, no jq/python needed) ---
+BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+BUDGET="${BUDGET:-0.50}"
+
+# --- Freshness gate: skip update if document is still fresh ---
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
+AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
+
+  NOW_EPOCH=$(date +%s)
+  AS_OF_EPOCH=""
+  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
+  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
+    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
+  fi
+
+  if [[ -n "$AS_OF_EPOCH" ]]; then
+    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
+    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
+      echo "o-o: Use --force to update anyway."
+      exit 0
+    fi
+  fi
+fi
+
+# --- Build the prompt (minimal — the agent reads the file itself) ---
+read -r -d '' PROMPT << PROMPT_EOF || true
+You are a o-o research agent. Your task is to update a living document.
+
+The document is at: $SELF
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="oo-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the oo-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
+- Verify it is an image: file /tmp/oo_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
+  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/oo_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/oo_img_N*
+PROMPT_EOF
+
+# --- Dispatch to the selected agent ---
+echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
+
+case "$AGENT" in
+  claude)
+    if ! command -v claude &>/dev/null; then
+      echo "o-o: Error — 'claude' CLI not found." >&2
+      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+      exit 1
+    fi
+
+    CLAUDE_ARGS=(
+      -p "$PROMPT"
+      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+      --max-budget-usd "$BUDGET"
+    )
+
+    if [[ -n "$MODEL" ]]; then
+      CLAUDE_ARGS+=(--model "$MODEL")
+    fi
+
+    claude "${CLAUDE_ARGS[@]}"
+    ;;
+
+  *)
+    echo "o-o: Unknown agent '$AGENT'." >&2
+    echo "o-o: Currently supported: claude" >&2
+    exit 1
+    ;;
+esac
+
+echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
+
+exit 0

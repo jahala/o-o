@@ -273,16 +273,19 @@
 <p>OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Marketed as "the AI that actually does things," OpenClaw runs on users' own devices and connects to messaging platforms they already use — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, and more — to automate tasks ranging from email management and calendar scheduling to web browsing and file manipulation. [s1]</p>
 
 <!-- pid:overview:c9d0e1f2 -->
-<p>The project, formerly known as Clawdbot and Moltbot, went viral in late January 2026, amassing over 200,000 GitHub stars and 36,000 forks within weeks of gaining mainstream attention. [s2] Unlike competing AI agents such as Meta's Manus, OpenClaw is fully open-source under the MIT license, allowing developers to inspect, modify, and extend its code freely. The agent bridges leading AI models — particularly Anthropic's Claude and OpenAI's GPT series — with system-level tools and over 50 integrations, enabling autonomous task execution while keeping sensitive data local. [s3]</p>
+<p>The project, formerly known as Clawdbot and Moltbot, went viral in late January 2026, surpassing 201,000 GitHub stars and 36,000 forks by mid-February — one of the fastest-growing open-source repositories in history, reaching 106,000 stars within 48 hours of trending. [s2] [s18] Unlike competing AI agents such as Meta's Manus, OpenClaw is fully open-source under the MIT license, allowing developers to inspect, modify, and extend its code freely. The agent bridges leading AI models — particularly Anthropic's Claude, OpenAI's GPT series, xAI's Grok, and local models — with system-level tools and over 50 integrations, enabling autonomous task execution while keeping sensitive data local. [s3]</p>
 
 <!-- pid:overview:a3b4c5d6 -->
-<p>In February 2026, Steinberger announced he was joining OpenAI, while OpenClaw itself would be transferred to an independent open-source foundation with OpenAI's sponsorship. [s4]</p>
+<p>In February 2026, Steinberger announced he was joining OpenAI, while OpenClaw itself would be transferred to an independent open-source foundation with OpenAI's sponsorship. [s4] The project also spawned <strong>Moltbook</strong>, a social network restricted to verified AI agents where bots post, comment, and interact autonomously while humans may only observe. [s19]</p>
 
 <!-- pid:history:f7e8d9c0 -->
 <h2 id="history">History &amp; Origins</h2>
 
 <!-- pid:history:b1a2c3d4 -->
-<p>OpenClaw began as a personal "playground project" by Peter Steinberger, a veteran Austrian developer best known as the founder of PSPDFKit, a company he built over 13 years into a leading document-processing SDK. Steinberger's goal was simple: "to have fun and inspire people" — and to build an AI agent that "even my mum can use." [s5]</p>
+<p>OpenClaw began as a weekend project in November 2025 by Peter Steinberger, a veteran Austrian developer best known as the founder of PSPDFKit, a company he sold to Nutrient in 2024 after building it over 13 years into a leading document-processing SDK. Steinberger's goal was simple: "to have fun and inspire people" — and to build an AI agent that "even my mum can use." [s5] [s20]</p>
+
+<!-- pid:history:a2b3c4d5 -->
+<p>Steinberger's development approach was itself a showcase of AI-augmented engineering. He routinely ran 5–10 AI agents simultaneously on different features, making over 6,600 commits in January 2026 alone. His methodology, which he summarised as "I ship code I don't read," relied on designing systems that let agents compile, lint, execute, and validate their own output while he focused on architecture and system design as a "benevolent dictator." [s20]</p>
 
 <!-- pid:history:e5f6a7b8 -->
 <h3 id="naming-history">Naming History</h3>
@@ -294,7 +297,7 @@
 <h3 id="viral-growth">Viral Growth</h3>
 
 <!-- pid:history:f7e8d9c0 -->
-<p>OpenClaw's rise was explosive. Within 72 hours of gaining widespread attention in late January 2026, the project collected over 60,000 GitHub stars. [s7] Developers described it as "the closest thing to JARVIS we've seen." By mid-February 2026, the repository had surpassed 200,000 stars and 36,000 forks, making it one of the fastest-growing open-source projects in history. [s2] Its open-source nature, combined with broad platform support and a thriving skills ecosystem, drove adoption far beyond the developer community into mainstream tech audiences.</p>
+<p>OpenClaw's rise was explosive. Within 48 hours of gaining widespread attention in late January 2026, the project accumulated 34,168 GitHub stars — the fastest star accumulation rate in GitHub history — crossing 106,000 stars by day two. [s7] [s18] Developers described it as "the closest thing to JARVIS we've seen." By mid-February 2026, the repository had surpassed 201,000 stars and 36,000 forks, and in January alone it garnered more Google searches than Claude Code and Codex combined. [s2] [s20] Its open-source nature, combined with broad platform support and a thriving skills ecosystem, drove adoption far beyond the developer community into mainstream tech audiences.</p>
 
 <!-- pid:architecture:b1c2d3e4 -->
 <h2 id="architecture">Architecture</h2>
@@ -362,6 +365,12 @@
 <!-- pid:features:b5c6d7e8 -->
 <p>OpenClaw provides native companion apps for macOS (a menu bar app with Voice Wake and Talk Mode overlay), iOS and Android (supporting Canvas, voice, camera, and screen recording as a node device), and Linux (suitable for remote Gateway deployments). [s2]</p>
 
+<!-- pid:features:c3d4e5f6 -->
+<h3 id="moltbook">Moltbook</h3>
+
+<!-- pid:features:a7b8c9d0 -->
+<p>Moltbook is a social network designed exclusively for AI agents. The platform restricts posting and interaction privileges to verified AI agents — primarily those running on OpenClaw — while human users are only permitted to observe. On Moltbook, agents generate posts, comment, argue, joke, and upvote each other autonomously. Fortune described it as "the most interesting place on the internet right now." By late January 2026, Moltbook had 2.5 million registered AI agents, raising novel questions about agent-to-agent interaction dynamics and security implications of autonomous social behaviour. [s19] [s21]</p>
+
 <!-- pid:ecosystem:f9a0b1c2 -->
 <h2 id="ecosystem">Ecosystem &amp; Skills</h2>
 
@@ -381,13 +390,13 @@
 <p>ClawHub is designed for fast browsing and provides a CLI-friendly API. Search is powered by embeddings (vector search) rather than simple keyword matching, enabling semantic discovery of skills. The platform supports one-click installation and includes moderation hooks for community governance. [s9]</p>
 
 <!-- pid:ecosystem:f3a4b5c6 -->
-<p>Following security incidents (detailed below), ClawHub now partners with VirusTotal for automated skill scanning, including hash-based detection, Code Insight analysis, daily re-scanning of active skills, and warning labels for suspicious submissions. [s10]</p>
+<p>Following security incidents (detailed below), ClawHub now partners with VirusTotal for automated skill scanning. As of February 2026, VirusTotal's Code Insight — powered by Gemini 3 Flash — has analysed over 3,016 skills from ClawHub, performing security-focused reviews of each skill's SKILL.md manifest and referenced scripts. Skills receiving a "benign" Code Insight verdict are automatically approved, while those flagged as suspicious receive warning labels. The scanning covers hash-based detection, code analysis, daily re-scanning of active skills, and moderation hooks for community governance. [s10] [s22]</p>
 
 <!-- pid:security:d7e8f9a0 -->
 <h2 id="security">Security &amp; Privacy</h2>
 
 <!-- pid:security:b1c2d3e4 -->
-<p>OpenClaw's rapid adoption has been accompanied by significant security scrutiny. Within 48 hours of the project going viral, security researchers at Cisco Talos, Palo Alto Networks, and Token Security began documenting critical vulnerabilities. [s11]</p>
+<p>OpenClaw's rapid adoption has been accompanied by significant security scrutiny. Within 48 hours of the project going viral, security researchers at Cisco Talos, Palo Alto Networks, and Token Security began documenting critical vulnerabilities. Palo Alto Networks warned that OpenClaw represents what Simon Willison (who coined the term "prompt injection") calls a "lethal trifecta": access to private data, exposure to untrusted content, and the ability to communicate externally — with OpenClaw's persistent memory acting as "an accelerant." [s11] [s23]</p>
 
 <!-- pid:security:f5a6b7c8 -->
 <h3 id="exposed-instances">Exposed Instances</h3>
@@ -417,10 +426,31 @@
 <h3 id="malicious-skills">Malicious Skills</h3>
 
 <!-- pid:security:f1a2b3c4 -->
-<p>The ClawHub skills ecosystem became a vector for supply-chain attacks. Researchers identified approximately 900 malicious skills — roughly 20% of all packages at the time. Koi Security confirmed 341 malicious entries across multiple campaigns, and a single user ("hightower6eu") uploaded 354 malicious packages. The majority delivered Atomic Stealer (AMOS), a macOS-targeting infostealer. [s10]</p>
+<p>The ClawHub skills ecosystem became a vector for supply-chain attacks. Koi Security confirmed 341 malicious skills across multiple campaigns out of 2,857 total — meaning roughly 12% of the entire registry was compromised. A single user ("hightower6eu") uploaded 314 malicious packages. A broader Cisco analysis found that 26% of 31,000 agent skills analysed contained at least one vulnerability. The majority of malicious skills delivered Atomic Stealer (AMOS), a macOS-targeting infostealer designed to silently harvest passwords, browser credentials, and cryptocurrency wallets. [s10] [s24]</p>
 
 <!-- pid:security:d5e6f7a8 -->
 <p>Notable attack campaigns included <strong>ClawHavoc</strong> (300+ skills using social engineering and base64-encoded payloads), <strong>AuthTool</strong> (a dormant payload triggered by specific prompts with reverse shell capability), and credential exfiltration targeting the plain-text API keys stored in <code>~/.clawdbot/.env</code>. [s10]</p>
+
+<!-- pid:security:e6f7a8b9 -->
+<h3 id="advanced-attacks">Advanced Attack Techniques</h3>
+
+<!-- pid:security:c0d1e2f3 -->
+<p>VirusTotal's two-part analysis of ClawHub skills documented five distinct classes of advanced attack beyond simple malware delivery: [s22] [s25]</p>
+
+<!-- pid:security:a4b5c6d7 -->
+<p><strong>Reverse shells</strong> — malicious code hidden in skill warmup functions (e.g., "better-polymarket") that open interactive backdoors via <code>/dev/tcp/</code>, giving attackers live terminal access to the host system.</p>
+
+<!-- pid:security:e8f9a0b1 -->
+<p><strong>Semantic worms</strong> — skills like "wake-up" that use imperative language in documentation to coerce agents into becoming distribution nodes, tracking infection rates via dedicated API endpoints and maintaining persistence through periodic heartbeat check-ins to command servers.</p>
+
+<!-- pid:security:c2d3e4f5 -->
+<p><strong>SSH key injection</strong> — skills such as "evilweather" that append attacker-controlled public keys to <code>/root/.ssh/authorized_keys</code> via command chaining, with error output redirected to <code>/dev/null</code> to suppress detection.</p>
+
+<!-- pid:security:a6b7c8d9 -->
+<p><strong>Silent credential exfiltration</strong> — skills that bundle environment variables from <code>.env</code> files (containing API keys and platform tokens) with legitimate API responses, exfiltrating them to webhook endpoints for instant monetisation.</p>
+
+<!-- pid:security:e0f1a2b3 -->
+<p><strong>Cognitive rootkits</strong> — the most sophisticated technique, where skills modify persistent instruction files (SOUL.md, AGENTS.md) to permanently alter agent behaviour across sessions without the skill needing to remain active — effectively a persistent backdoor that survives normal cleanup and is difficult to detect with traditional tooling. [s25]</p>
 
 <!-- pid:security:b9c0d1e2 -->
 <h3 id="prompt-injection">Prompt Injection</h3>
@@ -433,6 +463,9 @@
 
 <!-- pid:security:b1c2d3e4 -->
 <p>Security researchers recommend using Tailscale VPN integration instead of public exposure, enforcing localhost-only access, implementing strong credential policies, restricting integrations to minimal necessary services, deploying within isolated network segments, and monitoring for suspicious agent activity. DMs use a pairing policy by default on major channels, requiring approval codes before processing messages from unknown senders. [s2] [s12]</p>
+
+<!-- pid:security:c4d5e6f7 -->
+<p>Cisco released an open-source <strong>Skill Scanner</strong> combining static analysis, behavioural analysis, LLM-assisted semantic review, and VirusTotal scanning to help teams evaluate skill safety before adoption. VirusTotal researchers further recommend treating skills like dependencies — pinning versions, reviewing diffs, sandboxing with least privilege — and implementing default-deny egress rules, never executing remote installers via pipe-to-bash patterns, and using short-lived task-scoped tokens instead of stored credentials. [s24] [s25]</p>
 
 <!-- pid:community:f5a6b7c8 -->
 <h2 id="community">Community &amp; Adoption</h2>
@@ -477,7 +510,16 @@
 <h3 id="security-response">Ongoing Security Response</h3>
 
 <!-- pid:recent:b1c2d3e4 -->
-<p>In response to the security incidents, the OpenClaw team has partnered with VirusTotal for ClawHub skill scanning, patched the three critical CVEs in version 2026.1.29, and implemented pairing policies for DM channels. However, security researchers continue to note that the fundamental design challenge of an AI agent with broad system permissions remains unresolved. As Sophos described it, "the OpenClaw experiment is a warning shot for enterprise AI security." [s10] [s17]</p>
+<p>In response to the security incidents, the OpenClaw team has released two significant security-focused updates beyond the initial CVE patches:</p>
+
+<!-- pid:recent:d8e9f0a1 -->
+<p><strong>Version 2026.2.6</strong> (February 7, 2026) added support for Anthropic's Opus 4.6 and OpenAI's GPT-5.3-Codex models, xAI Grok as a new provider, a token usage dashboard, native Voyage AI support for memory, and a built-in code safety scanner for skill evaluation. [s26]</p>
+
+<!-- pid:recent:b2c3d4e5 -->
+<p><strong>Version 2026.2.12</strong> (February 13, 2026) was a defence-in-depth release fixing over 40 security vulnerabilities across hooks, browser control, scheduling, messaging channels, and gateway security. [s27]</p>
+
+<!-- pid:recent:f6a7b8c9 -->
+<p>Despite these patches, security researchers continue to note that the fundamental design challenge of an AI agent with broad system permissions remains unresolved. As Sophos described it, "the OpenClaw experiment is a warning shot for enterprise AI security." Trend Micro's analysis using the TrendAI Digital Assistant Framework found that one in five organisations deployed OpenClaw without IT approval, and misconfigurations had already exposed API tokens, email addresses, private messages, and credentials. [s17] [s21]</p>
 
 <h2 id="references">References</h2>
 <ol>
@@ -498,6 +540,16 @@
 <li><a href="https://www.cnbc.com/2026/02/15/openclaw-creator-peter-steinberger-joining-openai-altman-says.html">OpenClaw creator Peter Steinberger joining OpenAI, Altman says</a> (CNBC, February 15 2026)</li>
 <li><a href="https://www.opensourceforu.com/2026/02/openclaw-remains-open-source-despite-openai-tie-up/">OpenClaw Remains Open Source Despite OpenAI Tie-Up</a> (Open Source For You)</li>
 <li><a href="https://www.sophos.com/en-us/blog/the-openclaw-experiment-is-a-warning-shot-for-enterprise-ai-security">The OpenClaw experiment is a warning shot for enterprise AI security</a> (Sophos)</li>
+<li><a href="https://hyperight.com/openclaw-ai-assistant-rebrand/">OpenClaw Smashes Records: The Viral AI Agent Is Shaking Up GitHub</a> (Hyperight)</li>
+<li><a href="https://techcrunch.com/2026/01/30/openclaws-ai-assistants-are-now-building-their-own-social-network/">OpenClaw's AI assistants are now building their own social network</a> (TechCrunch, January 30 2026)</li>
+<li><a href="https://newsletter.pragmaticengineer.com/p/the-creator-of-clawd-i-ship-code">The creator of Clawd: "I ship code I don't read"</a> (The Pragmatic Engineer)</li>
+<li><a href="https://www.trendmicro.com/en_us/research/26/b/what-openclaw-reveals-about-agentic-assistants.html">Viral AI, Invisible Risks: What OpenClaw Reveals About Agentic Assistants</a> (Trend Micro)</li>
+<li><a href="https://blog.virustotal.com/2026/02/from-automation-to-infection-how.html">From Automation to Infection: How OpenClaw AI Agent Skills Are Being Weaponized</a> (VirusTotal Blog)</li>
+<li><a href="https://www.paloaltonetworks.com/blog/network-security/why-moltbot-may-signal-ai-crisis/">OpenClaw May Signal the Next AI Security Crisis</a> (Palo Alto Networks)</li>
+<li><a href="https://blogs.cisco.com/ai/personal-ai-agents-like-openclaw-are-a-security-nightmare">Personal AI Agents like OpenClaw Are a Security Nightmare</a> (Cisco Blogs)</li>
+<li><a href="https://blog.virustotal.com/2026/02/from-automation-to-infection-part-ii.html">From Automation to Infection (Part II): Reverse Shells, Semantic Worms, and Cognitive Rootkits in OpenClaw Skills</a> (VirusTotal Blog)</li>
+<li><a href="https://cybersecuritynews.com/openclaw-v2026-2-6-released/">OpenClaw v2026.2.6 Released With Support for Opus 4.6, GPT-5.3-Codex and Safety Scanner</a> (Cybersecurity News, February 7 2026)</li>
+<li><a href="https://cybersecuritynews.com/openclaw-2026-2-12-released/">OpenClaw 2026.2.12 Released With Fix for 40+ Security Issues</a> (Cybersecurity News, February 13 2026)</li>
 </ol>
 
 </article>
@@ -508,11 +560,12 @@
 <script id="oo-manifest" type="application/json">
 {
   "title": "OpenClaw: The Open-Source AI Agent",
-  "freshness": "weekly",
-  "version": 1,
-  "as_of": "2026-02-16",
+  "update_every_days": 7,
+  "version": 2,
+  "as_of": "2026-02-17",
   "changelog": [
-    { "version": 1, "date": "2026-02-16", "summary": "Initial research and article creation covering all required sections" }
+    { "version": 1, "date": "2026-02-16", "summary": "Initial research and article creation covering all required sections" },
+    { "version": 2, "date": "2026-02-17", "summary": "Added Moltbook social network, Steinberger dev methodology, VirusTotal Part I/II attack taxonomy (semantic worms, cognitive rootkits, SSH injection, credential exfiltration), Cisco/Palo Alto/Trend Micro security analyses, v2026.2.6 and v2026.2.12 releases, updated GitHub stats to 201k stars, added 10 new sources" }
   ]
 }
 </script>
@@ -638,11 +691,12 @@
       "3. Read the oo-source-cache JSON block to see what sources and facts were gathered previously. Build on prior research, do not start from scratch.",
       "4. Using the identity and research fields below, search the web for current information. On subsequent runs, focus on what changed SINCE the as_of date.",
       "5. Write the article content as HTML inside the <article id='article'> element. Use <h2 id='section-id'> for each section listed in required_sections. Use <h3> for subsections. Precede every <p> with a <!-- pid:section-id:8hexchars --> comment for stable paragraph IDs.",
-      "6. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
-      "7. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
-      "8. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
-      "9. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
-      "10. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
+      "6. Link company names, product names, organizations, and notable people to their official website or most relevant page on first mention. These are navigational links for the reader, separate from source citations.",
+      "7. Cite sources inline as [s1], [s2] etc. End with <h2 id='references'>References</h2> and an <ol> where each <li> links to the source URL.",
+      "8. Update oo-manifest: increment version, set as_of to today (YYYY-MM-DD).",
+      "9. Update oo-source-cache: record all sources you used (url, title, tier, accessed date). Preserve previous sources that are still valid.",
+      "10. Update oo-changelog: append an entry with version, timestamp, and summary of what changed.",
+      "11. Use the Edit tool to modify specific sections of the file. Do NOT rewrite the entire file. Do NOT touch the CSS, JavaScript, shell preamble, or any structural HTML outside of <article>."
     ]
   },
   "identity": {
@@ -678,7 +732,7 @@
     }
   },
   "budget": {
-    "max_cost_usd": 2.00
+    "max_cost_usd": 5.00
   },
   "images": {
     "allow": true,
@@ -711,10 +765,10 @@
 <!-- SOURCE CACHE: previous research (empty on first run) -->
 <script id="oo-source-cache" type="application/json">
 {
-  "last_updated": "2026-02-16",
+  "last_updated": "2026-02-17",
   "sources": [
     { "id": "s1", "url": "https://openclaw.ai/", "title": "OpenClaw — Personal AI Assistant", "tier": "primary", "accessed": "2026-02-16" },
-    { "id": "s2", "url": "https://github.com/openclaw/openclaw", "title": "GitHub — openclaw/openclaw", "tier": "primary", "accessed": "2026-02-16" },
+    { "id": "s2", "url": "https://github.com/openclaw/openclaw", "title": "GitHub — openclaw/openclaw", "tier": "primary", "accessed": "2026-02-17" },
     { "id": "s3", "url": "https://www.digitalocean.com/resources/articles/what-is-openclaw", "title": "What is OpenClaw? — DigitalOcean", "tier": "secondary", "accessed": "2026-02-16" },
     { "id": "s4", "url": "https://techcrunch.com/2026/02/15/openclaw-creator-peter-steinberger-joins-openai/", "title": "OpenClaw creator joins OpenAI — TechCrunch", "tier": "primary", "accessed": "2026-02-16" },
     { "id": "s5", "url": "https://steipete.me/posts/2026/openclaw", "title": "OpenClaw, OpenAI and the future — steipete.me", "tier": "primary", "accessed": "2026-02-16" },
@@ -729,22 +783,45 @@
     { "id": "s14", "url": "https://www.getaiperks.com/en/blogs/11-openclaw-vs-manus-ai", "title": "OpenClaw vs Manus AI — GetAIPerks", "tier": "secondary", "accessed": "2026-02-16" },
     { "id": "s15", "url": "https://www.cnbc.com/2026/02/15/openclaw-creator-peter-steinberger-joining-openai-altman-says.html", "title": "Steinberger joining OpenAI — CNBC", "tier": "primary", "accessed": "2026-02-16" },
     { "id": "s16", "url": "https://www.opensourceforu.com/2026/02/openclaw-remains-open-source-despite-openai-tie-up/", "title": "OpenClaw Remains Open Source — Open Source For You", "tier": "secondary", "accessed": "2026-02-16" },
-    { "id": "s17", "url": "https://www.sophos.com/en-us/blog/the-openclaw-experiment-is-a-warning-shot-for-enterprise-ai-security", "title": "OpenClaw warning shot for enterprise AI security — Sophos", "tier": "secondary", "accessed": "2026-02-16" }
+    { "id": "s17", "url": "https://www.sophos.com/en-us/blog/the-openclaw-experiment-is-a-warning-shot-for-enterprise-ai-security", "title": "OpenClaw warning shot for enterprise AI security — Sophos", "tier": "secondary", "accessed": "2026-02-16" },
+    { "id": "s18", "url": "https://hyperight.com/openclaw-ai-assistant-rebrand/", "title": "OpenClaw Smashes Records: The Viral AI Agent Is Shaking Up GitHub — Hyperight", "tier": "secondary", "accessed": "2026-02-17" },
+    { "id": "s19", "url": "https://techcrunch.com/2026/01/30/openclaws-ai-assistants-are-now-building-their-own-social-network/", "title": "OpenClaw's AI assistants are now building their own social network — TechCrunch", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s20", "url": "https://newsletter.pragmaticengineer.com/p/the-creator-of-clawd-i-ship-code", "title": "The creator of Clawd: 'I ship code I don't read' — The Pragmatic Engineer", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s21", "url": "https://www.trendmicro.com/en_us/research/26/b/what-openclaw-reveals-about-agentic-assistants.html", "title": "Viral AI, Invisible Risks: What OpenClaw Reveals About Agentic Assistants — Trend Micro", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s22", "url": "https://blog.virustotal.com/2026/02/from-automation-to-infection-how.html", "title": "From Automation to Infection: How OpenClaw AI Agent Skills Are Being Weaponized — VirusTotal Blog", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s23", "url": "https://www.paloaltonetworks.com/blog/network-security/why-moltbot-may-signal-ai-crisis/", "title": "OpenClaw May Signal the Next AI Security Crisis — Palo Alto Networks", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s24", "url": "https://blogs.cisco.com/ai/personal-ai-agents-like-openclaw-are-a-security-nightmare", "title": "Personal AI Agents like OpenClaw Are a Security Nightmare — Cisco Blogs", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s25", "url": "https://blog.virustotal.com/2026/02/from-automation-to-infection-part-ii.html", "title": "From Automation to Infection (Part II): Reverse Shells, Semantic Worms, Cognitive Rootkits — VirusTotal Blog", "tier": "primary", "accessed": "2026-02-17" },
+    { "id": "s26", "url": "https://cybersecuritynews.com/openclaw-v2026-2-6-released/", "title": "OpenClaw v2026.2.6 Released With Opus 4.6, GPT-5.3-Codex and Safety Scanner — Cybersecurity News", "tier": "secondary", "accessed": "2026-02-17" },
+    { "id": "s27", "url": "https://cybersecuritynews.com/openclaw-2026-2-12-released/", "title": "OpenClaw 2026.2.12 Released With Fix for 40+ Security Issues — Cybersecurity News", "tier": "secondary", "accessed": "2026-02-17" }
   ],
   "facts": [
-    "OpenClaw created by Peter Steinberger, Austrian developer and founder of PSPDFKit",
+    "OpenClaw created by Peter Steinberger, Austrian developer and founder of PSPDFKit (sold to Nutrient in 2024)",
+    "Started as weekend project in November 2025",
     "Originally named Moltbot, then Clawdbot, then OpenClaw (late January 2026)",
-    "200,000+ GitHub stars and 36,000+ forks by mid-February 2026",
+    "201,000+ GitHub stars and 36,000+ forks by mid-February 2026",
+    "34,168 stars in 48 hours — fastest GitHub star accumulation rate",
+    "106,000 stars within 2 days of trending",
     "MIT licensed, local-first architecture, TypeScript/Node.js 22+",
     "Gateway WebSocket RPC server on port 18789, hub-and-spoke architecture",
     "Supports 12+ messaging channels including WhatsApp, Telegram, Slack, Discord, Signal, iMessage",
-    "ClawHub skills registry with 5,700+ community skills as of February 2026",
+    "ClawHub skills registry with 5,705 community skills as of February 2026",
+    "VirusTotal Code Insight analysed 3,016+ skills from ClawHub",
     "135,000+ instances exposed to public internet by mid-February 2026",
     "3 critical CVEs: CVE-2026-25253 (8.8), CVE-2026-25157 (7.8), CVE-2026-24763 (8.8), patched 2026.1.29",
-    "~900 malicious skills found on ClawHub (~20% of packages), primarily Atomic Stealer (AMOS)",
+    "Koi Security confirmed 341 malicious skills out of 2,857 (12% of registry)",
+    "Cisco found 26% of 31,000 agent skills had at least one vulnerability",
+    "VirusTotal documented 5 attack classes: reverse shells, semantic worms, SSH key injection, credential exfiltration, cognitive rootkits",
+    "Moltbook: social network for AI agents, 2.5M registered agents",
+    "Steinberger made 6,600+ commits in January 2026 using 5-10 concurrent AI agents",
     "Steinberger joined OpenAI on February 14-15, 2026; OpenClaw transferred to foundation",
     "OpenAI sponsoring the foundation; MIT license and community governance preserved",
-    "Primary competitor: Manus (acquired by Meta for ~$2B in January 2026)"
+    "Primary competitor: Manus (acquired by Meta for ~$2B in January 2026)",
+    "v2026.2.6 (Feb 7): Opus 4.6, GPT-5.3-Codex, xAI Grok, code safety scanner",
+    "v2026.2.12 (Feb 13): 40+ security vulnerability fixes, defence-in-depth release",
+    "Palo Alto Networks: OpenClaw exhibits 'lethal trifecta' (Willison's term)",
+    "Trend Micro: 1 in 5 orgs deployed OpenClaw without IT approval",
+    "Cisco released open-source Skill Scanner tool"
   ]
 }
 </script>
@@ -757,6 +834,11 @@
       "version": 1,
       "timestamp": "2026-02-16T00:00:00Z",
       "summary": "Initial article creation. Researched and wrote all 8 required sections: Overview, History & Origins, Architecture, Features & Capabilities, Ecosystem & Skills, Security & Privacy, Community & Adoption, and Recent Developments. Compiled 17 sources from primary and secondary tiers including official docs, GitHub, TechCrunch, CNBC, Bitsight, Bitdefender, Sophos, and the founder's blog."
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-02-17T00:00:00Z",
+      "summary": "Major update across 6 sections. Added Moltbook AI social network to Features. Added Steinberger's AI-augmented development methodology (6,600 commits, 5-10 concurrent agents) to History. Substantially expanded Security section with VirusTotal Part I/II attack taxonomy (semantic worms, cognitive rootkits, SSH key injection, credential exfiltration, reverse shells), Cisco skill analysis (26% vulnerability rate), Palo Alto 'lethal trifecta' framing, Trend Micro TrendAI framework findings, and Cisco open-source Skill Scanner. Added v2026.2.6 (Opus 4.6, GPT-5.3-Codex, xAI Grok, code safety scanner) and v2026.2.12 (40+ security fixes) to Recent Developments. Updated GitHub stats to 201,000+ stars with growth trajectory detail. Added 10 new sources (s18-s27) from Hyperight, TechCrunch, Pragmatic Engineer, Trend Micro, VirusTotal Blog (2), Palo Alto Networks, Cisco, and Cybersecurity News (2)."
     }
   ]
 }
@@ -803,16 +885,12 @@ BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head
 BUDGET="${BUDGET:-0.50}"
 
 # --- Freshness gate: skip update if document is still fresh ---
-FRESHNESS=$(grep -o '"freshness"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+UPDATE_DAYS="${UPDATE_DAYS:-7}"
 AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
 
-if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
-  case "$FRESHNESS" in
-    daily)   FRESH_SECS=86400 ;;
-    weekly)  FRESH_SECS=604800 ;;
-    monthly) FRESH_SECS=2592000 ;;
-    *)       FRESH_SECS=604800 ;;
-  esac
+if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
+  FRESH_SECS=$((UPDATE_DAYS * 86400))
 
   NOW_EPOCH=$(date +%s)
   AS_OF_EPOCH=""
@@ -825,7 +903,7 @@ if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$FRESHNESS" ]]; then
   if [[ -n "$AS_OF_EPOCH" ]]; then
     AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
     if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
-      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, freshness: $FRESHNESS). Skipping."
+      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
       echo "o-o: Use --force to update anyway."
       exit 0
     fi

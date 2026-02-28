@@ -293,7 +293,7 @@ td a:hover { text-decoration:underline; }
           if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
           if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
           if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
-          html+='</dl>';
+          html+='</dl><p style="margin-top:12px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">Edit via CLI: <code>bash '+location.pathname.split('/').pop()+' --set scope "new value"</code></p>';
           panel.innerHTML=html;
         }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
         panel.classList.add('open');
@@ -1018,11 +1018,15 @@ show_help() {
     echo ""
   fi
   echo "Shared options:"
+  echo "  --set KEY VALUE                      Set a contract/config field"
   echo "  --sync [css|js|shell|all]            Sync shared sections to sibling files"
   echo "  --agent NAME                         Agent backend: claude (default)"
   echo "  --model NAME                         Override model (e.g. opus, sonnet, haiku)"
   echo "  --force                              Update even if document is still fresh"
   echo "  --help, -h                           Show this help"
+  echo ""
+  echo "Settable fields:"
+  echo "  subject, scope, audience, tone, budget, update_every_days"
   echo ""
   echo "Examples:"
   if [[ "$IS_INDEX" -eq 1 ]]; then
@@ -1050,6 +1054,7 @@ while [[ $# -gt 0 ]]; do
     --new)        ACTION="new"; NEW_TOPIC="${2:-}"; [[ -n "$NEW_TOPIC" ]] && shift; shift ;;
     --update-all) ACTION="update-all"; shift ;;
     --sync)       ACTION="sync"; SYNC_SECTION="${2:-all}"; shift; [[ $# -gt 0 && "${1:0:2}" != "--" ]] && shift ;;
+    --set)        ACTION="set"; SET_KEY="${2:-}"; SET_VAL="${3:-}"; shift; [[ -n "$SET_KEY" ]] && shift; [[ -n "$SET_VAL" ]] && shift ;;
     --agent)      AGENT="$2"; shift 2 ;;
     --model)      MODEL="$2"; shift 2 ;;
     --force)      FORCE=1; shift ;;
@@ -1174,6 +1179,35 @@ PROMPT_EOF
 }
 
 # ─── COMMAND ROUTER ───────────────────────────────────────────
+# ─── SET FIELD ─────────────────────────────────────────────────
+set_field() {
+  local key="$1" val="$2"
+  [[ -z "$key" || -z "$val" ]] && { echo "o-o: Usage: --set KEY VALUE" >&2; exit 1; }
+
+  case "$key" in
+    subject|scope|audience|tone)
+      # These live in oo-contract → identity.KEY
+      perl -i -0pe "s/(\"identity\"\\s*:\\s*\\{[^}]*\"$key\"\\s*:\\s*\")([^\"]*)(\")/\${1}$val\${3}/s" "$SELF"
+      echo "o-o: Set identity.$key = \"$val\""
+      ;;
+    budget)
+      # budget.max_cost_usd in oo-contract
+      perl -i -pe "s/(\"max_cost_usd\"\\s*:\\s*)[\\d.]+/\${1}$val/" "$SELF"
+      echo "o-o: Set budget.max_cost_usd = $val"
+      ;;
+    update_every_days)
+      # In oo-manifest
+      perl -i -pe "s/(\"update_every_days\"\\s*:\\s*)\\d+/\${1}$val/" "$SELF"
+      echo "o-o: Set update_every_days = $val"
+      ;;
+    *)
+      echo "o-o: Unknown field: $key" >&2
+      echo "o-o: Settable fields: subject, scope, audience, tone, budget, update_every_days" >&2
+      exit 1
+      ;;
+  esac
+}
+
 case "$ACTION" in
   new)
     if [[ "$IS_INDEX" -eq 0 ]]; then
@@ -1242,6 +1276,10 @@ case "$ACTION" in
 
   sync)
     sync_section "$SYNC_SECTION"
+    ;;
+
+  set)
+    set_field "$SET_KEY" "$SET_VAL"
     ;;
 
   help)

@@ -336,9 +336,11 @@ td a:hover { text-decoration:underline; }
   if(si){
     var table=d.querySelector('table');
     if(table){
+      var cards=d.querySelectorAll('.card');
       si.addEventListener('keyup',function(){
         var query=this.value.toLowerCase(), rows=table.querySelectorAll('tbody tr');
         rows.forEach(function(row){ var text=row.textContent.toLowerCase(); row.style.display=text.indexOf(query)>-1?'':'none'; });
+        cards.forEach(function(card){ var text=card.textContent.toLowerCase(); card.style.display=text.indexOf(query)>-1?'':'none'; });
       });
       var currentSort={col:-1,dir:'asc'};
       function sortTable(colIndex,type){

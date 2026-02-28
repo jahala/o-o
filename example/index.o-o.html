@@ -23,6 +23,8 @@ html, body { height:100%; }
 body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
 h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
 .wrap { max-width:900px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+.back-link { display:block; margin-bottom:10px; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--muted); text-decoration:none; }
+.back-link:hover { color:var(--accent); }
 header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
 #doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
 .meta { color:var(--muted); font-size:14px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:8px 10px; display:inline-block; margin-top:6px; }
@@ -400,6 +402,7 @@ TPL_HEAD
 <body>
 <div class="wrap">
 <header>
+<a href="index.o-o.html" class="back-link">&larr; Back to index</a>
 <h1 id="doc-title">__TITLE__</h1>
 <div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
 <p class="note">This is a self-updating living document. Run <code>bash __SLUG__.o-o.html</code> to update.</p>

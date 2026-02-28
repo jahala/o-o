@@ -18,6 +18,8 @@ html, body { height:100%; }
 body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
 h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
 .wrap { max-width:900px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
+.back-link { display:block; margin-bottom:10px; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--muted); text-decoration:none; }
+.back-link:hover { color:var(--accent); }
 header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
 #doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
 .meta { color:var(--muted); font-size:14px; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:8px 10px; display:inline-block; margin-top:6px; }
@@ -124,6 +126,7 @@ td a:hover { text-decoration:underline; }
 <body>
 <div class="wrap">
 <header>
+<a href="index.o-o.html" class="back-link">&larr; Back to index</a>
 <h1 id="doc-title">Vector Databases Compared</h1>
 <div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
 <p class="note">This is a self-updating living document. Run <code>bash vendor-comparison-vector-dbs.o-o.html</code> to update.</p>
@@ -776,7 +779,8 @@ generate_oo_file() {
 <meta charset="utf-8"/>
 <title>__TITLE__</title>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:" http-equiv="Content-Security-Policy"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='30' cy='50' r='18' fill='none' stroke='%232563eb' stroke-width='6'/><circle cx='70' cy='50' r='18' fill='none' stroke='%232563eb' stroke-width='6'/></svg>"/>
 TPL_HEAD
 
   # Inject CSS from this file (between OO:CSS markers, inclusive)
@@ -788,6 +792,7 @@ TPL_HEAD
 <body>
 <div class="wrap">
 <header>
+<a href="index.o-o.html" class="back-link">&larr; Back to index</a>
 <h1 id="doc-title">__TITLE__</h1>
 <div class="meta">As of <span id="doc-asof">&mdash;</span> &bull; Version <span class="version-badge"><span id="doc-version">0</span></span></div>
 <p class="note">This is a self-updating living document. Run <code>bash __SLUG__.o-o.html</code> to update.</p>

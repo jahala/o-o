@@ -15,252 +15,7 @@
 <meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
 
 <!-- ─── STYLES ──────────────────────────────────────────── -->
-<style>
-:root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
-html, body { height:100%; }
-body { margin:0; background:var(--bg); color:var(--bg); font-size:0; line-height:0; font-family:Georgia, 'Times New Roman', Times, serif; -webkit-font-smoothing:antialiased; }
-h1, h2, h3, h4, h5, h6 { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:600; }
-.wrap { max-width:1200px; margin:0 auto; padding:24px 20px 64px; color:var(--text); font-size:16px; line-height:1.65; }
-header { padding-bottom:16px; margin-bottom:24px; border-bottom:1px solid var(--border); }
-#doc-title { margin:0 0 6px 0; font-size:28px; color:var(--heading); letter-spacing:-0.01em; }
-.subtitle { color:var(--muted); font-size:16px; margin-top:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
-.stats-bar { background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:var(--muted); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-.stats-bar .stat { display:inline-block; }
-.stats-bar .stat strong { color:var(--heading); font-weight:600; }
-.search-bar { margin-bottom:20px; }
-.search-bar input[type="search"] { width:100%; max-width:400px; padding:10px 14px; font-size:15px; border:1px solid var(--border); border-radius:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; outline:none; transition:border-color 0.2s; }
-.search-bar input[type="search"]:focus { border-color:var(--accent); }
-.card-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:28px; }
-.card { display:block; border:1px solid var(--border); border-radius:8px; padding:14px 16px; transition:box-shadow 0.2s, border-color 0.2s; text-decoration:none; color:inherit; cursor:pointer; }
-.card:hover { box-shadow:0 2px 8px rgba(0,0,0,0.06); border-color:var(--accent); }
-.card-title { display:block; color:var(--heading); font-weight:600; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:17px; line-height:1.4; margin-bottom:6px; }
-.card:hover .card-title { color:var(--accent); }
-.card-badge { display:inline-block; font-size:11px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; padding:2px 8px; border-radius:999px; margin-bottom:8px; font-weight:500; letter-spacing:0.01em; }
-.card-badge.fresh { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
-.card-badge.stale { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
-.card-badge.new { background:var(--accent-weak); color:var(--accent); border:1px solid #bfdbfe; }
-.card-excerpt { font-size:15px; color:var(--text); line-height:1.55; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-#article { margin-top:24px; }
-table { width:100%; border-collapse:collapse; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:14px; color:var(--text); }
-th { text-align:left; padding:12px; background:#f9fafb; color:var(--heading); font-weight:600; border-bottom:2px solid var(--border); }
-th.sortable { cursor:pointer; user-select:none; position:relative; padding-right:24px; }
-th.sortable:hover { background:#f3f4f6; }
-th.sortable::after { content:'\2195'; position:absolute; right:8px; color:var(--muted); font-size:12px; }
-th.sortable.asc::after { content:'\2191'; color:var(--accent); }
-th.sortable.desc::after { content:'\2193'; color:var(--accent); }
-td { padding:12px; border-bottom:1px solid var(--border); }
-tr:hover { background:#fafbfc; }
-td a { color:var(--accent); text-decoration:none; font-weight:500; }
-td a:hover { text-decoration:underline; }
-.empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
-.empty-state p { margin:8px 0; }
-.empty-state code { background:#f9fafb; padding:3px 8px; border-radius:4px; font-size:14px; color:var(--heading); border:1px solid var(--border); }
-.file-size { color:var(--muted); font-size:13px; }
-@media (max-width: 768px) {
-  .wrap { padding:16px 14px 48px; }
-  #doc-title { font-size:24px; }
-  .stats-bar { flex-direction:column; align-items:flex-start; }
-  table { font-size:13px; }
-  th, td { padding:8px; }
-  .search-bar input[type="search"] { max-width:100%; }
-  .card-grid { grid-template-columns:repeat(2, 1fr); gap:12px; }
-}
-</style>
-</head>
-
-<!-- ─── DOCUMENT LIBRARY ────────────────────────────────── -->
-<body>
-<div class="wrap">
-<header>
-<h1 id="doc-title">o-o</h1>
-<p class="subtitle">Self-updating living documents</p>
-</header>
-<div class="stats-bar">
-  <div class="stat"><strong id="doc-count">8</strong> documents</div>
-  <div class="stat">Last scanned: <span id="last-scan">2026-02-17 02:08</span></div>
-</div>
-<div class="search-bar">
-  <input type="search" id="search-input" placeholder="Search documents...">
-</div>
-<article id="article">
-  <!-- INDEX-CONTENT-START -->
-  <div class="card-grid" id="card-grid">
-    <a class="card" href="yc-w26-batch.o-o.html">
-      <span class="card-title">Y Combinator W26 Batch</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">Y Combinator's Winter 2026 (W26) batch is the first of four batches in YC's expanded 2026 calendar, running from January...</span>
-    </a>
-    <a class="card" href="vendor-comparison-vector-dbs.o-o.html">
-      <span class="card-title">Vector Databases Compared</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">Vector databases are purpose-built systems for storing, indexing, and querying high-dimensional vector embeddings at sca...</span>
-    </a>
-    <a class="card" href="trump-incarceration.o-o.html">
-      <span class="card-title">Trump Incarceration</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">Donald Trump has not been incarcerated. As of February 2026, no criminal case against Trump has resulted in jail time. T...</span>
-    </a>
-    <a class="card" href="ai-model-landscape.o-o.html">
-      <span class="card-title">The LLM Landscape: Models, Benchmarks & Pricing</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">The large language model landscape in mid-February 2026 is defined by three converging forces: the commoditization of GP...</span>
-    </a>
-    <a class="card" href="openclaw.o-o.html">
-      <span class="card-title">OpenClaw: The Open-Source AI Agent</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Ma...</span>
-    </a>
-    <a class="card" href="competitor-costco.o-o.html">
-      <span class="card-title">Costco: Competitive Intelligence Briefing</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) continues to be the most feared operator in retail. In fiscal year 2025 (end...</span>
-    </a>
-    <a class="card" href="anthropic-leadership.o-o.html">
-      <span class="card-title">Anthropic Leadership Team</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">Anthropic is an American artificial intelligence safety company founded in 2021 by siblings Dario and Daniela Amodei, al...</span>
-    </a>
-    <a class="card" href="agi-declared.o-o.html">
-      <span class="card-title">AGI Declared</span>
-      <span class="card-badge fresh">Feb 17, 2026</span>
-      <span class="card-excerpt">As of February 2026, no major AI company or research laboratory has made a formal, official declaration that it has achi...</span>
-    </a>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th class="sortable" data-type="text">Title</th>
-        <th class="sortable" data-type="text">Size</th>
-        <th class="sortable" data-type="date">Last Updated</th>
-        <th class="sortable" data-type="number">Version</th>
-      </tr>
-    </thead>
-    <tbody>
-<tr>
-  <td><a href="competitor-costco.o-o.html">Costco: Competitive Intelligence Briefing</a></td>
-  <td>167K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="vendor-comparison-vector-dbs.o-o.html">Vector Databases Compared</a></td>
-  <td>53K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="ai-model-landscape.o-o.html">The LLM Landscape: Models, Benchmarks & Pricing</a></td>
-  <td>51K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="openclaw.o-o.html">OpenClaw: The Open-Source AI Agent</a></td>
-  <td>59K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="trump-incarceration.o-o.html">Trump Incarceration</a></td>
-  <td>33K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
-  <td>41K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="agi-declared.o-o.html">AGI Declared</a></td>
-  <td>41K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="yc-w26-batch.o-o.html">Y Combinator W26 Batch</a></td>
-  <td>53K</td>
-  <td>2026-02-17</td>
-  <td>4</td>
-</tr>
-    </tbody>
-  </table>
-  <!-- INDEX-CONTENT-END -->
-</article>
-</div>
-
-<!-- ─── SCRIPTS ─────────────────────────────────────────── -->
-<script>
-(function(){
-  var d=document, input=d.getElementById('search-input'), table=d.querySelector('table');
-  if(input && table){
-    input.addEventListener('keyup',function(){
-      var query=this.value.toLowerCase(), rows=table.querySelectorAll('tbody tr');
-      rows.forEach(function(row){ var text=row.textContent.toLowerCase(); row.style.display=text.indexOf(query)>-1?'':'none'; });
-    });
-  }
-  var currentSort={col:-1,dir:'asc'};
-  function sortTable(colIndex,type){
-    if(!table)return;
-    var tbody=table.querySelector('tbody'), rows=Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-    var dir='asc';
-    if(currentSort.col===colIndex){ dir=currentSort.dir==='asc'?'desc':'asc'; }
-    currentSort={col:colIndex,dir:dir};
-    rows.sort(function(a,b){
-      var aVal=a.cells[colIndex].textContent.trim(), bVal=b.cells[colIndex].textContent.trim();
-      if(type==='number'){ aVal=parseFloat(aVal)||0; bVal=parseFloat(bVal)||0; }
-      else if(type==='date'){ aVal=aVal==='\u2014'||aVal===''?0:new Date(aVal).getTime(); bVal=bVal==='\u2014'||bVal===''?0:new Date(bVal).getTime(); }
-      if(aVal<bVal)return dir==='asc'?-1:1;
-      if(aVal>bVal)return dir==='asc'?1:-1;
-      return 0;
-    });
-    rows.forEach(function(row){tbody.appendChild(row);});
-    var ths=table.querySelectorAll('th.sortable');
-    ths.forEach(function(th,i){ th.classList.remove('asc','desc'); if(i===colIndex){th.classList.add(dir);} });
-  }
-  if(table){
-    var ths=table.querySelectorAll('th.sortable');
-    ths.forEach(function(th,i){ th.addEventListener('click',function(){ var type=this.getAttribute('data-type')||'text'; sortTable(i,type); }); });
-  }
-})();
-</script>
-
-<!-- Stop browser parsing — everything below (shell code, embedded template) must not render -->
-<script>window.stop();</script>
-
-</body>
-</html>
-OO_HTML
-
-set -euo pipefail
-
-# Portable realpath alternative
-SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
-SELF_DIR="$(dirname "$SELF")"
-SELF_NAME="$(basename "$SELF")"
-
-# ─── DOCUMENT TEMPLATE ─────────────────────────────────────────
-generate_oo_file() {
-  local filepath="$1"
-  local title="$2"
-  local scope="$3"
-  local slug="$4"
-
-  # Write template with placeholders
-  cat > "$filepath" << 'TEMPLATE_EOF'
-#!/usr/bin/env bash
-# o-o Living Document — self-updating via LLM agent
-# To update: bash __SLUG__.o-o.html [--agent claude] [--model sonnet]
-# To read:   open __SLUG__.o-o.html in any browser
-: << 'OO_HTML'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<title>__TITLE__</title>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+<!-- OO:CSS:START -->
 <style>
 :root { --bg:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#2563eb; --accent-weak:#eff6ff; --heading:#111827; }
 html, body { height:100%; }
@@ -313,11 +68,52 @@ nav.toc a.active::before { content:'\2192'; }
 #article h2, #article h3 { clear:both; }
 .stub-notice { margin:40px 0; padding:24px; background:var(--accent-weak); border:1px solid var(--accent); border-radius:8px; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
 .stub-notice code { background:#fff; padding:2px 8px; border-radius:4px; font-size:15px; }
+.wrap.index-layout { max-width:1200px; }
+.subtitle { color:var(--muted); font-size:16px; margin-top:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+.stats-bar { background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:var(--muted); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.stats-bar .stat { display:inline-block; }
+.stats-bar .stat strong { color:var(--heading); font-weight:600; }
+.search-bar { margin-bottom:20px; }
+.search-bar input[type="search"] { width:100%; max-width:400px; padding:10px 14px; font-size:15px; border:1px solid var(--border); border-radius:8px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; outline:none; transition:border-color 0.2s; }
+.search-bar input[type="search"]:focus { border-color:var(--accent); }
+.card-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:28px; }
+.card { display:block; border:1px solid var(--border); border-radius:8px; padding:14px 16px; transition:box-shadow 0.2s, border-color 0.2s; text-decoration:none; color:inherit; cursor:pointer; }
+.card:hover { box-shadow:0 2px 8px rgba(0,0,0,0.06); border-color:var(--accent); }
+.card-title { display:block; color:var(--heading); font-weight:600; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:17px; line-height:1.4; margin-bottom:6px; }
+.card:hover .card-title { color:var(--accent); }
+.card-badge { display:inline-block; font-size:11px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; padding:2px 8px; border-radius:999px; margin-bottom:8px; font-weight:500; letter-spacing:0.01em; }
+.card-badge.fresh { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+.card-badge.stale { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+.card-badge.new { background:var(--accent-weak); color:var(--accent); border:1px solid #bfdbfe; }
+.card-excerpt { font-size:15px; color:var(--text); line-height:1.55; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+.empty-state p { margin:8px 0; }
+.empty-state code { background:#f9fafb; padding:3px 8px; border-radius:4px; font-size:14px; color:var(--heading); border:1px solid var(--border); }
+.file-size { color:var(--muted); font-size:13px; }
+table { width:100%; border-collapse:collapse; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size:14px; color:var(--text); }
+th { text-align:left; padding:12px; background:#f9fafb; color:var(--heading); font-weight:600; border-bottom:2px solid var(--border); }
+th.sortable { cursor:pointer; user-select:none; position:relative; padding-right:24px; }
+th.sortable:hover { background:#f3f4f6; }
+th.sortable::after { content:'\2195'; position:absolute; right:8px; color:var(--muted); font-size:12px; }
+th.sortable.asc::after { content:'\2191'; color:var(--accent); }
+th.sortable.desc::after { content:'\2193'; color:var(--accent); }
+td { padding:12px; border-bottom:1px solid var(--border); }
+tr:hover { background:#fafbfc; }
+td a { color:var(--accent); text-decoration:none; font-weight:500; }
+td a:hover { text-decoration:underline; }
 @media (max-width: 1200px) {
   .wrap { padding:16px 14px 48px; }
   nav.toc { position:sticky; top:0; left:auto; width:100%; max-height:none; margin:0 0 12px; padding:8px 10px; box-shadow:none; border:0; background:#ffffff; overflow-x:auto; overflow-y:hidden; white-space:nowrap; z-index:20; }
   nav.toc a { display:inline-block; margin:0 12px 0 0; white-space:nowrap; padding-left:0; }
   nav.toc a::before { position:static; margin-right:6px; left:auto; top:auto; }
+  .card-grid { grid-template-columns:repeat(3, 1fr); gap:14px; }
+}
+@media (max-width: 768px) {
+  .stats-bar { flex-direction:column; align-items:flex-start; }
+  table { font-size:13px; }
+  th, td { padding:8px; }
+  .search-bar input[type="search"] { max-width:100%; }
+  .card-grid { grid-template-columns:repeat(2, 1fr); gap:12px; }
 }
 @media (max-width: 640px) {
   .wrap { padding:16px 14px 48px; }
@@ -326,7 +122,281 @@ nav.toc a.active::before { content:'\2192'; }
   #article figure.fig-left, #article figure.fig-right { float:none; max-width:100%; margin:16px 0; }
   #article figure.fig-center { max-width:100%; }
 }
+@media (max-width: 480px) {
+  .card-grid { grid-template-columns:1fr; gap:10px; }
+}
 </style>
+<!-- OO:CSS:END -->
+</head>
+
+<!-- ─── DOCUMENT LIBRARY ────────────────────────────────── -->
+<body>
+<div class="wrap index-layout">
+<header>
+<h1 id="doc-title">o-o</h1>
+<p class="subtitle">Self-updating living documents</p>
+</header>
+<div class="stats-bar">
+  <div class="stat"><strong id="doc-count">8</strong> documents</div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-02-28 17:49</span></div>
+</div>
+<div class="search-bar">
+  <input type="search" id="search-input" placeholder="Search documents...">
+</div>
+<article id="article">
+  <!-- INDEX-CONTENT-START -->
+  <div class="card-grid" id="card-grid">
+    <a class="card" href="yc-w26-batch.o-o.html">
+      <span class="card-title">Y Combinator W26 Batch</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">Y Combinator's Winter 2026 (W26) batch is the first of four batches in YC's expanded 2026 calendar, running from January...</span>
+    </a>
+    <a class="card" href="vendor-comparison-vector-dbs.o-o.html">
+      <span class="card-title">Vector Databases Compared</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">Vector databases are purpose-built systems for storing, indexing, and querying high-dimensional vector embeddings at sca...</span>
+    </a>
+    <a class="card" href="trump-incarceration.o-o.html">
+      <span class="card-title">Trump Incarceration</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">Donald Trump has not been incarcerated. As of February 2026, no criminal case against Trump has resulted in jail time. T...</span>
+    </a>
+    <a class="card" href="ai-model-landscape.o-o.html">
+      <span class="card-title">The LLM Landscape: Models, Benchmarks & Pricing</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">The large language model landscape in mid-February 2026 is defined by three converging forces: the commoditization of GP...</span>
+    </a>
+    <a class="card" href="openclaw.o-o.html">
+      <span class="card-title">OpenClaw: The Open-Source AI Agent</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Ma...</span>
+    </a>
+    <a class="card" href="competitor-costco.o-o.html">
+      <span class="card-title">Costco: Competitive Intelligence Briefing</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) continues to be the most feared operator in retail. In fiscal year 2025 (end...</span>
+    </a>
+    <a class="card" href="anthropic-leadership.o-o.html">
+      <span class="card-title">Anthropic Leadership Team</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">Anthropic is an American artificial intelligence safety company founded in 2021 by siblings Dario and Daniela Amodei, al...</span>
+    </a>
+    <a class="card" href="agi-declared.o-o.html">
+      <span class="card-title">AGI Declared</span>
+      <span class="card-badge stale">Feb 17, 2026</span>
+      <span class="card-excerpt">As of February 2026, no major AI company or research laboratory has made a formal, official declaration that it has achi...</span>
+    </a>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th class="sortable" data-type="text">Title</th>
+        <th class="sortable" data-type="text">Size</th>
+        <th class="sortable" data-type="date">Last Updated</th>
+        <th class="sortable" data-type="number">Version</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><a href="competitor-costco.o-o.html">Costco: Competitive Intelligence Briefing</a></td>
+  <td>195K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="vendor-comparison-vector-dbs.o-o.html">Vector Databases Compared</a></td>
+  <td>81K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="ai-model-landscape.o-o.html">The LLM Landscape: Models, Benchmarks & Pricing</a></td>
+  <td>80K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="openclaw.o-o.html">OpenClaw: The Open-Source AI Agent</a></td>
+  <td>88K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="trump-incarceration.o-o.html">Trump Incarceration</a></td>
+  <td>63K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
+  <td>180K</td>
+  <td>2026-02-17</td>
+  <td>3</td>
+</tr>
+<tr>
+  <td><a href="agi-declared.o-o.html">AGI Declared</a></td>
+  <td>71K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
+  <td><a href="yc-w26-batch.o-o.html">Y Combinator W26 Batch</a></td>
+  <td>82K</td>
+  <td>2026-02-17</td>
+  <td>4</td>
+</tr>
+    </tbody>
+  </table>
+  <!-- INDEX-CONTENT-END -->
+</article>
+</div>
+
+<!-- OO:JS:START -->
+<script>
+(function(){
+  var d=document, data=JSON.parse(d.getElementById('oo-manifest').textContent);
+  d.getElementById('doc-title').textContent=data.title||'Living Article';
+  d.getElementById('doc-asof').textContent=data.as_of||'\u2014';
+  d.getElementById('doc-version').textContent=data.version||'0';
+  var toc=d.getElementById('toc');
+  if(toc){
+    var art=d.getElementById('article');
+    if(art){
+      try{
+        var w=document.createTreeWalker(art,NodeFilter.SHOW_COMMENT), nodes=[];
+        while(w.nextNode())nodes.push(w.currentNode);
+        nodes.forEach(function(n){
+          var m=(n.nodeValue||'').trim().match(/^pid:(\S+)$/);
+          if(m){ var t=n.nextElementSibling; if(t)t.setAttribute('data-pid',m[1]); n.parentNode.removeChild(n); }
+        });
+      }catch(e){}
+    }
+    var hh=d.querySelectorAll('#article h2, #article h3');
+    toc.innerHTML='<strong>Contents</strong><br>'+Array.prototype.map.call(hh,function(h){
+      var cls=h.tagName==='H3'?' class="toc-h3"':'';
+      return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
+    }).join('');
+    var refSection=d.getElementById('references');
+    if(refSection){
+      var ol=refSection.nextElementSibling;
+      while(ol&&ol.tagName!=='OL')ol=ol.nextElementSibling;
+      if(ol){ var items=ol.querySelectorAll('li'); items.forEach(function(li,i){li.id='s'+(i+1);}); }
+      if(art){ var paras=art.querySelectorAll('p'); paras.forEach(function(p){ p.innerHTML=p.innerHTML.replace(/\[s(\d+)\]/g,function(match,num){ return '<a href="#s'+num+'" class="cite">[s'+num+']</a>'; }); }); }
+    }
+    var links=Array.prototype.slice.call(toc.querySelectorAll('a')), map={};
+    links.forEach(function(a){map[a.getAttribute('href')]=a;});
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map['#'+e.target.id]; if(a)a.classList.add('active'); }
+      });
+    },{rootMargin:'0px 0px -70% 0px'});
+    d.querySelectorAll('#article h2').forEach(function(h){obs.observe(h);});
+    if(location.hash&&map[location.hash])map[location.hash].classList.add('active');
+    else if(links[0])links[0].classList.add('active');
+    var badge=d.querySelector('.version-badge'), panel=d.getElementById('contract-panel');
+    if(badge&&panel){
+      badge.addEventListener('click',function(){
+        if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
+        var el=d.getElementById('oo-contract');
+        if(!el){ panel.innerHTML='<em>No contract found.</em>'; panel.classList.add('open'); return; }
+        try{
+          var c=JSON.parse(el.textContent), id=c.identity||{}, r=c.research||{}, b=c.budget||{}, html='<dl>';
+          if(id.subject)html+='<dt>Subject</dt><dd>'+id.subject+'</dd>';
+          if(id.scope)html+='<dt>Scope</dt><dd>'+id.scope+'</dd>';
+          if(id.audience)html+='<dt>Audience</dt><dd>'+id.audience+'</dd>';
+          if(id.tone)html+='<dt>Tone</dt><dd>'+id.tone+'</dd>';
+          if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+          if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
+          if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
+          html+='</dl>';
+          panel.innerHTML=html;
+        }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
+        panel.classList.add('open');
+      });
+    }
+  }
+  var si=d.getElementById('search-input');
+  if(si){
+    var table=d.querySelector('table');
+    if(table){
+      si.addEventListener('keyup',function(){
+        var query=this.value.toLowerCase(), rows=table.querySelectorAll('tbody tr');
+        rows.forEach(function(row){ var text=row.textContent.toLowerCase(); row.style.display=text.indexOf(query)>-1?'':'none'; });
+      });
+      var currentSort={col:-1,dir:'asc'};
+      function sortTable(colIndex,type){
+        var tbody=table.querySelector('tbody'), rows=Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        var dir='asc';
+        if(currentSort.col===colIndex){ dir=currentSort.dir==='asc'?'desc':'asc'; }
+        currentSort={col:colIndex,dir:dir};
+        rows.sort(function(a,b){
+          var aVal=a.cells[colIndex].textContent.trim(), bVal=b.cells[colIndex].textContent.trim();
+          if(type==='number'){ aVal=parseFloat(aVal)||0; bVal=parseFloat(bVal)||0; }
+          else if(type==='date'){ aVal=aVal==='\u2014'||aVal===''?0:new Date(aVal).getTime(); bVal=bVal==='\u2014'||bVal===''?0:new Date(bVal).getTime(); }
+          if(aVal<bVal)return dir==='asc'?-1:1;
+          if(aVal>bVal)return dir==='asc'?1:-1;
+          return 0;
+        });
+        rows.forEach(function(row){tbody.appendChild(row);});
+        var ths=table.querySelectorAll('th.sortable');
+        ths.forEach(function(th,i){ th.classList.remove('asc','desc'); if(i===colIndex){th.classList.add(dir);} });
+      }
+      var ths=table.querySelectorAll('th.sortable');
+      ths.forEach(function(th,i){ th.addEventListener('click',function(){ var type=this.getAttribute('data-type')||'text'; sortTable(i,type); }); });
+    }
+  }
+})();
+</script>
+<!-- OO:JS:END -->
+
+<!-- Stop browser parsing — everything below (shell code, embedded template) must not render -->
+<script>window.stop();</script>
+
+</body>
+</html>
+OO_HTML
+
+set -euo pipefail
+
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_DIR="$(dirname "$SELF")"
+SELF_NAME="$(basename "$SELF")"
+
+# OO:SHELL:START
+# ─── DOCUMENT TEMPLATE ────────────────────────────────────────
+generate_oo_file() {
+  local filepath="$1" title="$2" scope="$3" slug="$4"
+
+  # Extract shared section line numbers from THIS file
+  local css_s css_e js_s js_e sh_s sh_e
+  css_s=$(grep -n '^<!-- OO:CSS:START -->$' "$SELF" | head -1 | cut -d: -f1)
+  css_e=$(grep -n '^<!-- OO:CSS:END -->$' "$SELF" | head -1 | cut -d: -f1)
+  js_s=$(grep -n '^<!-- OO:JS:START -->$' "$SELF" | head -1 | cut -d: -f1)
+  js_e=$(grep -n '^<!-- OO:JS:END -->$' "$SELF" | head -1 | cut -d: -f1)
+  sh_s=$(grep -n '^# OO:SHELL:START$' "$SELF" | head -1 | cut -d: -f1)
+  sh_e=$(grep -n '^# OO:SHELL:END$' "$SELF" | head -1 | cut -d: -f1)
+
+  # Part 1: shebang + heredoc start + HTML head (before CSS)
+  cat > "$filepath" << 'TPL_HEAD'
+#!/usr/bin/env bash
+# o-o Living Document — self-updating via LLM agent
+# To update: bash __SLUG__.o-o.html [--agent claude] [--model sonnet]
+# To read:   open __SLUG__.o-o.html in any browser
+: << 'OO_HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>__TITLE__</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" http-equiv="Content-Security-Policy"/>
+TPL_HEAD
+
+  # Inject CSS from this file (between OO:CSS markers, inclusive)
+  sed -n "${css_s},${css_e}p" "$SELF" >> "$filepath"
+
+  # Part 2: close head + body + header + article stub + manifest
+  cat >> "$filepath" << 'TPL_BODY'
 </head>
 <body>
 <div class="wrap">
@@ -347,7 +417,6 @@ nav.toc a.active::before { content:'\2192'; }
 <footer id="run-meta"></footer>
 </div>
 
-<!-- Manifest -->
 <script id="oo-manifest" type="application/json">
 {
   "title": "__TITLE__",
@@ -358,70 +427,13 @@ nav.toc a.active::before { content:'\2192'; }
 }
 </script>
 
-<!-- Binder JS -->
-<script>
-(function(){
-  var d=document, data=JSON.parse(d.getElementById('oo-manifest').textContent);
-  d.getElementById('doc-title').textContent=data.title||'Living Article';
-  d.getElementById('doc-asof').textContent=data.as_of||'\u2014';
-  d.getElementById('doc-version').textContent=data.version||'0';
-  var art=d.getElementById('article');
-  if(art){
-    try{
-      var w=document.createTreeWalker(art,NodeFilter.SHOW_COMMENT), nodes=[];
-      while(w.nextNode())nodes.push(w.currentNode);
-      nodes.forEach(function(n){
-        var m=(n.nodeValue||'').trim().match(/^pid:(\S+)$/);
-        if(m){ var t=n.nextElementSibling; if(t)t.setAttribute('data-pid',m[1]); n.parentNode.removeChild(n); }
-      });
-    }catch(e){}
-  }
-  var toc=d.getElementById('toc'), hh=d.querySelectorAll('#article h2, #article h3');
-  toc.innerHTML='<strong>Contents</strong><br>'+Array.prototype.map.call(hh,function(h){
-    var cls=h.tagName==='H3'?' class="toc-h3"':'';
-    return '<a href="#'+h.id+'"'+cls+'>'+h.textContent+'</a>';
-  }).join('');
-  var refSection=d.getElementById('references');
-  if(refSection){
-    var ol=refSection.nextElementSibling;
-    while(ol&&ol.tagName!=='OL')ol=ol.nextElementSibling;
-    if(ol){ var items=ol.querySelectorAll('li'); items.forEach(function(li,i){li.id='s'+(i+1);}); }
-    var paras=art.querySelectorAll('p');
-    paras.forEach(function(p){ p.innerHTML=p.innerHTML.replace(/\[s(\d+)\]/g,function(match,num){ return '<a href="#s'+num+'" class="cite">[s'+num+']</a>'; }); });
-  }
-  var links=Array.prototype.slice.call(toc.querySelectorAll('a')), map={};
-  links.forEach(function(a){map[a.getAttribute('href')]=a;});
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ links.forEach(function(l){l.classList.remove('active');}); var a=map['#'+e.target.id]; if(a)a.classList.add('active'); }
-    });
-  },{rootMargin:'0px 0px -70% 0px'});
-  d.querySelectorAll('#article h2').forEach(function(h){obs.observe(h);});
-  if(location.hash&&map[location.hash])map[location.hash].classList.add('active');
-  else if(links[0])links[0].classList.add('active');
-  var badge=d.querySelector('.version-badge'), panel=d.getElementById('contract-panel');
-  if(badge&&panel){
-    badge.addEventListener('click',function(){
-      if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
-      var el=d.getElementById('oo-contract');
-      if(!el){ panel.innerHTML='<em>No contract found.</em>'; panel.classList.add('open'); return; }
-      try{
-        var c=JSON.parse(el.textContent), id=c.identity||{}, r=c.research||{}, b=c.budget||{}, html='<dl>';
-        if(id.subject)html+='<dt>Subject</dt><dd>'+id.subject+'</dd>';
-        if(id.scope)html+='<dt>Scope</dt><dd>'+id.scope+'</dd>';
-        if(id.audience)html+='<dt>Audience</dt><dd>'+id.audience+'</dd>';
-        if(id.tone)html+='<dt>Tone</dt><dd>'+id.tone+'</dd>';
-        if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
-        if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
-        if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
-        html+='</dl>';
-        panel.innerHTML=html;
-      }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
-      panel.classList.add('open');
-    });
-  }
-})();
-</script>
+TPL_BODY
+
+  # Inject JS from this file (between OO:JS markers, inclusive)
+  sed -n "${js_s},${js_e}p" "$SELF" >> "$filepath"
+
+  # Part 3: contract + machine zone + close HTML + OO_HTML terminator + shell preamble
+  cat >> "$filepath" << 'TPL_CONTRACT'
 
 <!-- UPDATE CONTRACT: complete instructions for the research agent -->
 <script id="oo-contract" type="application/json">
@@ -520,151 +532,36 @@ OO_HTML
 
 set -euo pipefail
 
-# --- Portable path resolution (no realpath dependency) ---
 SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
+SELF_DIR="$(dirname "$SELF")"
 SELF_NAME="$(basename "$SELF")"
 
-# --- Parse arguments ---
-AGENT="claude"
-MODEL=""
-FORCE=0
+TPL_CONTRACT
 
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --agent)  AGENT="$2"; shift 2 ;;
-    --model)  MODEL="$2"; shift 2 ;;
-    --force)  FORCE=1; shift ;;
-    --help|-h)
-      echo "Usage: bash $SELF_NAME [OPTIONS]"
-      echo ""
-      echo "Update this living document using an LLM research agent."
-      echo ""
-      echo "Options:"
-      echo "  --agent NAME   Agent backend: claude (default)"
-      echo "  --model NAME   Override model (e.g. opus, sonnet, haiku)"
-      echo "  --force        Update even if document is still fresh"
-      echo "  --help, -h     Show this help"
-      exit 0
-      ;;
-    *) echo "Unknown option: $1 (try --help)" >&2; exit 1 ;;
-  esac
-done
+  # Inject shell block from this file (between OO:SHELL markers, inclusive)
+  sed -n "${sh_s},${sh_e}p" "$SELF" >> "$filepath"
 
-# --- Extract budget from contract (portable grep, no jq/python needed) ---
-BUDGET=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
-BUDGET="${BUDGET:-0.50}"
-
-# --- Freshness gate: skip update if document is still fresh ---
-UPDATE_DAYS=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
-UPDATE_DAYS="${UPDATE_DAYS:-7}"
-AS_OF=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
-
-if [[ "$FORCE" -eq 0 && -n "$AS_OF" && -n "$UPDATE_DAYS" ]]; then
-  FRESH_SECS=$((UPDATE_DAYS * 86400))
-
-  NOW_EPOCH=$(date +%s)
-  AS_OF_EPOCH=""
-  if date -j -f "%Y-%m-%d" "$AS_OF" "+%s" &>/dev/null 2>&1; then
-    AS_OF_EPOCH=$(date -j -f "%Y-%m-%d" "$AS_OF" "+%s")
-  elif date -d "$AS_OF" "+%s" &>/dev/null 2>&1; then
-    AS_OF_EPOCH=$(date -d "$AS_OF" "+%s")
-  fi
-
-  if [[ -n "$AS_OF_EPOCH" ]]; then
-    AGE=$(( NOW_EPOCH - AS_OF_EPOCH ))
-    if [[ "$AGE" -lt "$FRESH_SECS" ]]; then
-      echo "o-o: '$SELF_NAME' is still fresh (updated $AS_OF, updates every ${UPDATE_DAYS}d). Skipping."
-      echo "o-o: Use --force to update anyway."
-      exit 0
-    fi
-  fi
-fi
-
-# --- Build the prompt (minimal — the agent reads the file itself) ---
-read -r -d '' PROMPT << PROMPT_EOF || true
-You are a o-o research agent. Your task is to update a living document.
-
-The document is at: $SELF
-
-This file is a polyglot HTML/bash file structured as follows:
-- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
-- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
-
-Read the update contract (the JSON block with id="oo-contract") — it contains
-your complete instructions: the subject, research intents, required sections,
-quality thresholds, source policy, and output format rules.
-
-Check the oo-manifest "as_of" field for when this document was last updated.
-If empty, this is a first run — research everything. If it has a date, focus your
-research on new information since that date.
-
-Use the Edit tool to modify specific parts of the file in-place.
-Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
-Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
-
-IMAGES: The contract may have an "images" section. If images are allowed:
-- Find relevant images via web search (official sites, wikimedia, press kits)
-- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
-- Verify it is an image: file /tmp/oo_img_N.ext
-- Resize (preserve format — keep PNG for transparency, JPEG for photos):
-  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
-  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
-- Check size: if over max_file_kb, reduce further or skip
-- Encode: base64 < /tmp/oo_img_N_r.ext
-- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
-- Clean up: rm /tmp/oo_img_N*
-PROMPT_EOF
-
-# --- Dispatch to the selected agent ---
-echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$BUDGET)..."
-
-case "$AGENT" in
-  claude)
-    if ! command -v claude &>/dev/null; then
-      echo "o-o: Error — 'claude' CLI not found." >&2
-      echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
-      exit 1
-    fi
-
-    CLAUDE_ARGS=(
-      -p "$PROMPT"
-      --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
-      --max-budget-usd "$BUDGET"
-    )
-
-    if [[ -n "$MODEL" ]]; then
-      CLAUDE_ARGS+=(--model "$MODEL")
-    fi
-
-    claude "${CLAUDE_ARGS[@]}"
-    ;;
-
-  *)
-    echo "o-o: Unknown agent '$AGENT'." >&2
-    echo "o-o: Currently supported: claude" >&2
-    exit 1
-    ;;
-esac
-
-echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
-
-exit 0
-TEMPLATE_EOF
+  # Part 4: exit
+  printf '\nexit 0\n' >> "$filepath"
 
   # Replace placeholders
   local tmp="/tmp/oo_template_$$"
-  sed -e "s|__TITLE__|${title}|g" -e "s|__SCOPE__|${scope}|g" -e "s|__SLUG__|${slug}|g" -e "s|__YEAR__|$(date +%Y)|g" "$filepath" > "$tmp" && mv "$tmp" "$filepath"
+  sed -e "s|__TITLE__|${title}|g" \
+      -e "s|__SCOPE__|${scope}|g" \
+      -e "s|__SLUG__|${slug}|g" \
+      -e "s|__YEAR__|$(date +%Y)|g" \
+      "$filepath" > "$tmp" && mv "$tmp" "$filepath"
 
   chmod +x "$filepath"
 }
 
-# ─── UTILITIES ─────────────────────────────────────────────────
+# ─── UTILITIES ────────────────────────────────────────────────
 slugify() {
   local str="$1"
   echo "$str" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed 's/[^a-z0-9-]//g' | cut -c1-60
 }
 
-# ─── INDEX REBUILD ─────────────────────────────────────────────
+# ─── INDEX MANAGEMENT ─────────────────────────────────────────
 rebuild_index() {
   echo "o-o Index: Scanning for .o-o.html files..."
 
@@ -798,7 +695,6 @@ ${table_rows}    </tbody>
   echo "o-o Index: Found $count document(s). Index updated."
 }
 
-# ─── DOCUMENT CREATION ─────────────────────────────────────────
 create_new() {
   local input="$1"
   local title desc
@@ -818,29 +714,28 @@ create_new() {
 
   # Check if file exists
   if [[ -e "$filepath" ]]; then
-    echo "o-o Index: Error — file already exists: $filepath" >&2
+    echo "o-o: Error — file already exists: $filepath" >&2
     exit 1
   fi
 
-  echo "o-o Index: Creating new document: $title"
-  echo "o-o Index: File: $filepath"
+  echo "o-o: Creating new document: $title"
+  echo "o-o: File: $filepath"
 
   # Generate the file
   generate_oo_file "$filepath" "$title" "$desc" "$slug"
 
-  echo "o-o Index: Created $filepath"
-  echo "o-o Index: Running first update..."
+  echo "o-o: Created $filepath"
+  echo "o-o: Running first update..."
 
   # Run the file to trigger first update
   bash "$filepath"
 
-  echo "o-o Index: Document created and populated. Open in browser to read."
+  echo "o-o: Document created and populated. Open in browser to read."
 }
 
-# ─── BATCH UPDATE ──────────────────────────────────────────────
 update_all() {
   local force="${1:-0}"
-  echo "o-o Index: Checking for stale documents..."
+  echo "o-o: Checking for stale documents..."
 
   local now_epoch=$(date +%s)
   local updated_count=0
@@ -879,7 +774,7 @@ update_all() {
     fi
 
     if [[ "$should_update" -eq 1 ]]; then
-      echo "o-o Index: Updating $(basename "$file")..."
+      echo "o-o: Updating $(basename "$file")..."
       if [[ "$force" -eq 1 ]]; then
         bash "$file" --force
       else
@@ -887,46 +782,291 @@ update_all() {
       fi
       updated_count=$((updated_count + 1))
     else
-      echo "o-o Index: $(basename "$file") is still fresh. Skipping."
+      echo "o-o: $(basename "$file") is still fresh. Skipping."
     fi
   done < <(find "$SELF_DIR" -name "*.o-o.html" -type f)
 
   if [[ "$updated_count" -gt 0 ]]; then
-    echo "o-o Index: Updated $updated_count document(s)."
-    echo "o-o Index: Rebuilding index..."
+    echo "o-o: Updated $updated_count document(s)."
+    echo "o-o: Rebuilding index..."
     rebuild_index
   else
-    echo "o-o Index: All documents are up to date."
+    echo "o-o: All documents are up to date."
   fi
 }
 
-# ─── HELP & DISPATCH ───────────────────────────────────────────
-show_help() {
-  cat << 'HELP_EOF'
-o-o — index and management tool
+# ─── SYNC ─────────────────────────────────────────────────────
+sync_section() {
+  local section="$1"
+  local sm em
+  case "$section" in
+    css)   sm='<!-- OO:CSS:START -->' em='<!-- OO:CSS:END -->' ;;
+    js)    sm='<!-- OO:JS:START -->' em='<!-- OO:JS:END -->' ;;
+    shell) sm='# OO:SHELL:START' em='# OO:SHELL:END' ;;
+    all)   sync_section css; sync_section js; sync_section shell; return ;;
+    *)     echo "o-o Sync: Unknown section '$section'. Use: css, js, shell, all" >&2; exit 1 ;;
+  esac
 
-Usage:
-  bash index.o-o.html                              Rebuild the index
-  bash index.o-o.html --new                         Create new document (interactive)
-  bash index.o-o.html --new "Title / description"   Create new document (quick)
-  bash index.o-o.html --update-all                 Update stale documents (respects freshness)
-  bash index.o-o.html --update-all --force          Force update all documents
-  bash index.o-o.html --help                       Show this help
+  # Extract canonical section boundaries from THIS file
+  local start_line end_line
+  start_line=$(grep -n "^${sm}\$" "$SELF" | head -1 | cut -d: -f1)
+  end_line=$(grep -n "^${em}\$" "$SELF" | head -1 | cut -d: -f1)
 
-Examples:
-  bash index.o-o.html --new "History of the USA"
-  bash index.o-o.html --new "Python Async / Guide to Python async/await patterns"
-  bash index.o-o.html --update-all
+  if [[ -z "$start_line" || -z "$end_line" ]]; then
+    echo "o-o Sync: ERROR — no $section markers found in $SELF_NAME" >&2
+    return 1
+  fi
 
-The index.o-o.html file is both a web page (open in browser) and a management tool (run with bash).
+  local synced=0
+  for file in "$SELF_DIR"/*.o-o.html; do
+    [[ "$file" == "$SELF" ]] && continue
 
-HELP_EOF
+    local f_start f_end
+    f_start=$(grep -n "^${sm}\$" "$file" | head -1 | cut -d: -f1 || true)
+    f_end=$(grep -n "^${em}\$" "$file" | head -1 | cut -d: -f1 || true)
+
+    if [[ -z "$f_start" || -z "$f_end" ]]; then
+      echo "o-o Sync: SKIP $(basename "$file") (no $section markers)"
+      continue
+    fi
+
+    # Assemble: content before marker + canonical section + content after marker
+    {
+      head -n $((f_start - 1)) "$file"
+      sed -n "${start_line},${end_line}p" "$SELF"
+      tail -n +$((f_end + 1)) "$file"
+    } > "${file}.tmp" && mv "${file}.tmp" "$file"
+
+    synced=$((synced + 1))
+    echo "o-o Sync: $(basename "$file") [$section]"
+  done
+
+  # Handle custom oo.css for CSS sync
+  if [[ "$section" == "css" ]]; then
+    local custom_css="$SELF_DIR/oo.css"
+    local csm='<!-- OO:CUSTOM:START -->'
+    local cem='<!-- OO:CUSTOM:END -->'
+
+    for file in "$SELF_DIR"/*.o-o.html; do
+      # Remove existing custom block if present
+      local c_start c_end
+      c_start=$(grep -n "^${csm}\$" "$file" 2>/dev/null | head -1 | cut -d: -f1 || true)
+      c_end=$(grep -n "^${cem}\$" "$file" 2>/dev/null | head -1 | cut -d: -f1 || true)
+
+      if [[ -n "$c_start" && -n "$c_end" ]]; then
+        {
+          head -n $((c_start - 1)) "$file"
+          tail -n +$((c_end + 1)) "$file"
+        } > "${file}.tmp" && mv "${file}.tmp" "$file"
+      fi
+
+      # If oo.css exists, inject it right after OO:CSS:END
+      if [[ -f "$custom_css" ]]; then
+        local css_end_line
+        css_end_line=$(grep -n "^${em}\$" "$file" | head -1 | cut -d: -f1)
+        if [[ -n "$css_end_line" ]]; then
+          {
+            head -n "$css_end_line" "$file"
+            echo "$csm"
+            echo "<style>"
+            cat "$custom_css"
+            echo "</style>"
+            echo "$cem"
+            tail -n +$((css_end_line + 1)) "$file"
+          } > "${file}.tmp" && mv "${file}.tmp" "$file"
+        fi
+      fi
+    done
+  fi
+
+  echo "o-o Sync: $section synced to $synced file(s)."
 }
 
-# Main command routing
-case "${1:-}" in
-  --new)
-    if [[ -z "${2:-}" ]]; then
+# ─── HELP ─────────────────────────────────────────────────────
+show_help() {
+  echo "o-o — self-updating living documents"
+  echo ""
+  echo "Usage:"
+  echo "  bash $SELF_NAME [OPTIONS]"
+  echo ""
+  if [[ "$IS_INDEX" -eq 1 ]]; then
+    echo "Index commands:"
+    echo "  (no args)                            Rebuild the index"
+    echo "  --new                                Create new document (interactive)"
+    echo "  --new \"Title / description\"           Create new document (quick)"
+    echo "  --update-all                         Update stale documents"
+    echo "  --update-all --force                 Force update all documents"
+    echo ""
+  else
+    echo "Article commands:"
+    echo "  (no args)                            Update this document"
+    echo ""
+  fi
+  echo "Shared options:"
+  echo "  --sync [css|js|shell|all]            Sync shared sections to sibling files"
+  echo "  --agent NAME                         Agent backend: claude (default)"
+  echo "  --model NAME                         Override model (e.g. opus, sonnet, haiku)"
+  echo "  --force                              Update even if document is still fresh"
+  echo "  --help, -h                           Show this help"
+  echo ""
+  echo "Examples:"
+  if [[ "$IS_INDEX" -eq 1 ]]; then
+    echo "  bash $SELF_NAME --new \"History of the USA\""
+    echo "  bash $SELF_NAME --new \"Python Async / Guide to async/await patterns\""
+    echo "  bash $SELF_NAME --update-all"
+  else
+    echo "  bash $SELF_NAME                      # Update with latest research"
+    echo "  bash $SELF_NAME --force              # Force update even if fresh"
+    echo "  bash $SELF_NAME --model opus         # Use a specific model"
+  fi
+  echo "  bash $SELF_NAME --sync all           # Propagate shared code to siblings"
+}
+
+# ─── ARG PARSING ──────────────────────────────────────────────
+ACTION=""
+NEW_TOPIC=""
+SYNC_SECTION=""
+AGENT="claude"
+MODEL=""
+FORCE=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --new)        ACTION="new"; NEW_TOPIC="${2:-}"; [[ -n "$NEW_TOPIC" ]] && shift; shift ;;
+    --update-all) ACTION="update-all"; shift ;;
+    --sync)       ACTION="sync"; SYNC_SECTION="${2:-all}"; shift; [[ $# -gt 0 && "${1:0:2}" != "--" ]] && shift ;;
+    --agent)      AGENT="$2"; shift 2 ;;
+    --model)      MODEL="$2"; shift 2 ;;
+    --force)      FORCE=1; shift ;;
+    --help|-h)    ACTION="help"; shift ;;
+    *)            echo "o-o: Unknown option: $1 (try --help)" >&2; exit 1 ;;
+  esac
+done
+
+IS_INDEX=0
+[[ "$SELF_NAME" == index* ]] && IS_INDEX=1
+
+# ─── FRESHNESS CHECK ──────────────────────────────────────────
+check_freshness() {
+  [[ "$FORCE" -eq 1 ]] && return 1  # return 1 = not fresh, should update
+
+  local update_days as_of
+  update_days=$(grep -o '"update_every_days"[[:space:]]*:[[:space:]]*[0-9]*' "$SELF" | head -1 | grep -o '[0-9]*$' || true)
+  update_days="${update_days:-7}"
+  as_of=$(grep -o '"as_of"[[:space:]]*:[[:space:]]*"[^"]*"' "$SELF" | head -1 | sed 's/.*:[[:space:]]*"//' | sed 's/"$//')
+
+  [[ -z "$as_of" ]] && return 1  # no date = needs update
+
+  local fresh_secs=$((update_days * 86400))
+  local now_epoch=$(date +%s)
+  local as_of_epoch=""
+
+  if date -j -f "%Y-%m-%d" "$as_of" "+%s" &>/dev/null 2>&1; then
+    as_of_epoch=$(date -j -f "%Y-%m-%d" "$as_of" "+%s")
+  elif date -d "$as_of" "+%s" &>/dev/null 2>&1; then
+    as_of_epoch=$(date -d "$as_of" "+%s")
+  fi
+
+  if [[ -n "$as_of_epoch" ]]; then
+    local age=$(( now_epoch - as_of_epoch ))
+    if [[ "$age" -lt "$fresh_secs" ]]; then
+      echo "o-o: '$SELF_NAME' is still fresh (updated $as_of, updates every ${update_days}d). Skipping."
+      echo "o-o: Use --force to update anyway."
+      return 0  # fresh, skip
+    fi
+  fi
+
+  return 1  # not fresh, should update
+}
+
+# ─── AGENT DISPATCH ───────────────────────────────────────────
+dispatch_update() {
+  # Extract budget from contract
+  local budget
+  budget=$(grep -o '"max_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' "$SELF" | head -1 | grep -o '[0-9.]*$' || true)
+  budget="${budget:-0.50}"
+
+  # Build the prompt
+  local prompt
+  read -r -d '' prompt << 'PROMPT_EOF' || true
+You are a o-o research agent. Your task is to update a living document.
+
+The document is at: __SELF__
+
+This file is a polyglot HTML/bash file structured as follows:
+- Above window.stop(): browser-visible content (article, CSS, JS, manifest)
+- Below window.stop(): machine-readable zone (update contract, source cache, changelog)
+
+Read the update contract (the JSON block with id="oo-contract") — it contains
+your complete instructions: the subject, research intents, required sections,
+quality thresholds, source policy, and output format rules.
+
+Check the oo-manifest "as_of" field for when this document was last updated.
+If empty, this is a first run — research everything. If it has a date, focus your
+research on new information since that date.
+
+Use the Edit tool to modify specific parts of the file in-place.
+Only modify: <article> content, oo-manifest, oo-source-cache, oo-changelog.
+Do NOT touch CSS, JavaScript, the shell preamble, or structural HTML outside <article>.
+
+IMAGES: The contract may have an "images" section. If images are allowed:
+- Find relevant images via web search (official sites, wikimedia, press kits)
+- Download with: curl -sL "<url>" -o /tmp/oo_img_N.ext
+- Verify it is an image: file /tmp/oo_img_N.ext
+- Resize (preserve format — keep PNG for transparency, JPEG for photos):
+  macOS: sips --resampleWidth <px> /tmp/oo_img_N.ext --out /tmp/oo_img_N_r.ext
+  Linux: convert /tmp/oo_img_N.ext -resize <px>x /tmp/oo_img_N_r.ext
+- Check size: if over max_file_kb, reduce further or skip
+- Encode: base64 < /tmp/oo_img_N_r.ext
+- Embed as: <figure class="fig-right|fig-left|fig-full|fig-center"><img src="data:image/<mime>;base64,..." alt="description"><figcaption>Caption. <span class="img-src">Source: <a href="url">domain</a></span></figcaption></figure>
+- Clean up: rm /tmp/oo_img_N*
+PROMPT_EOF
+
+  # Replace __SELF__ placeholder with actual path
+  prompt="${prompt//__SELF__/$SELF}"
+
+  echo "o-o: Updating '$SELF_NAME' via $AGENT (budget: \$$budget)..."
+
+  case "$AGENT" in
+    claude)
+      if ! command -v claude &>/dev/null; then
+        echo "o-o: Error — 'claude' CLI not found." >&2
+        echo "o-o: Install: https://docs.anthropic.com/en/docs/claude-code" >&2
+        exit 1
+      fi
+
+      local -a claude_args=(
+        -p "$prompt"
+        --allowed-tools "Bash,Read,Edit,WebSearch,WebFetch"
+        --max-budget-usd "$budget"
+      )
+
+      if [[ -n "$MODEL" ]]; then
+        claude_args+=(--model "$MODEL")
+      fi
+
+      claude "${claude_args[@]}"
+      ;;
+
+    *)
+      echo "o-o: Unknown agent '$AGENT'." >&2
+      echo "o-o: Currently supported: claude" >&2
+      exit 1
+      ;;
+  esac
+
+  echo "o-o: Update complete. Open '$SELF_NAME' in a browser to read."
+}
+
+# ─── COMMAND ROUTER ───────────────────────────────────────────
+case "$ACTION" in
+  new)
+    if [[ "$IS_INDEX" -eq 0 ]]; then
+      echo "o-o: --new is only available on index files." >&2
+      echo "o-o: Rename this file to index*.o-o.html to enable library management." >&2
+      exit 1
+    fi
+    if [[ -z "$NEW_TOPIC" ]]; then
       # Interactive mode
       echo ""
       echo "  Create new o-o document"
@@ -972,27 +1112,39 @@ case "${1:-}" in
       echo ""
       bash "$OO_NEW_PATH"
     else
-      create_new "$2"
+      create_new "$NEW_TOPIC"
     fi
     ;;
-  --update-all)
-    if [[ "${2:-}" == "--force" ]]; then
-      update_all 1
-    else
-      update_all 0
+
+  update-all)
+    if [[ "$IS_INDEX" -eq 0 ]]; then
+      echo "o-o: --update-all is only available on index files." >&2
+      echo "o-o: Rename this file to index*.o-o.html to enable library management." >&2
+      exit 1
     fi
+    update_all "$FORCE"
     ;;
-  --help|-h)
+
+  sync)
+    sync_section "$SYNC_SECTION"
+    ;;
+
+  help)
     show_help
     ;;
+
   "")
-    rebuild_index
-    ;;
-  *)
-    echo "o-o Index: Unknown command: $1" >&2
-    echo "Run: bash index.o-o.html --help" >&2
-    exit 1
+    if [[ "$IS_INDEX" -eq 1 ]]; then
+      rebuild_index
+    else
+      # Article update: check freshness then dispatch
+      if check_freshness; then
+        exit 0  # still fresh, already printed message
+      fi
+      dispatch_update
+    fi
     ;;
 esac
+# OO:SHELL:END
 
 exit 0

@@ -1182,6 +1182,7 @@ show_help() {
     echo ""
   fi
   echo "Shared options:"
+  echo "  --show                               Show current contract and config"
   echo "  --set KEY VALUE                      Set a contract/config field"
   echo "  --add intent|section VALUE           Add to a research array field"
   echo "  --remove intent|section VALUE        Remove from a research array field"
@@ -1228,6 +1229,7 @@ while [[ $# -gt 0 ]]; do
     --new)        ACTION="new"; NEW_TOPIC="${2:-}"; [[ -n "$NEW_TOPIC" ]] && shift; shift ;;
     --update-all) ACTION="update-all"; shift ;;
     --sync)       ACTION="sync"; SYNC_SECTION="${2:-all}"; shift; [[ $# -gt 0 && "${1:0:2}" != "--" ]] && shift ;;
+    --show)       ACTION="show"; shift ;;
     --set)        ACTION="set"; SET_KEY="${2:-}"; SET_VAL="${3:-}"; shift; [[ -n "$SET_KEY" ]] && shift; [[ -n "$SET_VAL" ]] && shift ;;
     --add)        ACTION="add"; ARR_FIELD="${2:-}"; ARR_VAL="${3:-}"; shift; [[ -n "$ARR_FIELD" ]] && shift; [[ -n "$ARR_VAL" ]] && shift ;;
     --remove)     ACTION="remove"; ARR_FIELD="${2:-}"; ARR_VAL="${3:-}"; shift; [[ -n "$ARR_FIELD" ]] && shift; [[ -n "$ARR_VAL" ]] && shift ;;
@@ -1355,6 +1357,67 @@ PROMPT_EOF
 }
 
 # ─── COMMAND ROUTER ───────────────────────────────────────────
+# ─── SHOW CONTRACT ────────────────────────────────────────────
+show_contract() {
+  echo ""
+  echo "  $SELF_NAME"
+  echo "  ────────────────────────"
+  # Extract manifest fields
+  local manifest contract
+  manifest=$(perl -0777 -ne 'print $1 if /id="oo-manifest"[^>]*>\s*(\{.*?\})\s*<\/script>/s' "$SELF")
+  contract=$(perl -0777 -ne 'print $1 if /id="oo-contract"[^>]*>\s*(\{.*?\})\s*<\/script>/s' "$SELF")
+
+  if [[ -n "$manifest" ]]; then
+    local title as_of version update_days
+    title=$(echo "$manifest" | perl -ne 'print $1 if /"title"\s*:\s*"([^"]*)"/')
+    as_of=$(echo "$manifest" | perl -ne 'print $1 if /"as_of"\s*:\s*"([^"]*)"/')
+    version=$(echo "$manifest" | perl -ne 'print $1 if /"version"\s*:\s*(\d+)/')
+    update_days=$(echo "$manifest" | perl -ne 'print $1 if /"update_every_days"\s*:\s*(\d+)/')
+    [[ -n "$title" ]] && echo "  Title:             $title"
+    [[ -n "$version" ]] && echo "  Version:           $version"
+    [[ -n "$as_of" ]] && echo "  Last updated:      $as_of"
+    [[ -n "$update_days" ]] && echo "  Update every:      ${update_days} days"
+  fi
+
+  if [[ -n "$contract" ]]; then
+    local subject scope audience tone budget
+    subject=$(echo "$contract" | perl -ne 'print $1 if /"subject"\s*:\s*"([^"]*)"/')
+    scope=$(echo "$contract" | perl -ne 'print $1 if /"scope"\s*:\s*"([^"]*)"/')
+    audience=$(echo "$contract" | perl -ne 'print $1 if /"audience"\s*:\s*"([^"]*)"/')
+    tone=$(echo "$contract" | perl -ne 'print $1 if /"tone"\s*:\s*"([^"]*)"/')
+    budget=$(echo "$contract" | perl -ne 'print $1 if /"max_cost_usd"\s*:\s*([\d.]+)/')
+    echo ""
+    [[ -n "$subject" ]] && echo "  Subject:           $subject"
+    [[ -n "$scope" ]] && echo "  Scope:             $scope"
+    [[ -n "$audience" ]] && echo "  Audience:          $audience"
+    [[ -n "$tone" ]] && echo "  Tone:              $tone"
+    [[ -n "$budget" ]] && echo "  Budget:            \$$budget"
+
+    # Research intents
+    local intents
+    intents=$(echo "$contract" | perl -0777 -ne 'if(/"intents"\s*:\s*\[(.*?)\]/s){$i=$1; while($i=~/"([^"]+)"/g){print "$1\n"}}')
+    if [[ -n "$intents" ]]; then
+      echo ""
+      echo "  Research intents:"
+      while IFS= read -r line; do
+        echo "    - $line"
+      done <<< "$intents"
+    fi
+
+    # Required sections
+    local sections
+    sections=$(echo "$contract" | perl -0777 -ne 'if(/"required_sections"\s*:\s*\[(.*?)\]/s){$i=$1; while($i=~/"([^"]+)"/g){print "$1\n"}}')
+    if [[ -n "$sections" ]]; then
+      echo ""
+      echo "  Required sections:"
+      while IFS= read -r line; do
+        echo "    - $line"
+      done <<< "$sections"
+    fi
+  fi
+  echo ""
+}
+
 # ─── SET FIELD ─────────────────────────────────────────────────
 set_field() {
   local key="$1" val="$2"
@@ -1486,6 +1549,10 @@ case "$ACTION" in
 
   sync)
     sync_section "$SYNC_SECTION"
+    ;;
+
+  show)
+    show_contract
     ;;
 
   set)

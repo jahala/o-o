@@ -1,6 +1,8 @@
 # o-o
 *looky-looky*
 
+[**Live demo**](https://jahala.github.io/o-o/example/index.o-o.html)
+
 Each `.o-o.html` file is a self-updating living document — open it in a browser to read, run it with `bash` to update.
 
 ```
@@ -31,17 +33,26 @@ bash example/index.o-o.html --update-all
 ┌─────────────────────────────────────────┐
 │  Shell preamble (hidden from browser    │  ← bash reads this
 │  via : << 'OO_HTML' heredoc)            │
+├── <!-- OO:CSS:START/END --> ────────────┤
+│  Unified CSS (article + index styles)   │  ← browser renders this
 ├─────────────────────────────────────────┤
-│  HTML + CSS + Article content           │  ← browser renders this
-│  Manifest, Contract, Binder JS          │
+│  HTML: header, article content          │
+│  Manifest JSON                          │
+├── <!-- OO:JS:START/END --> ─────────────┤
+│  Unified JS (TOC, citations, search)    │
+├─────────────────────────────────────────┤
+│  Contract JSON                          │
 ├── window.stop() ────────────────────────┤
 │  Machine-readable zone                  │  ← agent reads this
 │  (source cache, changelog)              │
 ├── OO_HTML ──────────────────────────────┤
-│  Shell execution code                   │  ← bash runs this
-│  (arg parsing, agent dispatch)          │
+├── # OO:SHELL:START/END ─────────────────┤
+│  Unified shell (template, sync, index,  │  ← bash runs this
+│  update, arg parsing, agent dispatch)   │
 └─────────────────────────────────────────┘
 ```
+
+Every file carries the complete toolset. Shared sections (CSS, JS, shell) are wrapped in `OO:` markers so they can be replaced programmatically across all files with `--sync`.
 
 When you run `bash file.o-o.html`:
 
@@ -71,7 +82,7 @@ Click the **version badge** in any document's header to inspect its contract in-
 
 ## Index / Library Manager
 
-`index.o-o.html` serves as both a browsable card-grid library and a management CLI:
+Any file named `index*.o-o.html` automatically becomes a library manager — a browsable card-grid and management CLI:
 
 ```bash
 bash index.o-o.html                                    # Rebuild index
@@ -86,11 +97,23 @@ bash index.o-o.html --update-all --force               # Force update all
 ```
 bash document.o-o.html [OPTIONS]
 
+  --sync SECTION  Sync shared code to all sibling files (css, js, shell, all)
   --agent NAME    Agent backend (default: claude)
   --model NAME    Override model (e.g. opus, sonnet, haiku)
   --force         Update even if not due yet
   --help, -h      Show help
 ```
+
+## Sync
+
+All `.o-o.html` files share the same CSS, JS, and shell code. Edit any file, then propagate:
+
+```bash
+bash any-file.o-o.html --sync all       # Sync CSS, JS, and shell to siblings
+bash any-file.o-o.html --sync css       # Sync just CSS
+```
+
+Drop an `oo.css` file in the same directory to add custom styles (theming, dark mode). It gets injected automatically during `--sync css`.
 
 ## Requirements
 

@@ -293,7 +293,7 @@ td a:hover { text-decoration:underline; }
           if(r.intents&&r.intents.length){ html+='<dt>Research Intents</dt><dd>'; r.intents.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
           if(r.required_sections&&r.required_sections.length){ html+='<dt>Required Sections</dt><dd>'; r.required_sections.forEach(function(t){html+='<span class="tag">'+t+'</span>';}); html+='</dd>'; }
           if(b.max_cost_usd)html+='<dt>Budget</dt><dd>$'+b.max_cost_usd.toFixed(2)+'</dd>';
-          html+='</dl><p style="margin-top:12px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">Edit via CLI: <code>bash '+location.pathname.split('/').pop()+' --set scope "new value"</code></p>';
+          var fn=location.pathname.split('/').pop(); html+='</dl><p style="margin-top:12px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">Edit via CLI:<br><code>bash '+fn+' --set scope "new value"</code><br><code>bash '+fn+' --add intent "search query"</code><br><code>bash '+fn+' --remove section "Old Section"</code></p>';
           panel.innerHTML=html;
         }catch(e){ panel.innerHTML='<em>Error parsing contract.</em>'; }
         panel.classList.add('open');
@@ -1019,14 +1019,20 @@ show_help() {
   fi
   echo "Shared options:"
   echo "  --set KEY VALUE                      Set a contract/config field"
+  echo "  --add intent|section VALUE           Add to a research array field"
+  echo "  --remove intent|section VALUE        Remove from a research array field"
   echo "  --sync [css|js|shell|all]            Sync shared sections to sibling files"
   echo "  --agent NAME                         Agent backend: claude (default)"
   echo "  --model NAME                         Override model (e.g. opus, sonnet, haiku)"
   echo "  --force                              Update even if document is still fresh"
   echo "  --help, -h                           Show this help"
   echo ""
-  echo "Settable fields:"
+  echo "Settable fields (--set):"
   echo "  subject, scope, audience, tone, budget, update_every_days"
+  echo ""
+  echo "Array fields (--add / --remove):"
+  echo "  intent      Research search queries"
+  echo "  section     Required article sections"
   echo ""
   echo "Examples:"
   if [[ "$IS_INDEX" -eq 1 ]]; then
@@ -1038,6 +1044,10 @@ show_help() {
     echo "  bash $SELF_NAME --force              # Force update even if fresh"
     echo "  bash $SELF_NAME --model opus         # Use a specific model"
   fi
+  echo "  bash $SELF_NAME --set scope \"US market analysis\""
+  echo "  bash $SELF_NAME --add intent \"quarterly earnings 2026\""
+  echo "  bash $SELF_NAME --add section \"Market Analysis\""
+  echo "  bash $SELF_NAME --remove intent \"old search query\""
   echo "  bash $SELF_NAME --sync all           # Propagate shared code to siblings"
 }
 
@@ -1055,6 +1065,8 @@ while [[ $# -gt 0 ]]; do
     --update-all) ACTION="update-all"; shift ;;
     --sync)       ACTION="sync"; SYNC_SECTION="${2:-all}"; shift; [[ $# -gt 0 && "${1:0:2}" != "--" ]] && shift ;;
     --set)        ACTION="set"; SET_KEY="${2:-}"; SET_VAL="${3:-}"; shift; [[ -n "$SET_KEY" ]] && shift; [[ -n "$SET_VAL" ]] && shift ;;
+    --add)        ACTION="add"; ARR_FIELD="${2:-}"; ARR_VAL="${3:-}"; shift; [[ -n "$ARR_FIELD" ]] && shift; [[ -n "$ARR_VAL" ]] && shift ;;
+    --remove)     ACTION="remove"; ARR_FIELD="${2:-}"; ARR_VAL="${3:-}"; shift; [[ -n "$ARR_FIELD" ]] && shift; [[ -n "$ARR_VAL" ]] && shift ;;
     --agent)      AGENT="$2"; shift 2 ;;
     --model)      MODEL="$2"; shift 2 ;;
     --force)      FORCE=1; shift ;;
@@ -1203,9 +1215,43 @@ set_field() {
     *)
       echo "o-o: Unknown field: $key" >&2
       echo "o-o: Settable fields: subject, scope, audience, tone, budget, update_every_days" >&2
+      echo "o-o: For array fields use: --add intent|section VALUE  /  --remove intent|section VALUE" >&2
       exit 1
       ;;
   esac
+}
+
+# ─── ADD / REMOVE ARRAY ITEMS ──────────────────────────────────
+add_to_array() {
+  local field="$1" value="$2"
+  [[ -z "$field" || -z "$value" ]] && { echo "o-o: Usage: --add intent|section VALUE" >&2; exit 1; }
+  local arr_name
+  case "$field" in
+    intent)  arr_name="intents" ;;
+    section) arr_name="required_sections" ;;
+    *)       echo "o-o: Unknown array field: $field (use: intent, section)" >&2; exit 1 ;;
+  esac
+  # Append before the closing ] of the named array
+  perl -i -0777 -pe 's/("'"$arr_name"'"\s*:\s*\[.*?)(\s*\])/$1,\n        "'"$value"'"$2/s' "$SELF"
+  # Fix leading comma if array was previously empty: ["x"] → ["x"]
+  perl -i -pe 's/\[\s*,\s*"/["/' "$SELF"
+  echo "o-o: Added to research.$arr_name: \"$value\""
+}
+
+remove_from_array() {
+  local field="$1" value="$2"
+  [[ -z "$field" || -z "$value" ]] && { echo "o-o: Usage: --remove intent|section VALUE" >&2; exit 1; }
+  local arr_name
+  case "$field" in
+    intent)  arr_name="intents" ;;
+    section) arr_name="required_sections" ;;
+    *)       echo "o-o: Unknown array field: $field (use: intent, section)" >&2; exit 1 ;;
+  esac
+  # Remove line matching the exact value
+  perl -i -ne 'print unless /^\s*"\Q'"$value"'\E"\s*,?\s*$/' "$SELF"
+  # Fix trailing comma before ]: ..., ] → ...]
+  perl -i -0777 -pe 's/,(\s*\])/$1/g' "$SELF"
+  echo "o-o: Removed from research.$arr_name: \"$value\""
 }
 
 case "$ACTION" in
@@ -1280,6 +1326,22 @@ case "$ACTION" in
 
   set)
     set_field "$SET_KEY" "$SET_VAL"
+    ;;
+
+  add)
+    if [[ "$IS_INDEX" -eq 1 ]]; then
+      echo "o-o: --add is for article files (modifies the research contract)." >&2
+      exit 1
+    fi
+    add_to_array "$ARR_FIELD" "$ARR_VAL"
+    ;;
+
+  remove)
+    if [[ "$IS_INDEX" -eq 1 ]]; then
+      echo "o-o: --remove is for article files (modifies the research contract)." >&2
+      exit 1
+    fi
+    remove_from_array "$ARR_FIELD" "$ARR_VAL"
     ;;
 
   help)

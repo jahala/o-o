@@ -1359,6 +1359,10 @@ remove_from_array() {
   echo "o-o: Removed from research.$arr_name: \"$value\""
 }
 
+# The router sits in { ...; exit; } so bash parses it whole before running it.
+# The agent rewrites this file while bash runs it; without the braces, bash
+# would read its next command from a stale byte offset in the new content.
+{
 case "$ACTION" in
   new)
     if [[ "$IS_INDEX" -eq 0 ]]; then
@@ -1469,6 +1473,8 @@ case "$ACTION" in
     fi
     ;;
 esac
+exit 0
+}
 # OO:SHELL:END
 
 exit 0

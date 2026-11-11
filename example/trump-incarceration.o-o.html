@@ -890,10 +890,12 @@ update_all() {
 
     if [[ "$should_update" -eq 1 ]]; then
       echo "o-o: Updating $(basename "$file")..."
+      # </dev/null: the loop reads its file list from stdin. Without this, the
+      # agent (claude -p reads piped stdin) swallows the rest of the list.
       if [[ "$force" -eq 1 ]]; then
-        bash "$file" --force
+        bash "$file" --force </dev/null
       else
-        bash "$file"
+        bash "$file" </dev/null
       fi
       updated_count=$((updated_count + 1))
     else

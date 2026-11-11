@@ -145,12 +145,17 @@ td a:hover { text-decoration:underline; }
 </header>
 <div class="stats-bar">
   <div class="stat"><strong id="doc-count">8</strong> documents</div>
-  <div class="stat">Last scanned: <span id="last-scan">2026-02-28 18:48</span></div>
+  <div class="stat">Last scanned: <span id="last-scan">2026-11-11 14:20</span></div>
   <input type="search" id="search-input" placeholder="Search...">
 </div>
 <article id="article">
   <!-- INDEX-CONTENT-START -->
   <div class="card-grid" id="card-grid">
+    <a class="card" href="competitor-costco.o-o.html">
+      <span class="card-title">Costco: Competitive Intelligence Briefing</span>
+      <span class="card-badge fresh">Nov 11, 2026</span>
+      <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) remains the most feared operator in retail, and fiscal 2026 made the case st...</span>
+    </a>
     <a class="card" href="yc-w26-batch.o-o.html">
       <span class="card-title">Y Combinator W26 Batch</span>
       <span class="card-badge stale">Feb 17, 2026</span>
@@ -176,11 +181,6 @@ td a:hover { text-decoration:underline; }
       <span class="card-badge stale">Feb 17, 2026</span>
       <span class="card-excerpt">OpenClaw is an open-source, local-first autonomous AI agent created by Austrian software developer Peter Steinberger. Ma...</span>
     </a>
-    <a class="card" href="competitor-costco.o-o.html">
-      <span class="card-title">Costco: Competitive Intelligence Briefing</span>
-      <span class="card-badge stale">Feb 17, 2026</span>
-      <span class="card-excerpt">Costco Wholesale Corporation (NASDAQ: COST) continues to be the most feared operator in retail. In fiscal year 2025 (end...</span>
-    </a>
     <a class="card" href="anthropic-leadership.o-o.html">
       <span class="card-title">Anthropic Leadership Team</span>
       <span class="card-badge stale">Feb 17, 2026</span>
@@ -204,49 +204,49 @@ td a:hover { text-decoration:underline; }
     <tbody>
 <tr>
   <td><a href="competitor-costco.o-o.html">Costco: Competitive Intelligence Briefing</a></td>
-  <td>198K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
+  <td>492K</td>
+  <td>2026-11-11</td>
+  <td>3</td>
 </tr>
 <tr>
   <td><a href="vendor-comparison-vector-dbs.o-o.html">Vector Databases Compared</a></td>
-  <td>84K</td>
+  <td>92K</td>
   <td>2026-02-17</td>
   <td>2</td>
 </tr>
 <tr>
   <td><a href="ai-model-landscape.o-o.html">The LLM Landscape: Models, Benchmarks & Pricing</a></td>
-  <td>82K</td>
+  <td>90K</td>
   <td>2026-02-17</td>
   <td>2</td>
 </tr>
 <tr>
   <td><a href="openclaw.o-o.html">OpenClaw: The Open-Source AI Agent</a></td>
-  <td>91K</td>
+  <td>98K</td>
   <td>2026-02-17</td>
   <td>2</td>
 </tr>
 <tr>
   <td><a href="trump-incarceration.o-o.html">Trump Incarceration</a></td>
-  <td>66K</td>
-  <td>2026-02-17</td>
-  <td>2</td>
-</tr>
-<tr>
-  <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
-  <td>183K</td>
-  <td>2026-02-17</td>
-  <td>3</td>
-</tr>
-<tr>
-  <td><a href="agi-declared.o-o.html">AGI Declared</a></td>
   <td>74K</td>
   <td>2026-02-17</td>
   <td>2</td>
 </tr>
 <tr>
+  <td><a href="anthropic-leadership.o-o.html">Anthropic Leadership Team</a></td>
+  <td>191K</td>
+  <td>2026-02-17</td>
+  <td>3</td>
+</tr>
+<tr>
+  <td><a href="agi-declared.o-o.html">AGI Declared</a></td>
+  <td>82K</td>
+  <td>2026-02-17</td>
+  <td>2</td>
+</tr>
+<tr>
   <td><a href="yc-w26-batch.o-o.html">Y Combinator W26 Batch</a></td>
-  <td>85K</td>
+  <td>92K</td>
   <td>2026-02-17</td>
   <td>4</td>
 </tr>
@@ -795,10 +795,12 @@ update_all() {
 
     if [[ "$should_update" -eq 1 ]]; then
       echo "o-o: Updating $(basename "$file")..."
+      # </dev/null: the loop reads its file list from stdin. Without this, the
+      # agent (claude -p reads piped stdin) swallows the rest of the list.
       if [[ "$force" -eq 1 ]]; then
-        bash "$file" --force
+        bash "$file" --force </dev/null
       else
-        bash "$file"
+        bash "$file" </dev/null
       fi
       updated_count=$((updated_count + 1))
     else
